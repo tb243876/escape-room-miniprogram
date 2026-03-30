@@ -1,101 +1,101 @@
-# 密室店小程序原型
+# 密室小程序（迷场档案馆）
 
-这是一个基于微信原生小程序 + CloudBase 结构搭建的简易原型。
+基于微信原生小程序 + CloudBase 构建的密室门店小程序。
 
-建议你在微信开发者工具导入这个目录：
+## 功能概览
 
-- `/Users/edy/Documents/密室小程序/miniapp`
+### 玩家端
 
-当前目标不是把所有业务做完，而是先把这几个点做成可看的第一版：
+- 首页：浏览主题、活动入口
+- 主题列表/详情：查看主题信息、恐怖星级
+- 活动页：查看门店活动
+- 组局大厅：发起/加入组局
+- 队伍房间：查看组局成员、互相查看玩家卡片
+- 排行榜：查看玩家排名、荣誉、徽章
+- 档案：查看个人通关记录、徽章、成长值
+- 资料编辑：头像、昵称、签名、性别
 
-- 首页
-- 主题列表
-- 主题详情
-- 活动页
-- 组局页
-- 会员/我的页
+### 员工端（工作台）
 
-## 技术方向
+- 授权绑定：本机授权码绑定
+- 场次管理：确认成员、开始场次、结束场次、上传集锦
+- 集锦管理：查看/上传照片视频
 
-当前代码按 CloudBase 方式组织：
+## 技术架构
 
-- `app.js`
-  - 预留了 `wx.cloud.init`
-- `utils/cloudbase.js`
-  - 统一数据入口
-  - 已支持 mock / CloudBase 双模式
-- `mock/data.js`
-  - 演示数据
-- `cloudbase-init.json`
-  - 第一批建议导入 CloudBase 的初始化数据
-- `cloudfunctions/README.md`
-  - CloudBase 集合和接入说明
+```
+pages/                 # 页面目录
+  home/                # 首页
+  themes/              # 主题列表
+  theme-detail/        # 主题详情
+  activities/          # 活动页
+  lobby/               # 组局大厅
+  lobby-create/        # 发起组局
+  team-room/           # 队伍房间
+  leaderboard/         # 排行榜
+  profile/             # 我的/档案
+  profile-edit/        # 资料编辑
+  badges/              # 徽章页
+  staff-auth-code/     # 工作台授权
+  staff-dashboard/     # 工作台首页
+  staff-session/       # 场次管理
+  staff-sessions/      # 场次列表
+  staff-highlights/    # 集锦管理
+  staff-store/         # 门店管理
+  staff-users/         # 用户管理
 
-## 默认开发约束
-
-后续继续开发时，默认按以下优先级处理：
-
-1. 安全性
-2. 性能
-3. 用户体验
-
-同时默认遵守以下约束：
-
-- 所有云函数必须包含事务处理
-- 所有写操作默认考虑幂等和重复提交
-- 所有用户可见错误都要返回可读提示，不直接暴露底层异常
-- 涉及用户身份、积分、勋章、库存、次数累计的逻辑，优先放到云端而不是只放前端
-
-最终统一规则见：
-
-- `FINAL_DEVELOPMENT_SPEC.md`
-
-## 如何看
-
-1. 用微信开发者工具打开这个目录
-2. 直接预览页面
-3. 当前 `appid` 使用的是 `touristappid`
-
-## 如何切到真实 CloudBase
-
-### 第一步
-
-在 CloudBase 创建环境，拿到 `envId`
-
-### 第二步
-
-修改 `app.js`
-
-```js
-globalData: {
-  envId: "你的-cloudbase-env-id",
-  useMockData: false,
-}
+utils/                 # 公共工具
+  cloudbase.js         # 统一服务入口
+  platform/            # 平台相关（运行时、存储、性能）
+  domain/              # 业务领域（主题、档案、组局、店员、排行榜）
 ```
 
-### 第三步
+### 云函数
 
-在 CloudBase 数据库创建集合：
+- `getProfile`: 获取/创建用户档案
+- `updateProfile`: 更新用户资料
+- `groupManage`: 组局管理（创建/加入/退出/取消）
+- `staffManage`: 门店管理（授权/场次/集锦）
+- `getLeaderboard`: 排行榜数据聚合
 
-- `themes`
-- `activities`
-- `groups`
-- `profiles`
+## 运行配置
 
-### 第四步
+在 `app.js` 中配置：
 
-用 `cloudbase-init.json` 里的示例数据初始化集合
+- `envId`: CloudBase 环境 ID
+- `useMockData`: 是否使用 Mock 数据
+- `useMockGroups`: 组局是否使用 Mock
+- `enablePerfTracing`: 是否开启性能追踪日志
 
-## 当前状态
+## 测试脚本
 
-- 页面原型已可看
-- 数据层已支持切 CloudBase
-- 还没做登录、组局表单提交、后台管理端
+```bash
+npm run lint                # 代码静态检查
+npm run test:phase1         # 结构/规则/流程校验
+npm run test:business       # 业务规则校验
+npm run test:flows          # 主流程校验
+npm run test:api            # 接口契约校验
+npm run test:perf           # 性能校验
+npm run test:ui             # UI 冒烟校验
+npm run test:ui:player      # 玩家端 UI 校验
+npm run test:ui:staff       # 员工端 UI 校验
+npm run test:ui:session     # 场次 UI 校验
+npm run test:regression     # 完整回归测试
+```
 
-## 后面最值得继续补的
+## 开发约束
 
-1. CloudBase 真数据接通
-2. 用户登录
-3. 通关档案真实用户绑定
-4. 组局发布表单
-5. B 端 Web 管理页
+1. 安全性 > 性能 > 用户体验
+2. 所有写操作需考虑幂等和重复提交
+3. 用户可见错误返回可读提示，不暴露底层异常
+4. 涉及用户身份、积分、勋章、库存的逻辑放云端
+
+## 相关文档
+
+- `PROJECT_CONTEXT.md`: 项目长期上下文
+- `CURRENT_STATUS.md`: 当前状态
+- `ARCHITECTURE.md`: 架构说明
+- `FINAL_DEVELOPMENT_SPEC.md`: 开发规范
+- `docs/PHASE1_DEVELOPMENT_GUIDE.md`: 开发指南
+- `docs/UI_STYLE_GUIDE.md`: UI 风格规范
+- `docs/UI_FLOW_GUIDE.md`: UI 流程规范
