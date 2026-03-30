@@ -1,0 +1,130 @@
+.board {
+  padding: 30rpx;
+  background:
+    linear-gradient(160deg, rgba(79, 52, 37, 0.05), rgba(79, 52, 37, 0)),
+    linear-gradient(135deg, #fff4e5, #f0d9b9);
+}
+
+.board-kicker {
+  font-size: 22rpx;
+  letter-spacing: 6rpx;
+  color: #9e6a47;
+}
+
+.board-title {
+  margin-top: 16rpx;
+  font-size: 38rpx;
+  font-weight: 700;
+}
+
+.board-subtitle {
+  margin-top: 14rpx;
+  font-size: 26rpx;
+  line-height: 1.7;
+  color: #6f604d;
+}
+
+.activity-poster {
+  margin-top: 18rpx;
+  position: relative;
+  padding-left: 24rpx;
+}
+
+.activity-rail {
+  position: absolute;
+  left: 10rpx;
+  top: 18rpx;
+  bottom: 18rpx;
+  width: 4rpx;
+  border-radius: 999rpx;
+}
+
+.activity-rail-warm {
+  background: linear-gradient(180deg, #d4a16e, #f0d8b4);
+}
+
+.activity-rail-dark {
+  background: linear-gradient(180deg, #8b654e, #ddc3aa);
+}
+
+.activity-date-badge {
+  width: fit-content;
+  padding: 10rpx 16rpx;
+  border-radius: 999rpx;
+  background: #fbedd8;
+  color: #a15d34;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.activity-card {
+  margin-top: 12rpx;
+  padding: 26rpx;
+  border-radius: 26rpx;
+  border: 1rpx solid rgba(148, 101, 64, 0.12);
+  box-shadow: 0 14rpx 28rpx rgba(78, 47, 26, 0.08);
+}
+
+.activity-card-warm {
+  background: linear-gradient(180deg, rgba(255, 249, 241, 0.98) 0%, rgba(246, 234, 218, 0.98) 100%);
+}
+
+.activity-card-plain {
+  background: linear-gradient(180deg, rgba(255, 252, 247, 0.98) 0%, rgba(241, 234, 226, 0.98) 100%);
+}
+
+.activity-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20rpx;
+}
+
+.activity-title-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.activity-label {
+  width: fit-content;
+  padding: 6rpx 12rpx;
+  border-radius: 999rpx;
+  background: rgba(158, 61, 34, 0.08);
+  color: #9e5a34;
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+}
+
+.activity-title {
+  margin-top: 12rpx;
+  font-size: 33rpx;
+  font-weight: 700;
+}
+
+.activity-badge {
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(135deg, #f1ddc4, #ebc89d);
+  color: #9e3d22;
+  font-size: 22rpx;
+}
+
+.activity-summary,
+.activity-highlight {
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  line-height: 1.7;
+  color: #64584d;
+}
+
+.activity-highlight-label {
+  margin-top: 18rpx;
+  font-size: 22rpx;
+  letter-spacing: 4rpx;
+  color: #9a6848;
+}
+
+.activity-highlight {
+  color: #9e3d22;
+  font-weight: 600;
+}

@@ -1,0 +1,143 @@
+<view class="screen">
+  <view wx:if="{{errorText}}" class="card status-card">
+    <view class="status-title">门店管理加载失败</view>
+    <view class="status-text">{{errorText}}</view>
+    <view class="button-primary status-action" bindtap="retryLoad">重新加载</view>
+  </view>
+
+  <block wx:elif="{{dashboard && dashboard.canManageAuthCodes}}">
+    <view class="hero-card store-hero">
+      <view class="store-kicker">门店管理</view>
+      <view class="store-title">授权、员工、店长转移</view>
+      <view class="store-subtitle">这里单独处理门店后台权限，不再和其他功能混排。</view>
+    </view>
+
+    <view class="card store-card">
+      <view class="row">
+        <view class="section-title-inline">生成授权码</view>
+        <view class="store-summary">已绑定 {{dashboard.authCodeSummary.activeStaff}} 人</view>
+      </view>
+      <view class="auth-code-action-row">
+        <view class="auth-code-action-chip" wx:for="{{dashboard.authCodeActions}}" wx:key="key" data-role="{{item.key}}" bindtap="generateAuthCode">{{item.text}}</view>
+      </view>
+      <view wx:if="{{dashboard.authCodeList.length}}" class="auth-code-list">
+        <view class="auth-code-item" wx:for="{{dashboard.authCodeList}}" wx:key="code">
+          <view class="auth-code-item-head">
+            <view class="auth-code-item-code">{{item.code}}</view>
+            <view class="auth-code-item-head-side">
+              <view class="auth-code-item-role">{{item.roleLabel}}</view>
+              <view class="auth-code-item-status {{item.statusClass}}">{{item.statusText}}</view>
+            </view>
+          </view>
+          <view class="auth-code-item-meta">{{item.createdDateText}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{dashboard.staffMembers.length}}" class="card store-card">
+      <view class="row">
+        <view class="section-title-inline">员工管理</view>
+        <view class="store-summary">{{dashboard.staffMembers.length}} 人</view>
+      </view>
+      <view class="staff-roster-list">
+        <view class="staff-roster-item" wx:for="{{dashboard.staffMembers}}" wx:key="openId">
+          <view class="staff-roster-main" data-openid="{{item.openId}}" bindtap="openStaffProfile">
+            <image wx:if="{{item.avatarUrl}}" class="staff-roster-avatar" src="{{item.avatarUrl}}" mode="aspectFill"></image>
+            <view wx:else class="staff-roster-avatar staff-roster-avatar-fallback">{{item.avatarText}}</view>
+            <view class="staff-roster-copy">
+              <view class="staff-roster-name-row">
+                <view class="staff-roster-name">{{item.nickname}}</view>
+                <view class="staff-roster-role">{{item.roleLabel}}</view>
+                <view wx:if="{{item.isCurrentUser}}" class="staff-roster-self">当前账号</view>
+              </view>
+              <view class="staff-roster-meta">绑定时间 {{item.boundAtText || '刚刚'}}</view>
+            </view>
+          </view>
+          <view
+            wx:if="{{item.canRemove}}"
+            class="staff-roster-action"
+            data-openid="{{item.openId}}"
+            catchtap="promptRemoveStaff"
+          >
+            移除
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{dashboard.canTransferManager && dashboard.managerTransfer.candidateList.length}}" class="card store-card">
+      <view class="row">
+        <view class="section-title-inline">店长转移</view>
+        <view class="store-summary">{{dashboard.managerTransfer.candidateList.length}} 人可选</view>
+      </view>
+      <view class="store-tip">当前店长账号：{{dashboard.managerTransfer.currentManager}}</view>
+      <view class="staff-transfer-list">
+        <view class="staff-transfer-item" wx:for="{{dashboard.managerTransfer.candidateList}}" wx:key="openId">
+          <view>
+            <view class="staff-transfer-name">{{item.nickname}}</view>
+            <view class="staff-transfer-meta">{{item.roleLabel}}</view>
+          </view>
+          <view class="staff-transfer-btn" data-openid="{{item.openId}}" bindtap="promptTransferManager">转为店长</view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <view wx:else class="card status-card">
+    <view class="status-title">当前无权限查看</view>
+    <view class="status-text">只有副店长及以上可以进入门店管理。</view>
+  </view>
+
+  <view wx:if="{{dialogVisible || selectedStaffProfile}}" class="room-mask modal-mask-center" bindtap="closeDialog">
+    <view class="room-dialog modal-card-common" catchtap="noop">
+      <block wx:if="{{selectedStaffProfile}}">
+        <scroll-view class="store-dialog-scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
+          <view class="player-card-head">
+            <block wx:if="{{selectedStaffProfile.avatarUrl}}">
+              <image class="player-card-avatar-image" src="{{selectedStaffProfile.avatarUrl}}" mode="aspectFill"></image>
+            </block>
+            <view wx:else class="player-card-avatar">{{selectedStaffProfile.avatarText}}</view>
+            <view class="player-card-copy">
+              <view class="player-card-name">{{selectedStaffProfile.nickname}}</view>
+              <view class="player-card-title">{{selectedStaffProfile.titleLabel}}</view>
+              <view class="player-card-meta">{{selectedStaffProfile.genderText}} · {{selectedStaffProfile.summaryText}}</view>
+            </view>
+          </view>
+          <view class="player-card-section">
+            <view class="player-card-section-title">个性签名</view>
+            <view class="player-card-signature">{{selectedStaffProfile.signature}}</view>
+          </view>
+          <view class="player-card-stats">
+            <view class="player-card-stat">
+              <view class="player-card-stat-num">{{selectedStaffProfile.totalPlayCount}}</view>
+              <view class="player-card-stat-label">通关次数</view>
+            </view>
+            <view class="player-card-stat">
+              <view class="player-card-stat-num">{{selectedStaffProfile.badgeCount}}</view>
+              <view class="player-card-stat-label">荣誉徽章</view>
+            </view>
+            <view class="player-card-stat">
+              <view class="player-card-stat-num">{{selectedStaffProfile.growthValue}}</view>
+              <view class="player-card-stat-label">成长值</view>
+            </view>
+          </view>
+          <view class="player-card-section">
+            <view class="player-card-section-title">当前荣誉</view>
+            <view class="player-card-tag-list">
+              <view class="player-card-tag" wx:for="{{selectedStaffProfile.honorLabels}}" wx:key="*this">{{item}}</view>
+            </view>
+          </view>
+        </scroll-view>
+        <view class="button-primary store-dialog-single" bindtap="closeDialog">关闭资料</view>
+      </block>
+      <block wx:else>
+        <view class="room-dialog-title modal-title-common">{{dialogTitle}}</view>
+        <view class="room-dialog-content modal-content-common">{{dialogContent}}</view>
+        <view class="store-dialog-actions actions-split">
+          <view class="store-dialog-btn store-dialog-btn-secondary" bindtap="closeDialog">取消</view>
+          <view class="store-dialog-btn store-dialog-btn-primary" bindtap="confirmDialogAction">确认</view>
+        </view>
+      </block>
+    </view>
+  </view>
+</view>

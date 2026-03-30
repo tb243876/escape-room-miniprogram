@@ -1,0 +1,100 @@
+<view class="screen screen-with-tabbar">
+  <view wx:if="{{errorText}}" class="card status-card">
+    <view class="status-title">页面加载失败</view>
+    <view class="status-text">{{errorText}}</view>
+    <view class="button-primary status-action" bindtap="retryLoad">重新加载</view>
+  </view>
+
+  <block wx:else>
+  <view class="home-stage">
+    <view class="home-stage-card">
+      <view class="home-stage-kicker">主题推荐</view>
+      <view class="home-stage-stamp">按等级浏览</view>
+      <view class="home-stage-title">{{hero.title || '先挑主题，再决定今晚玩哪一场'}}</view>
+      <view class="home-stage-subtitle">{{hero.subtitle || '首页只保留最关键的信息：快速找主题、看推荐、直接进详情。'}}</view>
+      <view class="home-stage-meta">
+        <view class="home-stage-meta-item">先按恐怖等级筛选</view>
+        <view class="home-stage-meta-item">再看题材、人数和时长</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="home-search-shell">
+    <view class="card home-search-card">
+      <view class="home-search-head">
+        <view class="home-search-title">搜索主题</view>
+        <view class="home-search-record">共 {{isSearching ? searchingThemes.length : themeGroups.length}} 类</view>
+      </view>
+      <view class="home-search-row">
+        <input
+          class="home-search-input"
+          value="{{keyword}}"
+          placeholder="搜索主题名 / 恐怖等级 / 题材"
+          placeholder-style="color: #9b8a7d;"
+          bindinput="onKeywordInput"
+          confirm-type="search"
+          cursor-spacing="24"
+        />
+        <view wx:if="{{keyword}}" class="home-search-clear" bindtap="clearSearch">清空</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="section-title">
+    <text>按恐怖等级选主题</text>
+    <text wx:if="{{isSearching}}">结果 {{searchingThemes.length}}</text>
+  </view>
+  <block wx:if="{{isSearching}}">
+    <block wx:if="{{searchingThemes.length}}">
+      <block wx:for="{{searchingThemes}}" wx:key="id">
+        <view class="card compact-theme-card" bindtap="openTheme" data-id="{{item.id}}">
+          <image class="compact-cover" src="{{item.coverImage}}" mode="aspectFill"></image>
+          <view class="compact-body">
+            <view class="compact-kicker">搜索结果</view>
+            <view class="compact-name">{{item.name}}</view>
+            <view class="horror-stars">
+              <text class="horror-stars-label">恐怖星级：</text>
+              <text class="horror-star-active">{{item.horrorStarsFilledText}}</text>
+              <text class="horror-star-inactive">{{item.horrorStarsEmptyText}}</text>
+            </view>
+            <view class="compact-meta" wx:if="{{item.metaText}}">{{item.metaText}}</view>
+            <view class="compact-desc" wx:if="{{item.slogan}}">{{item.slogan}}</view>
+          </view>
+        </view>
+      </block>
+    </block>
+    <view wx:else class="card search-empty">没有找到匹配主题，换个关键词试试。</view>
+  </block>
+
+  <block wx:else>
+    <block wx:for="{{themeGroups}}" wx:key="title">
+      <view class="level-block {{item.blockClass}}">
+        <view class="level-title-row">
+          <view>
+            <view class="level-index">LEVEL {{index + 1}}</view>
+            <view class="level-title">{{item.title}}</view>
+          </view>
+          <view class="level-note">{{item.levelNote}}</view>
+        </view>
+        <block wx:for="{{item.items}}" wx:key="id" wx:for-item="theme">
+          <view class="card compact-theme-card" bindtap="openTheme" data-id="{{theme.id}}">
+            <image class="compact-cover" src="{{theme.coverImage}}" mode="aspectFill"></image>
+            <view class="compact-body">
+              <view class="compact-kicker">主题推荐</view>
+              <view class="compact-name">{{theme.name}}</view>
+              <view class="horror-stars">
+                <text class="horror-stars-label">恐怖星级：</text>
+                <text class="horror-star-active">{{theme.horrorStarsFilledText}}</text>
+                <text class="horror-star-inactive">{{theme.horrorStarsEmptyText}}</text>
+              </view>
+              <view class="compact-meta">{{theme.metaText}}</view>
+              <view class="compact-desc">{{theme.slogan}}</view>
+            </view>
+          </view>
+        </block>
+      </view>
+    </block>
+  </block>
+
+  </block>
+</view>

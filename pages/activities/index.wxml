@@ -1,0 +1,40 @@
+<view class="screen screen-with-tabbar">
+  <view wx:if="{{errorText}}" class="card status-card">
+    <view class="status-title">活动页加载失败</view>
+    <view class="status-text">{{errorText}}</view>
+    <view class="button-primary status-action" bindtap="retryLoad">重新加载</view>
+  </view>
+
+  <block wx:else>
+    <view class="hero-card board">
+      <view class="board-kicker">活动专区</view>
+      <view class="board-title">近期活动</view>
+      <view class="board-subtitle">把近期能参加的活动和福利集中放在这里，方便直接查看。</view>
+    </view>
+
+    <block wx:if="{{activities.length}}">
+      <block wx:for="{{activities}}" wx:key="id">
+        <view class="activity-poster">
+          <view class="activity-rail {{item.railClass}}"></view>
+          <view class="activity-date-badge">{{item.time}}</view>
+          <view class="activity-card {{item.cardClass}}">
+            <view class="activity-top">
+              <view class="activity-title-wrap">
+                <view class="activity-label">近期活动</view>
+                <view class="activity-title">{{item.title}}</view>
+              </view>
+              <view class="activity-badge">{{item.status}}</view>
+            </view>
+            <view class="activity-summary">{{item.summary}}</view>
+            <view class="activity-highlight-label">适合谁现在参与</view>
+            <view class="activity-highlight">{{item.highlight}}</view>
+          </view>
+        </view>
+      </block>
+    </block>
+    <view wx:else class="card status-card">
+      <view class="status-title">暂无活动</view>
+      <view class="status-text">当前没有活动内容，后续上新后会展示在这里。</view>
+    </view>
+  </block>
+</view>

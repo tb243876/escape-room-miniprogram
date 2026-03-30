@@ -1,0 +1,658 @@
+{
+  "themes": [
+    {
+      "_id": "theme-shixiong",
+      "name": "尸兄",
+      "slogan": "微恐入门本，用压迫氛围慢慢把你拖进故事里。",
+      "difficulty": "进阶",
+      "horror": "微恐",
+      "people": "4-6人",
+      "duration": "90分钟",
+      "tags": ["微恐", "新手友好", "剧情沉浸"],
+      "coverImage": "/assets/themes/shixiong.jpeg",
+      "coverGradient": "linear-gradient(135deg, #5a463d, #9b7b63)",
+      "story": "一场看似普通的旧楼探访，因为一段失踪往事逐渐变得不再正常。",
+      "highlights": ["适合第一次接触恐怖密室的用户。", "主打氛围和代入感，不会一上来就把人劝退。"],
+      "reviews": ["很适合带怕恐的朋友入门。"],
+      "isHot": true,
+      "status": "online",
+      "sort": 1
+    },
+    {
+      "_id": "theme-jishengchong",
+      "name": "寄生虫",
+      "slogan": "中恐主题，节奏压迫感强，适合想进阶的玩家。",
+      "difficulty": "硬核",
+      "horror": "中恐",
+      "people": "5-8人",
+      "duration": "120分钟",
+      "tags": ["中恐", "老玩家推荐", "压迫氛围"],
+      "coverImage": "/assets/themes/jishengchong.jpeg",
+      "coverGradient": "linear-gradient(135deg, #421717, #8f2d23)",
+      "story": "当熟悉的人开始出现无法解释的异样，所有人都意识到这次不是普通调查。",
+      "highlights": ["适合追求刺激和压迫感的用户。"],
+      "reviews": ["中恐里属于代入感很强的一类。"],
+      "isHot": true,
+      "status": "online",
+      "sort": 2
+    },
+    {
+      "_id": "theme-yixueyuan",
+      "name": "医学怨",
+      "slogan": "中恐医疗题材，本身就自带不安感。",
+      "difficulty": "进阶",
+      "horror": "中恐",
+      "people": "4-6人",
+      "duration": "100分钟",
+      "tags": ["中恐", "医院题材", "代入感强"],
+      "coverImage": "/assets/themes/yixueyuan.jpeg",
+      "coverGradient": "linear-gradient(135deg, #2f3e4e, #6a7f8f)",
+      "story": "废弃的医学楼里还残留着未完成的治疗记录。",
+      "highlights": ["医院环境天然容易出压迫感。"],
+      "reviews": ["题材本身就很容易让人代入。"],
+      "isHot": true,
+      "status": "online",
+      "sort": 3
+    },
+    {
+      "_id": "theme-xishiren",
+      "name": "洗尸人",
+      "slogan": "中恐题材里更偏阴冷和职业禁忌感。",
+      "difficulty": "进阶",
+      "horror": "中恐",
+      "people": "4-6人",
+      "duration": "100分钟",
+      "tags": ["中恐", "职业禁忌", "氛围压抑"],
+      "coverImage": "/assets/themes/xishiren.jpeg",
+      "coverGradient": "linear-gradient(135deg, #243038, #5d6a72)",
+      "story": "深夜的停尸间里，最可怕的从来不是尸体本身。",
+      "highlights": ["题材辨识度强，适合做传播记忆点。"],
+      "reviews": ["题材很抓人，氛围很阴。"],
+      "isHot": false,
+      "status": "online",
+      "sort": 4
+    },
+    {
+      "_id": "theme-wenchuanzhongxue",
+      "name": "文川中学",
+      "slogan": "中恐校园题材，熟悉感会放大不安。",
+      "difficulty": "进阶",
+      "horror": "中恐",
+      "people": "4-7人",
+      "duration": "110分钟",
+      "tags": ["中恐", "校园题材", "剧情向"],
+      "coverImage": "/assets/themes/wenchuanzhongxue.jpeg",
+      "coverGradient": "linear-gradient(135deg, #4a352f, #8d6657)",
+      "story": "被废弃的教学楼在夜里重新亮起了灯。",
+      "highlights": ["校园题材很容易引发代入。"],
+      "reviews": ["场景熟悉所以更容易害怕。"],
+      "isHot": false,
+      "status": "online",
+      "sort": 5
+    },
+    {
+      "_id": "theme-tonglingren",
+      "name": "瞳灵人",
+      "slogan": "重恐主题，适合明确追求强刺激的玩家。",
+      "difficulty": "硬核",
+      "horror": "重恐",
+      "people": "5-8人",
+      "duration": "120分钟",
+      "tags": ["重恐", "高刺激", "老玩家推荐"],
+      "coverImage": "/assets/themes/tonglingren.jpeg",
+      "coverGradient": "linear-gradient(135deg, #1f1416, #6f2d2d)",
+      "story": "所有见过那双眼睛的人，最后都会重新回到这里。",
+      "highlights": ["适合重恐爱好者，不建议新手直接挑战。"],
+      "reviews": ["是真的重恐，不是挂个名字。"],
+      "isHot": true,
+      "status": "online",
+      "sort": 6
+    }
+  ],
+  "activities": [
+    {
+      "_id": "activity-spring",
+      "title": "春季双人组局周",
+      "time": "4月1日 - 4月15日",
+      "status": "进行中",
+      "summary": "工作日夜场组局成功可获饮品券和主题徽章。",
+      "highlight": "鼓励老客带新客进场，适合转介绍。",
+      "sort": 1
+    },
+    {
+      "_id": "activity-new-theme",
+      "title": "新主题内测招募",
+      "time": "4月20日",
+      "status": "即将开始",
+      "summary": "限老客优先报名，参与可获得优先预约资格。",
+      "highlight": "适合做会员活跃和社群预热。",
+      "sort": 2
+    }
+  ],
+  "groups": [
+    {
+      "_id": "group-001",
+      "themeId": "theme-tonglingren",
+      "themeName": "瞳灵人",
+      "horror": "重恐",
+      "dateValue": "2026-03-29",
+      "date": "03月29日",
+      "timeSlot": "19:30",
+      "currentPeople": 4,
+      "targetPeople": 6,
+      "note": "重恐主题，优先来玩过中恐本的玩家，想凑满 6 人开。",
+      "status": "pending_store_confirm",
+      "contactName": "阿哲",
+      "contactPhone": "13800138001",
+      "creatorName": "阿哲",
+      "creatorOpenId": "seed-user-001",
+      "participants": [
+        {
+          "openId": "seed-user-001",
+          "contactName": "阿哲",
+          "contactPhone": "13800138001",
+          "role": "creator",
+          "status": "active",
+          "joinedAt": "2026-03-20T10:00:00.000Z"
+        },
+        {
+          "openId": "seed-user-002",
+          "contactName": "小林",
+          "contactPhone": "13800138002",
+          "role": "member",
+          "status": "active",
+          "joinedAt": "2026-03-20T10:05:00.000Z"
+        },
+        {
+          "openId": "seed-user-003",
+          "contactName": "阿宁",
+          "contactPhone": "13800138003",
+          "role": "member",
+          "status": "active",
+          "joinedAt": "2026-03-20T10:10:00.000Z"
+        },
+        {
+          "openId": "seed-user-004",
+          "contactName": "老周",
+          "contactPhone": "13800138004",
+          "role": "member",
+          "status": "active",
+          "joinedAt": "2026-03-20T10:15:00.000Z"
+        }
+      ],
+      "roomStage": "pending_confirm",
+      "roomMembers": [
+        { "openId": "seed-user-001", "nickname": "阿哲", "status": "已到店" },
+        { "openId": "seed-user-002", "nickname": "小林", "status": "已到店" },
+        { "openId": "seed-user-003", "nickname": "阿宁", "status": "待确认" },
+        { "openId": "seed-user-004", "nickname": "老周", "status": "待确认" }
+      ],
+      "roomTimeline": [
+        { "title": "大厅组局已转真实房间", "content": "该场已由门店接管，等待最终成员确认。" },
+        { "title": "待确认成员", "content": "确认通过后，玩家端会看到“待开场”状态。" }
+      ],
+      "sessionId": "session-group-001",
+      "createdAt": "2026-03-20T10:00:00.000Z",
+      "updatedAt": "2026-03-20T10:15:00.000Z"
+    },
+    {
+      "_id": "group-002",
+      "themeId": "theme-shixiong",
+      "themeName": "尸兄",
+      "horror": "微恐",
+      "dateValue": "2026-03-30",
+      "date": "03月30日",
+      "timeSlot": "20:00",
+      "currentPeople": 4,
+      "targetPeople": 4,
+      "note": "适合带新朋友体验，微恐入门局。",
+      "status": "confirmed",
+      "contactName": "圆圆",
+      "contactPhone": "13800138005",
+      "creatorName": "圆圆",
+      "creatorOpenId": "seed-user-005",
+      "participants": [
+        {
+          "openId": "seed-user-005",
+          "contactName": "圆圆",
+          "contactPhone": "13800138005",
+          "role": "creator",
+          "status": "active",
+          "joinedAt": "2026-03-21T12:00:00.000Z"
+        },
+        {
+          "openId": "seed-user-006",
+          "contactName": "阿木",
+          "contactPhone": "13800138006",
+          "role": "member",
+          "status": "active",
+          "joinedAt": "2026-03-21T12:10:00.000Z"
+        },
+        {
+          "openId": "seed-user-007",
+          "contactName": "北野",
+          "contactPhone": "13800138007",
+          "role": "member",
+          "status": "active",
+          "joinedAt": "2026-03-21T12:15:00.000Z"
+        },
+        {
+          "openId": "seed-user-008",
+          "contactName": "禾木",
+          "contactPhone": "13800138008",
+          "role": "member",
+          "status": "active",
+          "joinedAt": "2026-03-21T12:20:00.000Z"
+        }
+      ],
+      "roomStage": "ready",
+      "roomMembers": [
+        { "openId": "seed-user-005", "nickname": "圆圆", "status": "已确认" },
+        { "openId": "seed-user-006", "nickname": "阿木", "status": "已确认" },
+        { "openId": "seed-user-007", "nickname": "北野", "status": "已确认" },
+        { "openId": "seed-user-008", "nickname": "禾木", "status": "已确认" }
+      ],
+      "roomTimeline": [
+        { "title": "门店已确认成员", "content": "真实队伍已固定，等待店员点击开始。" },
+        { "title": "待开始", "content": "开始后玩家端会看到“游戏中”，并锁定本场状态流转。" }
+      ],
+      "sessionId": "session-group-002",
+      "createdAt": "2026-03-21T12:00:00.000Z",
+      "updatedAt": "2026-03-21T12:20:00.000Z"
+    },
+    {
+      "_id": "group-003",
+      "themeId": "theme-yixueyuan",
+      "themeName": "医学怨",
+      "horror": "中恐",
+      "dateValue": "2026-03-31",
+      "date": "03月31日",
+      "timeSlot": "19:00",
+      "currentPeople": 5,
+      "targetPeople": 5,
+      "note": "队伍已满，正在进行中。",
+      "status": "confirmed",
+      "contactName": "安妮",
+      "contactPhone": "13800138009",
+      "creatorName": "安妮",
+      "creatorOpenId": "seed-user-009",
+      "participants": [
+        {
+          "openId": "seed-user-009",
+          "contactName": "安妮",
+          "contactPhone": "13800138009",
+          "role": "creator",
+          "status": "active",
+          "joinedAt": "2026-03-22T18:00:00.000Z"
+        },
+        {
+          "openId": "seed-user-010",
+          "contactName": "阿宇",
+          "contactPhone": "13800138010",
+          "role": "member",
+          "status": "active",
+          "joinedAt": "2026-03-22T18:05:00.000Z"
+        },
+        {
+          "openId": "seed-user-011",
+          "contactName": "阿辞",
+          "contactPhone": "13800138011",
+          "role": "member",
+          "status": "active",
+          "joinedAt": "2026-03-22T18:10:00.000Z"
+        },
+        {
+          "openId": "seed-user-012",
+          "contactName": "南一",
+          "contactPhone": "13800138012",
+          "role": "member",
+          "status": "active",
+          "joinedAt": "2026-03-22T18:15:00.000Z"
+        },
+        {
+          "openId": "seed-user-008",
+          "contactName": "禾木",
+          "contactPhone": "13800138008",
+          "role": "member",
+          "status": "active",
+          "joinedAt": "2026-03-22T18:20:00.000Z"
+        }
+      ],
+      "roomStage": "playing",
+      "roomMembers": [
+        { "openId": "seed-user-009", "nickname": "安妮", "status": "游戏中" },
+        { "openId": "seed-user-010", "nickname": "阿宇", "status": "游戏中" },
+        { "openId": "seed-user-011", "nickname": "阿辞", "status": "游戏中" },
+        { "openId": "seed-user-012", "nickname": "南一", "status": "游戏中" },
+        { "openId": "seed-user-008", "nickname": "禾木", "status": "游戏中" }
+      ],
+      "roomTimeline": [
+        { "title": "场次已开始", "content": "玩家正在游玩，等待店员在结束后点击结算。" },
+        { "title": "待自动结算", "content": "结束场次后将自动发放成长值并更新排行榜。" }
+      ],
+      "sessionId": "session-group-003",
+      "createdAt": "2026-03-22T18:00:00.000Z",
+      "updatedAt": "2026-03-22T19:10:00.000Z"
+    }
+  ],
+  "profiles": [
+    {
+      "_id": "demo-user",
+      "nickname": "档案室常客",
+      "level": "进阶会员",
+      "totalPlayCount": 6,
+      "badgeCount": 4,
+      "nextLevelHint": "再完成 2 个主题即可解锁老玩家会员",
+      "recentThemes": ["尸兄", "寄生虫", "医学怨"],
+      "perks": ["生日月专属福利", "新主题优先报名", "老客夜场券"],
+      "contactPhone": "13800138000",
+      "growthValue": 96,
+      "streakDays": 2,
+      "createdAt": "2026-03-10T10:00:00.000Z"
+    },
+    {
+      "_id": "seed-user-001",
+      "nickname": "阿哲",
+      "contactPhone": "13800138001",
+      "growthValue": 241,
+      "badgeCount": 7,
+      "streakDays": 8,
+      "createdAt": "2026-02-01T10:00:00.000Z",
+      "recentThemes": ["瞳灵人", "寄生虫"],
+      "punchRecords": [
+        { "recordId": "seed-r-001", "themeName": "瞳灵人", "themeId": "theme-tonglingren", "horror": "重恐", "teamSize": 6, "lateNight": true, "punchedAt": "2026-03-20T22:00:00.000Z" },
+        { "recordId": "seed-r-002", "themeName": "寄生虫", "themeId": "theme-jishengchong", "horror": "中恐", "teamSize": 5, "lateNight": false, "punchedAt": "2026-03-12T21:00:00.000Z" }
+      ]
+    },
+    {
+      "_id": "seed-user-009",
+      "nickname": "安妮",
+      "contactPhone": "13800138009",
+      "growthValue": 268,
+      "badgeCount": 8,
+      "streakDays": 11,
+      "createdAt": "2026-01-20T10:00:00.000Z",
+      "recentThemes": ["医学怨", "尸兄", "瞳灵人"],
+      "punchRecords": [
+        { "recordId": "seed-r-101", "themeName": "医学怨", "themeId": "theme-yixueyuan", "horror": "中恐", "teamSize": 5, "lateNight": false, "punchedAt": "2026-03-25T21:00:00.000Z" },
+        { "recordId": "seed-r-102", "themeName": "尸兄", "themeId": "theme-shixiong", "horror": "微恐", "teamSize": 4, "lateNight": false, "punchedAt": "2026-03-18T20:00:00.000Z" },
+        { "recordId": "seed-r-103", "themeName": "瞳灵人", "themeId": "theme-tonglingren", "horror": "重恐", "teamSize": 6, "lateNight": true, "punchedAt": "2026-03-10T23:00:00.000Z" }
+      ]
+    },
+    {
+      "_id": "seed-user-010",
+      "nickname": "阿宇",
+      "contactPhone": "13800138010",
+      "growthValue": 148,
+      "badgeCount": 4,
+      "streakDays": 4,
+      "createdAt": "2026-02-05T10:00:00.000Z",
+      "recentThemes": ["医学怨"],
+      "punchRecords": [
+        { "recordId": "seed-r-201", "themeName": "医学怨", "themeId": "theme-yixueyuan", "horror": "中恐", "teamSize": 5, "lateNight": false, "punchedAt": "2026-03-24T21:00:00.000Z" }
+      ]
+    },
+    {
+      "_id": "seed-user-011",
+      "nickname": "阿辞",
+      "contactPhone": "13800138011",
+      "growthValue": 176,
+      "badgeCount": 4,
+      "streakDays": 4,
+      "createdAt": "2026-02-08T10:00:00.000Z",
+      "recentThemes": ["医学怨"],
+      "punchRecords": [
+        { "recordId": "seed-r-301", "themeName": "医学怨", "themeId": "theme-yixueyuan", "horror": "中恐", "teamSize": 5, "lateNight": false, "punchedAt": "2026-03-22T21:00:00.000Z" }
+      ]
+    },
+    {
+      "_id": "seed-user-008",
+      "nickname": "禾木",
+      "contactPhone": "13800138008",
+      "growthValue": 191,
+      "badgeCount": 5,
+      "streakDays": 4,
+      "createdAt": "2026-02-06T10:00:00.000Z",
+      "recentThemes": ["医学怨", "尸兄"],
+      "punchRecords": [
+        { "recordId": "seed-r-401", "themeName": "医学怨", "themeId": "theme-yixueyuan", "horror": "中恐", "teamSize": 5, "lateNight": false, "punchedAt": "2026-03-23T21:00:00.000Z" },
+        { "recordId": "seed-r-402", "themeName": "尸兄", "themeId": "theme-shixiong", "horror": "微恐", "teamSize": 4, "lateNight": false, "punchedAt": "2026-03-16T20:00:00.000Z" }
+      ]
+    },
+    {
+      "_id": "seed-user-002",
+      "nickname": "小林",
+      "contactPhone": "13800138002",
+      "growthValue": 223,
+      "badgeCount": 6,
+      "streakDays": 6,
+      "createdAt": "2026-02-03T10:00:00.000Z",
+      "recentThemes": ["瞳灵人", "尸兄"],
+      "punchRecords": [
+        { "recordId": "seed-r-501", "themeName": "瞳灵人", "themeId": "theme-tonglingren", "horror": "重恐", "teamSize": 6, "lateNight": true, "punchedAt": "2026-03-21T23:00:00.000Z" },
+        { "recordId": "seed-r-502", "themeName": "尸兄", "themeId": "theme-shixiong", "horror": "微恐", "teamSize": 4, "lateNight": false, "punchedAt": "2026-03-14T20:00:00.000Z" }
+      ]
+    }
+  ],
+  "staff_auth_codes": [
+    {
+      "_id": "STAFF2026",
+      "role": "staff",
+      "roleLabel": "店员",
+      "storeName": "迷场档案馆",
+      "status": "active",
+      "createdAt": "2026-03-01T10:00:00.000Z"
+    },
+    {
+      "_id": "MANAGER2026",
+      "role": "assistant_manager",
+      "roleLabel": "副店长",
+      "storeName": "迷场档案馆",
+      "status": "active",
+      "createdAt": "2026-03-02T10:00:00.000Z"
+    },
+    {
+      "_id": "OWNER2026",
+      "role": "store_manager",
+      "roleLabel": "店长",
+      "storeName": "迷场档案馆",
+      "status": "active",
+      "createdAt": "2026-03-03T10:00:00.000Z"
+    }
+  ],
+  "staff_bindings": [],
+  "staff_sessions": [
+    {
+      "_id": "session-group-001",
+      "groupId": "group-001",
+      "themeId": "theme-tonglingren",
+      "themeName": "瞳灵人",
+      "horror": "重恐",
+      "playDate": "03月29日",
+      "timeSlot": "19:30",
+      "teamSize": 4,
+      "lateNight": true,
+      "storeName": "迷场档案馆",
+      "stageKey": "pending_confirm",
+      "stageLabel": "确认成员",
+      "memberSummary": "当前已确认 2/4 人",
+      "metaText": "03月29日 19:30 · 组局大厅转真实队伍",
+      "note": "请先逐个核对真实到店玩家，未到店成员不要提前确认。",
+      "members": [
+        { "openId": "seed-user-001", "nickname": "阿哲", "contactPhone": "13800138001", "status": "已到店" },
+        { "openId": "seed-user-002", "nickname": "小林", "contactPhone": "13800138002", "status": "已到店" },
+        { "openId": "seed-user-003", "nickname": "阿宁", "contactPhone": "13800138003", "status": "待确认" },
+        { "openId": "seed-user-004", "nickname": "老周", "contactPhone": "13800138004", "status": "待确认" }
+      ],
+      "timeline": [
+        { "title": "大厅组局已转真实房间", "content": "该场已由门店接管，等待最终成员确认。" },
+        { "title": "待确认成员", "content": "确认通过后，玩家端会看到“待开场”状态。" }
+      ],
+      "actions": [
+        { "key": "confirm", "text": "确认成员", "tone": "primary", "enabled": false, "hint": "请先逐个确认到店成员，再进入待开始。" },
+        { "key": "start", "text": "开始场次", "tone": "secondary", "enabled": false, "hint": "必须先完成成员确认。" },
+        { "key": "end", "text": "结束场次", "tone": "secondary", "enabled": false, "hint": "开始后才能结束并自动结算。" },
+        { "key": "highlight", "text": "上传集锦", "tone": "secondary", "enabled": false, "hint": "结算成功后才能上传本场集锦。" }
+      ],
+      "settlementApplied": false,
+      "createdAt": "2026-03-20T10:20:00.000Z",
+      "updatedAt": "2026-03-20T10:20:00.000Z"
+    },
+    {
+      "_id": "session-group-002",
+      "groupId": "group-002",
+      "themeId": "theme-shixiong",
+      "themeName": "尸兄",
+      "horror": "微恐",
+      "playDate": "03月30日",
+      "timeSlot": "20:00",
+      "teamSize": 4,
+      "lateNight": false,
+      "storeName": "迷场档案馆",
+      "stageKey": "ready",
+      "stageLabel": "开始场次",
+      "memberSummary": "当前已确认 4/4 人",
+      "metaText": "03月30日 20:00 · 所有成员已确认",
+      "note": "这场已经可以开场，开场后玩家端状态会自动切到游戏中。",
+      "members": [
+        { "openId": "seed-user-005", "nickname": "圆圆", "contactPhone": "13800138005", "status": "已确认" },
+        { "openId": "seed-user-006", "nickname": "阿木", "contactPhone": "13800138006", "status": "已确认" },
+        { "openId": "seed-user-007", "nickname": "北野", "contactPhone": "13800138007", "status": "已确认" },
+        { "openId": "seed-user-008", "nickname": "禾木", "contactPhone": "13800138008", "status": "已确认" }
+      ],
+      "timeline": [
+        { "title": "门店已确认成员", "content": "真实队伍已固定，等待店员点击开始。" },
+        { "title": "待开始", "content": "开始后玩家端会看到“游戏中”，并锁定本场状态流转。" }
+      ],
+      "actions": [
+        { "key": "confirm", "text": "确认成员", "tone": "secondary", "enabled": false, "hint": "这场成员已确认完成。" },
+        { "key": "start", "text": "开始场次", "tone": "primary", "enabled": true, "hint": "点击后进入进行中状态。" },
+        { "key": "end", "text": "结束场次", "tone": "secondary", "enabled": false, "hint": "开始后才能执行结束。" },
+        { "key": "highlight", "text": "上传集锦", "tone": "secondary", "enabled": false, "hint": "结算成功后开放上传。" }
+      ],
+      "settlementApplied": false,
+      "createdAt": "2026-03-21T12:30:00.000Z",
+      "updatedAt": "2026-03-21T12:30:00.000Z"
+    },
+    {
+      "_id": "session-group-003",
+      "groupId": "group-003",
+      "themeId": "theme-yixueyuan",
+      "themeName": "医学怨",
+      "horror": "中恐",
+      "playDate": "03月31日",
+      "timeSlot": "19:00",
+      "teamSize": 5,
+      "lateNight": false,
+      "storeName": "迷场档案馆",
+      "stageKey": "playing",
+      "stageLabel": "结束场次",
+      "memberSummary": "当前 5/5 人 · 游戏中",
+      "metaText": "正在进行 · 等待店员结束场次",
+      "note": "结束场次后系统会自动结算成长值、徽章、档案和排行榜。",
+      "members": [
+        { "openId": "seed-user-009", "nickname": "安妮", "contactPhone": "13800138009", "status": "游戏中" },
+        { "openId": "seed-user-010", "nickname": "阿宇", "contactPhone": "13800138010", "status": "游戏中" },
+        { "openId": "seed-user-011", "nickname": "阿辞", "contactPhone": "13800138011", "status": "游戏中" },
+        { "openId": "seed-user-012", "nickname": "南一", "contactPhone": "13800138012", "status": "游戏中" },
+        { "openId": "seed-user-008", "nickname": "禾木", "contactPhone": "13800138008", "status": "游戏中" }
+      ],
+      "timeline": [
+        { "title": "场次已开始", "content": "玩家正在游玩，等待店员在结束后点击结算。" },
+        { "title": "待自动结算", "content": "结束场次后将自动发放成长值并更新排行榜。" }
+      ],
+      "actions": [
+        { "key": "confirm", "text": "确认成员", "tone": "secondary", "enabled": false, "hint": "这场已经开始，无需再次确认。" },
+        { "key": "start", "text": "开始场次", "tone": "secondary", "enabled": false, "hint": "当前已经在进行中。" },
+        { "key": "end", "text": "结束场次", "tone": "primary", "enabled": true, "hint": "点击后触发自动结算链路。" },
+        { "key": "highlight", "text": "上传集锦", "tone": "secondary", "enabled": false, "hint": "结束并结算后即可上传。" }
+      ],
+      "settlementApplied": false,
+      "createdAt": "2026-03-22T19:00:00.000Z",
+      "updatedAt": "2026-03-22T19:10:00.000Z"
+    }
+  ],
+  "staff_highlights": [
+    {
+      "_id": "highlight-session-group-001",
+      "sessionId": "session-group-001",
+      "groupId": "group-001",
+      "themeName": "瞳灵人",
+      "sessionLabel": "03月29日 19:30",
+      "status": "待上传",
+      "expireHint": "建议在结算后 48 小时内补齐本场照片或视频。",
+      "uploaderRole": "staff",
+      "uploaderName": "",
+      "media": [],
+      "createdAt": "2026-03-20T10:20:00.000Z",
+      "updatedAt": "2026-03-20T10:20:00.000Z"
+    },
+    {
+      "_id": "highlight-session-group-003",
+      "sessionId": "session-group-003",
+      "groupId": "group-003",
+      "themeName": "医学怨",
+      "sessionLabel": "03月31日 19:00",
+      "status": "已上传",
+      "expireHint": "本场集锦已归档，可继续补充内容。",
+      "uploaderRole": "assistant_manager",
+      "uploaderName": "副店长",
+      "media": [
+        { "id": "media-001", "title": "候场合影", "type": "image" },
+        { "id": "media-002", "title": "结算短视频", "type": "video" }
+      ],
+      "createdAt": "2026-03-22T20:30:00.000Z",
+      "updatedAt": "2026-03-22T21:00:00.000Z"
+    }
+  ],
+  "punch_codes": [
+    {
+      "_id": "punch-001",
+      "code": "SHIXIONG0325",
+      "themeId": "theme-shixiong",
+      "themeName": "尸兄",
+      "horror": "微恐",
+      "sessionLabel": "03月25日 20:00 场",
+      "rewardText": "已计入你的通关档案",
+      "teamSize": 4,
+      "lateNight": false,
+      "maxUseCount": 1,
+      "usedCount": 0,
+      "usedBy": [],
+      "expireAt": "2026-12-31T23:59:59.000Z",
+      "status": "active"
+    },
+    {
+      "_id": "punch-002",
+      "code": "TLR0325",
+      "themeId": "theme-tonglingren",
+      "themeName": "瞳灵人",
+      "horror": "重恐",
+      "sessionLabel": "03月25日 19:30 场",
+      "rewardText": "已计入你的重恐挑战记录",
+      "teamSize": 6,
+      "lateNight": true,
+      "maxUseCount": 1,
+      "usedCount": 0,
+      "usedBy": [],
+      "expireAt": "2026-12-31T23:59:59.000Z",
+      "status": "active"
+    },
+    {
+      "_id": "punch-003",
+      "code": "YXY0326",
+      "themeId": "theme-yixueyuan",
+      "themeName": "医学怨",
+      "horror": "中恐",
+      "sessionLabel": "03月26日 18:30 场",
+      "rewardText": "已计入你的通关档案",
+      "teamSize": 4,
+      "lateNight": false,
+      "maxUseCount": 1,
+      "usedCount": 0,
+      "usedBy": [],
+      "expireAt": "2026-12-31T23:59:59.000Z",
+      "status": "active"
+    }
+  ]
+}

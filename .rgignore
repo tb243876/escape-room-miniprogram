@@ -1,0 +1,5 @@
+node_modules/
+docs/
+package-lock.json
+project.private.config.json
+assets/tabbar/*.svg

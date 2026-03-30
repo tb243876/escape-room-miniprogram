@@ -1,0 +1,49 @@
+<view class="screen">
+  <view wx:if="{{errorText}}" class="card status-card">
+    <view class="status-title">用户看板加载失败</view>
+    <view class="status-text">{{errorText}}</view>
+    <view class="button-primary status-action" bindtap="retryLoad">重新加载</view>
+  </view>
+
+  <block wx:elif="{{dashboard && dashboard.canViewMemberStats}}">
+    <view class="hero-card users-hero">
+      <view class="users-kicker">用户看板</view>
+      <view class="users-title">用户概况与活跃趋势</view>
+      <view class="users-subtitle">这里专门看玩家数据，不再和场次管理混在一起。</view>
+    </view>
+
+    <view class="stat-grid">
+      <view class="card stat-item">
+        <view class="stat-num">{{dashboard.memberStats.totalUsers}}</view>
+        <view class="stat-label">累计用户</view>
+      </view>
+      <view class="card stat-item">
+        <view class="stat-num">{{dashboard.memberStats.activeUsers30d}}</view>
+        <view class="stat-label">近30天活跃</view>
+      </view>
+      <view class="card stat-item">
+        <view class="stat-num">{{dashboard.memberStats.completedSessions30d}}</view>
+        <view class="stat-label">近30天完成场次</view>
+      </view>
+      <view class="card stat-item">
+        <view class="stat-num">{{dashboard.memberStats.newUsers7d}}</view>
+        <view class="stat-label">本周新增</view>
+      </view>
+    </view>
+
+    <view class="insight-list">
+      <view class="card insight-card" wx:for="{{dashboard.memberInsights}}" wx:key="title">
+        <view class="row">
+          <view class="insight-title">{{item.title}}</view>
+          <view class="insight-value">{{item.value}}</view>
+        </view>
+        <view class="insight-note">{{item.note}}</view>
+      </view>
+    </view>
+  </block>
+
+  <view wx:else class="card status-card">
+    <view class="status-title">当前无权限查看</view>
+    <view class="status-text">只有副店长及以上可以查看用户看板。</view>
+  </view>
+</view>

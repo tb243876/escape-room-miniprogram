@@ -1,0 +1,16 @@
+<view class="screen">
+  <view class="hero-card staff-auth-hero">
+    <view class="staff-auth-kicker">门店工作台</view>
+    <view class="staff-auth-title">输入店长提供的授权码</view>
+    <view class="staff-auth-subtitle">首次授权成功后，当前微信身份会和门店角色长期绑定，后续进入工作台无需再次输入。</view>
+  </view>
+
+  <view class="card staff-auth-card">
+    <view class="staff-auth-label">授权码</view>
+    <input class="staff-auth-input" value="{{code}}" bindinput="onInput" placeholder="请输入店员码或副店长码" placeholder-style="color: #9b8a7d;" cursor-spacing="24" />
+    <view wx:if="{{errorText}}" class="staff-auth-error">{{errorText}}</view>
+    <view class="button-primary staff-auth-submit {{isSubmitting ? 'button-disabled' : ''}}" bindtap="submitCode">
+      {{isSubmitting ? '绑定中...' : '确认绑定'}}
+    </view>
+  </view>
+</view>

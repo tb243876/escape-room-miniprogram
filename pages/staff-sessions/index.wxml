@@ -1,0 +1,45 @@
+<view class="screen">
+  <view wx:if="{{errorText}}" class="card status-card">
+    <view class="status-title">场次管理加载失败</view>
+    <view class="status-text">{{errorText}}</view>
+    <view class="button-primary status-action" bindtap="retryLoad">重新加载</view>
+  </view>
+
+  <block wx:elif="{{dashboard}}">
+    <view class="hero-card sessions-hero">
+      <view class="sessions-kicker">场次管理</view>
+      <view class="sessions-title">处理门店当前待办</view>
+      <view class="sessions-subtitle">这里只放场次，不再和用户数据、门店管理混在一页。</view>
+    </view>
+
+    <view class="stat-grid">
+      <view class="card stat-item">
+        <view class="stat-num">{{dashboard.stats.pendingConfirm}}</view>
+        <view class="stat-label">待确认</view>
+      </view>
+      <view class="card stat-item">
+        <view class="stat-num">{{dashboard.stats.readyToStart}}</view>
+        <view class="stat-label">待开始</view>
+      </view>
+      <view class="card stat-item">
+        <view class="stat-num">{{dashboard.stats.playing}}</view>
+        <view class="stat-label">进行中</view>
+      </view>
+      <view class="card stat-item">
+        <view class="stat-num">{{dashboard.stats.pendingHighlights}}</view>
+        <view class="stat-label">待上传</view>
+      </view>
+    </view>
+
+    <block wx:for="{{dashboard.sessions}}" wx:key="id">
+      <view class="card session-card">
+        <view class="row">
+          <view class="session-title">{{item.themeName}}</view>
+          <view class="session-stage session-stage-{{item.stageKey}}">{{item.stage}}</view>
+        </view>
+        <view class="session-meta">{{item.metaText}}</view>
+        <view class="button-primary session-btn" data-id="{{item.id}}" bindtap="openSession">{{item.actionText}}</view>
+      </view>
+    </block>
+  </block>
+</view>

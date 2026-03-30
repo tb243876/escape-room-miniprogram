@@ -1,0 +1,267 @@
+<view class="screen screen-with-tabbar">
+  <view wx:if="{{errorText}}" class="card status-card">
+    <view class="status-title">组局大厅加载失败</view>
+    <view class="status-text">{{errorText}}</view>
+    <view class="button-primary status-action" bindtap="retryLoad">重新加载</view>
+  </view>
+
+  <block wx:else>
+    <view class="section-title">
+      <text>{{activePage === 'mine' ? '我的组局' : '最近可拼场次'}}</text>
+      <text class="lobby-hero-btn" bindtap="openCreatePage">去发起组局</text>
+    </view>
+
+    <view class="lobby-summary-strip">
+      <view class="lobby-summary-card" wx:for="{{summaryCards}}" wx:key="label">
+        <view class="lobby-summary-value">{{item.value}}</view>
+        <view class="lobby-summary-label">{{item.label}}</view>
+      </view>
+    </view>
+
+    <view class="lobby-hall-note">
+      {{activePage === 'mine'
+        ? '这里保留你发起或加入过的队伍记录。'
+        : '这里显示的是今晚可拼的意向场次，真正成局仍以门店核验为准。'}}
+    </view>
+
+    <scroll-view class="lobby-filter-scroll" scroll-x="true" show-scrollbar="false">
+      <view class="lobby-filter-row">
+        <view
+          wx:for="{{primaryTabs}}"
+          wx:key="key"
+          class="lobby-filter-chip {{item.active ? 'lobby-filter-chip-active' : ''}}"
+          data-key="{{item.key}}"
+          bindtap="changePage"
+        >
+          {{item.text}}
+        </view>
+      </view>
+    </scroll-view>
+
+    <view class="lobby-toolbar">
+      <scroll-view wx:if="{{activePage === 'mine'}}" class="lobby-subfilter-scroll" scroll-x="true" show-scrollbar="false">
+        <view class="lobby-subfilter-row">
+          <view
+            wx:for="{{filterTabs}}"
+            wx:key="key"
+            class="lobby-subfilter-chip {{item.active ? 'lobby-subfilter-chip-active' : ''}}"
+            data-key="{{item.key}}"
+            bindtap="changeFilter"
+          >
+            {{item.text}}
+          </view>
+        </view>
+      </scroll-view>
+
+      <scroll-view wx:if="{{activePage === 'lobby'}}" class="lobby-subfilter-scroll" scroll-x="true" show-scrollbar="false">
+        <view class="lobby-subfilter-row">
+        <view
+          wx:if="{{themeFilters.length > 1}}"
+          class="lobby-subfilter-chip {{activeThemeSummary ? 'lobby-subfilter-chip-active' : ''}}"
+          bindtap="openThemeFilterModal"
+        >
+          <text>主题</text>
+          <text wx:if="{{activeThemeSummary}}"> · {{activeThemeSummary}}</text>
+        </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view wx:if="{{isLoading}}" class="card status-card">
+      <view class="status-title">正在整理最近组局</view>
+      <view class="status-text">请稍等，马上就好。</view>
+    </view>
+
+    <block wx:elif="{{visibleGroups.length}}">
+      <block wx:for="{{visibleGroups}}" wx:key="id">
+        <view wx:if="{{item.cardClass === 'group-card-owner'}}" class="card lobby-owner-card">
+          <view class="lobby-owner-head">
+            <view>
+              <view class="lobby-owner-kicker">我发起的</view>
+              <view class="lobby-owner-title">{{item.themeName}}</view>
+            </view>
+            <view class="lobby-owner-head-side">
+              <view class="lobby-owner-seal">我发起的</view>
+              <view class="lobby-status-pill {{item.statusPillClass}}">{{item.statusText}}</view>
+            </view>
+          </view>
+          <view class="lobby-owner-meta">{{item.metaText}}</view>
+          <view class="lobby-member-preview">
+            <text class="lobby-member-preview-label">队伍成员</text>
+            <text>{{item.memberPreviewText}}</text>
+            <text wx:if="{{item.hiddenMemberText}}"> · {{item.hiddenMemberText}}</text>
+          </view>
+          <view class="lobby-owner-note">{{item.note}}</view>
+          <view class="lobby-owner-grid">
+            <view class="lobby-owner-stat">
+              <view class="lobby-owner-stat-label">当前状态</view>
+              <view class="lobby-owner-stat-value">{{item.statusText}}</view>
+            </view>
+            <view class="lobby-owner-stat">
+              <view class="lobby-owner-stat-label">当前提醒</view>
+              <view class="lobby-owner-stat-value">{{item.riskHint}}</view>
+            </view>
+          </view>
+          <view class="lobby-card-actions lobby-owner-actions actions-split">
+            <view class="button-secondary" data-id="{{item.id}}" bindtap="openRoom">{{item.roomButtonText}}</view>
+            <view
+              wx:if="{{item.canDelete}}"
+              class="button-primary lobby-cancel-btn"
+              data-id="{{item.id}}"
+              bindtap="promptDeleteGroup"
+            >
+              删除记录
+            </view>
+            <view
+              wx:else
+              class="button-primary lobby-cancel-btn"
+              data-id="{{item.id}}"
+              bindtap="promptCancelGroup"
+            >
+              {{item.cancelButtonText}}
+            </view>
+          </view>
+        </view>
+
+        <view wx:elif="{{item.cardClass === 'group-card-member'}}" class="card lobby-member-card">
+          <view class="lobby-member-ticket">
+            <view class="lobby-member-side">
+              <view class="lobby-member-side-text">我已加入</view>
+            </view>
+            <view class="lobby-member-main">
+              <view class="lobby-member-top">
+                <view class="lobby-member-title">{{item.themeName}}</view>
+                <view class="lobby-member-top-side">
+                  <view class="lobby-member-badge">我已加入</view>
+                  <view class="lobby-status-pill {{item.statusPillClass}}">{{item.statusText}}</view>
+                </view>
+              </view>
+              <view class="lobby-member-meta">{{item.metaText}}</view>
+              <view class="lobby-member-preview">
+                <text class="lobby-member-preview-label">同行成员</text>
+                <text>{{item.memberPreviewText}}</text>
+                <text wx:if="{{item.hiddenMemberText}}"> · {{item.hiddenMemberText}}</text>
+              </view>
+              <view class="lobby-member-risk">{{item.riskHint}}</view>
+              <view class="lobby-card-actions actions-split">
+                <view class="button-secondary" data-id="{{item.id}}" bindtap="openRoom">{{item.roomButtonText}}</view>
+                <view
+                  wx:if="{{item.canDelete}}"
+                  class="button-primary lobby-cancel-btn"
+                  data-id="{{item.id}}"
+                  bindtap="promptDeleteGroup"
+                >
+                  删除记录
+                </view>
+                <view
+                  wx:else
+                  class="button-primary lobby-cancel-btn"
+                  data-id="{{item.id}}"
+                  bindtap="promptCancelGroup"
+                >
+                  {{item.cancelButtonText}}
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <view wx:else class="card lobby-public-card">
+          <view class="lobby-public-notch lobby-public-notch-left"></view>
+          <view class="lobby-public-notch lobby-public-notch-right"></view>
+          <view class="lobby-public-top">
+            <view class="lobby-public-kicker">正在招募</view>
+            <view class="lobby-status-pill lobby-public-status {{item.statusPillClass}}">{{item.statusText}}</view>
+          </view>
+          <view class="lobby-public-title">{{item.themeName}}</view>
+          <view class="lobby-public-meta">{{item.metaText}}</view>
+          <view class="lobby-member-preview">
+            <text class="lobby-member-preview-label">当前成员</text>
+            <text>{{item.memberPreviewText}}</text>
+            <text wx:if="{{item.hiddenMemberText}}"> · {{item.hiddenMemberText}}</text>
+          </view>
+          <view class="lobby-public-note">{{item.note}}</view>
+          <view class="lobby-public-foot">
+            <view class="lobby-public-tip">{{item.riskHint}}</view>
+          </view>
+          <view class="lobby-card-actions actions-split">
+            <view class="button-secondary" data-id="{{item.id}}" bindtap="openRoom">{{item.roomButtonText}}</view>
+            <view class="button-primary {{item.joinButtonClass}}" data-id="{{item.id}}" bindtap="promptJoinGroup">{{item.joinButtonText}}</view>
+          </view>
+        </view>
+      </block>
+    </block>
+
+    <view wx:else class="card status-card">
+      <view class="status-title">{{activePage === 'mine' ? '你还没有相关组局' : '现在还没有组局'}}</view>
+      <view class="status-text">
+        {{activePage === 'mine'
+          ? '你还没有发起或加入任何队伍，可以先去大厅看看，或者自己发起一场。'
+          : '你可以先发起一场，把今晚想玩的局挂出来。'}}
+      </view>
+      <view class="button-primary status-action" bindtap="openCreatePage">去发起</view>
+    </view>
+  </block>
+
+  <view wx:if="{{filterPanelVisible}}" class="lobby-modal-mask" bindtap="closeFilterModal">
+    <view class="lobby-sheet" catchtap="noop">
+      <view class="lobby-sheet-handle"></view>
+      <view class="lobby-sheet-title">{{filterPanelTitle}}</view>
+      <view class="lobby-sheet-options">
+        <view
+          wx:for="{{filterPanelOptions}}"
+          wx:key="key"
+          class="lobby-sheet-option {{item.active ? 'lobby-sheet-option-active' : ''}}"
+          data-key="{{item.key}}"
+          bindtap="selectFilterOption"
+        >
+          <text>{{item.text}}</text>
+          <text wx:if="{{item.active}}" class="lobby-sheet-option-mark">当前</text>
+        </view>
+      </view>
+      <view class="lobby-sheet-secondary" bindtap="clearFilterSelection">清空筛选</view>
+      <view class="lobby-sheet-cancel" bindtap="closeFilterModal">取消</view>
+    </view>
+  </view>
+
+  <view wx:if="{{confirmDialogVisible}}" class="lobby-modal-mask" bindtap="closeConfirmDialog">
+    <view class="lobby-dialog modal-card-common" catchtap="noop">
+      <view class="lobby-dialog-title modal-title-common">{{confirmDialogTitle}}</view>
+      <view class="lobby-dialog-content modal-content-common">{{confirmDialogContent}}</view>
+      <view class="lobby-dialog-actions actions-split">
+        <view class="lobby-dialog-btn lobby-dialog-btn-secondary" bindtap="closeConfirmDialog">再想想</view>
+        <view class="lobby-dialog-btn lobby-dialog-btn-primary" bindtap="confirmDialogAction">确认</view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{joinFormVisible}}" class="lobby-modal-mask" bindtap="closeJoinForm">
+    <view class="lobby-dialog modal-card-common" catchtap="noop">
+      <view class="lobby-dialog-title modal-title-common">加入 {{joinFormThemeName}}</view>
+      <view class="lobby-dialog-content modal-content-common">填写联系人信息后提交报名，后续仍需门店确认真实到店成员。</view>
+      <view class="lobby-join-fields">
+        <input
+          class="lobby-join-input {{joinFormErrorField === 'contactName' ? 'lobby-join-input-error' : ''}}"
+          placeholder="联系人称呼"
+          value="{{joinFormContactName}}"
+          data-field="contactName"
+          bindinput="onJoinFormInput"
+        />
+        <input
+          class="lobby-join-input {{joinFormErrorField === 'contactPhone' ? 'lobby-join-input-error' : ''}}"
+          placeholder="手机号"
+          type="number"
+          maxlength="11"
+          value="{{joinFormContactPhone}}"
+          data-field="contactPhone"
+          bindinput="onJoinFormInput"
+        />
+      </view>
+      <view wx:if="{{joinFormErrorText}}" class="lobby-join-error">{{joinFormErrorText}}</view>
+      <view class="lobby-dialog-actions actions-split">
+        <view class="lobby-dialog-btn lobby-dialog-btn-secondary" bindtap="closeJoinForm">取消</view>
+        <view class="lobby-dialog-btn lobby-dialog-btn-primary" bindtap="submitJoinForm">确认报名</view>
+      </view>
+    </view>
+  </view>
+</view>

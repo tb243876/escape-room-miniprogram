@@ -1,0 +1,65 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/lobby/index",
+    "pages/lobby-create/index",
+    "pages/team-room/index",
+    "pages/leaderboard/index",
+    "pages/staff-auth-code/index",
+    "pages/staff-dashboard/index",
+    "pages/staff-users/index",
+    "pages/staff-sessions/index",
+    "pages/staff-store/index",
+    "pages/staff-session/index",
+    "pages/staff-highlights/index",
+    "pages/badges/index",
+    "pages/theme-detail/index",
+    "pages/activities/index",
+    "pages/themes/index",
+    "pages/profile-edit/index",
+    "pages/profile/index"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#f8f1e8",
+    "navigationBarTitleText": "迷场档案馆",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f5ede4",
+    "backgroundTextStyle": "light"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#7f7568",
+    "selectedColor": "#9e3d22",
+    "borderStyle": "white",
+    "backgroundColor": "#fbf6f0",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页",
+        "iconPath": "assets/tabbar/home.png",
+        "selectedIconPath": "assets/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/lobby/index",
+        "text": "组队大厅",
+        "iconPath": "assets/tabbar/lobby.png",
+        "selectedIconPath": "assets/tabbar/lobby-active.png"
+      },
+      {
+        "pagePath": "pages/activities/index",
+        "text": "活动",
+        "iconPath": "assets/tabbar/activities.png",
+        "selectedIconPath": "assets/tabbar/activities-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "assets/tabbar/profile.png",
+        "selectedIconPath": "assets/tabbar/profile-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "entryPagePath": "pages/home/index"
+}

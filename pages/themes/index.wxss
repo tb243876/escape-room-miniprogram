@@ -1,0 +1,194 @@
+.themes-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 34rpx 30rpx 30rpx;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 245, 230, 0.04) 0,
+      rgba(255, 245, 230, 0.04) 14rpx,
+      rgba(255, 245, 230, 0) 14rpx,
+      rgba(255, 245, 230, 0) 28rpx
+    ),
+    linear-gradient(160deg, rgba(22, 12, 10, 0.06), rgba(22, 12, 10, 0)),
+    radial-gradient(circle at top right, rgba(239, 198, 135, 0.2), transparent 34%),
+    linear-gradient(135deg, #36221c, #634437 58%, #be905d);
+  color: #fff3e8;
+  border: 1rpx solid rgba(255, 239, 216, 0.08);
+}
+
+.themes-kicker {
+  font-size: 22rpx;
+  letter-spacing: 4rpx;
+  opacity: 0.78;
+}
+
+.themes-stamp {
+  position: absolute;
+  right: 24rpx;
+  top: 24rpx;
+  padding: 10rpx 14rpx;
+  border-radius: 999rpx;
+  border: 1rpx solid rgba(255, 237, 212, 0.18);
+  background: rgba(39, 24, 18, 0.18);
+  font-size: 18rpx;
+  letter-spacing: 2rpx;
+  color: rgba(255, 243, 232, 0.78);
+  transform: rotate(-8deg);
+}
+
+.themes-title {
+  margin-top: 18rpx;
+  max-width: 560rpx;
+  font-size: 40rpx;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.themes-subtitle {
+  margin-top: 14rpx;
+  max-width: 620rpx;
+  font-size: 25rpx;
+  line-height: 1.8;
+  color: rgba(255, 243, 232, 0.84);
+}
+
+.search-box {
+  padding: 18rpx;
+  margin-top: 18rpx;
+  background:
+    radial-gradient(circle at top right, rgba(255, 234, 204, 0.22), transparent 32%),
+    linear-gradient(180deg, rgba(255, 248, 240, 0.98), rgba(244, 235, 224, 0.98));
+  border: 1rpx solid rgba(128, 90, 60, 0.08);
+}
+
+.search-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-bottom: 14rpx;
+}
+
+.search-title {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #5c4030;
+}
+
+.search-record {
+  font-size: 20rpx;
+  color: #8d684d;
+}
+
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.search-input {
+  flex: 1;
+  height: 88rpx;
+  line-height: 88rpx;
+  padding: 0 24rpx;
+  border-radius: 18rpx;
+  background: #f8f1e6;
+  border: 1rpx solid rgba(135, 96, 64, 0.08);
+}
+
+.search-btn {
+  min-width: 120rpx;
+}
+
+.tag-scroll {
+  white-space: nowrap;
+  margin: 20rpx 0 10rpx;
+}
+
+.tag-row {
+  display: inline-flex;
+}
+
+.filter-tag {
+  margin-right: 14rpx;
+}
+
+.tag-active {
+  background: #9e3d22;
+  color: #fff;
+}
+
+.theme-card {
+  overflow: hidden;
+  margin-bottom: 18rpx;
+  background:
+    linear-gradient(90deg, rgba(111, 77, 55, 0.06) 0, rgba(111, 77, 55, 0.06) 16rpx, transparent 16rpx),
+    rgba(255, 251, 247, 0.82);
+  border: 1rpx solid rgba(128, 90, 60, 0.08);
+}
+
+.theme-cover {
+  height: 220rpx;
+  width: 100%;
+  display: block;
+}
+
+.theme-content {
+  padding: 24rpx;
+}
+
+.theme-kicker {
+  font-size: 18rpx;
+  letter-spacing: 4rpx;
+  color: #9d775b;
+}
+
+.theme-name {
+  margin-top: 8rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.theme-stars {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  letter-spacing: 2rpx;
+}
+
+.theme-stars-label {
+  color: #8f664c;
+}
+
+.theme-star {
+  display: inline-block;
+  margin-right: 2rpx;
+  font-size: 26rpx;
+  line-height: 1;
+}
+
+.theme-star-active {
+  color: #b85d37;
+  font-size: 26rpx;
+  line-height: 1;
+  text-shadow: 0 2rpx 6rpx rgba(184, 93, 55, 0.16);
+}
+
+.theme-star-inactive {
+  color: #d7c4b6;
+  font-size: 26rpx;
+  line-height: 1;
+  opacity: 0.95;
+}
+
+.theme-slogan,
+.theme-meta {
+  margin-top: 10rpx;
+  font-size: 25rpx;
+  color: #6d6155;
+  line-height: 1.7;
+}
+
+.tag-wrap {
+  margin-top: 12rpx;
+}

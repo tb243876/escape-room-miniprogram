@@ -1,0 +1,64 @@
+<view class="screen">
+  <view wx:if="{{errorText}}" class="card status-card">
+    <view class="status-title">主题页加载失败</view>
+    <view class="status-text">{{errorText}}</view>
+    <view class="button-primary status-action" bindtap="retryLoad">重新加载</view>
+  </view>
+
+  <block wx:else>
+  <view class="hero-card themes-hero">
+    <view class="themes-kicker">主题列表</view>
+    <view class="themes-stamp">可按题材筛选</view>
+    <view class="themes-title">从主题目录里，先找到你今晚最想开的那一场</view>
+    <view class="themes-subtitle">按恐怖等级、题材和人数筛选，再进入详情看完整故事背景和游玩建议。</view>
+  </view>
+
+  <view class="panel search-box">
+    <view class="search-head">
+      <view class="search-title">搜索主题</view>
+      <view class="search-record">当前 {{themes.length}}</view>
+    </view>
+    <view class="search-row">
+      <input class="search-input" placeholder="搜索主题名 / 恐怖等级 / 题材" placeholder-style="color: #9b8a7d;" value="{{keyword}}" bindinput="onKeywordInput" confirm-type="search" bindconfirm="onSearch" cursor-spacing="24" />
+      <view class="button-secondary search-btn {{isSubmitting ? 'button-disabled' : ''}}" bindtap="onSearch">搜索</view>
+    </view>
+  </view>
+
+  <scroll-view class="tag-scroll" scroll-x="true" show-scrollbar="false">
+    <view class="tag-row">
+      <text
+        wx:for="{{filterTags}}"
+        wx:key="*this"
+        class="tag filter-tag {{activeTag === item ? 'tag-active' : ''}}"
+        data-tag="{{item}}"
+        bindtap="chooseTag"
+      >
+        {{item}}
+      </text>
+    </view>
+  </scroll-view>
+
+  <block wx:if="{{themes.length}}">
+    <block wx:for="{{themes}}" wx:key="id">
+      <view class="card theme-card" bindtap="openTheme" data-id="{{item.id}}">
+        <image class="theme-cover" src="{{item.coverImage}}" mode="aspectFill"></image>
+        <view class="theme-content">
+          <view class="theme-kicker">主题推荐</view>
+          <view class="theme-name">{{item.name}}</view>
+          <view class="theme-stars">
+            <text class="theme-stars-label">恐怖星级：</text>
+            <text class="theme-star-active">{{item.horrorStarsFilledText}}</text>
+            <text class="theme-star-inactive">{{item.horrorStarsEmptyText}}</text>
+          </view>
+          <view class="theme-slogan">{{item.slogan}}</view>
+        <view class="theme-meta">{{item.difficulty}} · {{item.horror}} · {{item.people}} · {{item.duration}}</view>
+        <view class="tag-wrap">
+          <text class="tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+        </view>
+      </view>
+    </view>
+  </block>
+  </block>
+  <view wx:else class="empty-text">没有找到匹配主题，换个关键词试试。</view>
+  </block>
+</view>

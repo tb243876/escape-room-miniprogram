@@ -1,0 +1,36 @@
+<view class="screen">
+  <view wx:if="{{errorText}}" class="card status-card">
+    <view class="status-title">徽章页加载失败</view>
+    <view class="status-text">{{errorText}}</view>
+    <view class="button-primary status-action" bindtap="retryLoad">重新加载</view>
+  </view>
+
+  <view wx:elif="{{profile}}" class="screen-inner">
+    <view class="hero-card badges-hero">
+      <view class="badges-kicker">我的徽章</view>
+      <view class="badges-title">徽章墙</view>
+      <view class="badges-subtitle">已解锁 {{profile.badgeCount}} / {{profile.badgeCatalog.length}} 枚徽章，亮起的是你已经拿到的徽章。</view>
+    </view>
+
+    <view wx:if="{{profile.badgeCatalog.length}}" class="badge-grid">
+      <view class="profile-badge {{item.badgeItemClass}}" wx:for="{{profile.badgeCatalog}}" wx:key="key">
+        <view class="profile-badge-inner">
+          <view class="profile-badge-status">{{item.badgeStateText}}</view>
+          <view class="profile-badge-icon {{item.badgeIconClass}}">徽</view>
+          <view class="profile-badge-name">{{item.name}}</view>
+          <view class="profile-badge-desc">{{item.description}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="card status-card">
+      <view class="status-title">暂无徽章数据</view>
+      <view class="status-text">当前还没有可展示的徽章。</view>
+    </view>
+  </view>
+
+  <view wx:else class="card status-card">
+    <view class="status-title">暂无徽章数据</view>
+    <view class="status-text">当前还没有可展示的徽章数据，请稍后重试。</view>
+  </view>
+</view>

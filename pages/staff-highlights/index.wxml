@@ -1,0 +1,45 @@
+<view class="screen">
+  <view class="hero-card staff-highlights-hero">
+    <view class="staff-highlights-kicker">门店工作台</view>
+    <view class="staff-highlights-title">集锦管理</view>
+    <view class="staff-highlights-subtitle">这里集中查看哪些场次已上传、哪些还没上传，方便统一处理。</view>
+  </view>
+
+  <view wx:if="{{errorText}}" class="card status-card">
+    <view class="status-title">集锦库加载失败</view>
+    <view class="status-text">{{errorText}}</view>
+    <view class="button-primary status-action" bindtap="retryLoad">重新加载</view>
+  </view>
+
+  <block wx:elif="{{highlights.length}}">
+    <view class="section-title">
+      <text>场次集锦</text>
+    </view>
+
+    <view class="card highlight-pack" wx:for="{{highlights}}" wx:key="id">
+      <view class="row">
+        <view class="highlight-pack-title">{{item.themeName}} · {{item.sessionLabel}}</view>
+        <view class="highlight-pack-status {{item.statusClass}}">{{item.status}}</view>
+      </view>
+      <view class="highlight-pack-meta">{{item.expireHint}}</view>
+      <view class="highlight-pack-meta">责任角色：{{item.roleLabel}}{{item.uploaderName ? ' · ' + item.uploaderName : ''}}</view>
+
+      <view wx:if="{{item.media.length}}" class="highlight-media-list">
+        <view class="highlight-media-item" wx:for="{{item.media}}" wx:key="id">
+          <view class="highlight-media-visual"></view>
+          <view class="highlight-media-copy">
+            <view class="highlight-media-title">{{item.title}}</view>
+            <view class="highlight-media-tag">{{item.tagText}}</view>
+          </view>
+        </view>
+      </view>
+
+      <view wx:else class="highlight-empty">当前还没有上传内容，等待本场结算后补传。</view>
+    </view>
+  </block>
+
+  <view wx:else class="card status-card">
+    <view class="status-title">当前还没有集锦记录</view>
+    <view class="status-text">等门店完成场次结算后，这里会出现待上传或已上传的集锦包。</view>
+  </view>
+</view>

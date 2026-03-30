@@ -1,0 +1,6 @@
+assets
+node_modules
+vendor
+admin-web/vendor
+project.private.config.json
+package-lock.json

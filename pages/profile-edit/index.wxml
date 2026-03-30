@@ -1,0 +1,81 @@
+<view class="screen">
+  <view class="hero-card edit-hero">
+    <view class="edit-kicker">个人资料</view>
+    <view class="edit-title">完善一下你的资料</view>
+    <view class="edit-subtitle">这里先支持头像、昵称、签名和性别。荣誉与称号会跟着真实场次、徽章和成长自动更新。</view>
+  </view>
+
+  <view class="card edit-card">
+    <view class="edit-section-title">头像</view>
+    <view class="avatar-row">
+      <block wx:if="{{form.avatarUrl}}">
+        <image class="edit-avatar-image" src="{{form.avatarUrl}}" mode="aspectFill"></image>
+      </block>
+      <view wx:else class="edit-avatar">{{form.nickname ? form.nickname.slice(0, 1) : '档'}}</view>
+      <button class="button-secondary avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">更换头像</button>
+    </view>
+  </view>
+
+  <view class="card edit-card">
+    <view class="edit-section-title">基础信息</view>
+
+    <view class="field-block">
+      <view class="field-label">昵称</view>
+      <input class="edit-input {{errorField === 'nickname' ? 'edit-input-error' : ''}}" value="{{form.nickname}}" data-field="nickname" bindinput="onInput" maxlength="12" placeholder="请输入昵称" placeholder-style="color: #9b8a7d;" cursor-spacing="24" />
+    </view>
+
+    <view class="field-block">
+      <view class="field-label">签名</view>
+      <textarea class="edit-textarea {{errorField === 'signature' ? 'edit-input-error' : ''}}" value="{{form.signature}}" data-field="signature" bindinput="onInput" maxlength="40" placeholder="写一句个性签名" placeholder-style="color: #9b8a7d;" cursor-spacing="24"></textarea>
+    </view>
+
+    <view class="field-block">
+      <view class="field-label">性别</view>
+      <view class="picker-field" bindtap="openGenderSheet">
+        <text>{{form.gender === 'male' ? '男' : form.gender === 'female' ? '女' : '未设置'}}</text>
+        <text class="picker-arrow">选择</text>
+      </view>
+    </view>
+
+    <view wx:if="{{errorText}}" class="form-error">{{errorText}}</view>
+  </view>
+
+  <view class="card edit-card">
+    <view class="row">
+      <view class="edit-section-title">当前称号</view>
+      <view class="edit-title-badge">{{titleLabel}}</view>
+    </view>
+    <view class="honor-list">
+      <view class="honor-tag" wx:for="{{honorLabels}}" wx:key="*this">{{item}}</view>
+    </view>
+  </view>
+
+  <view class="edit-actions">
+    <view class="button-secondary" bindtap="goBack">先不改了</view>
+    <view class="button-primary {{isSubmitting ? 'button-disabled' : ''}}" bindtap="submitProfile">保存资料</view>
+  </view>
+
+  <view wx:if="{{genderSheetVisible}}" class="edit-modal-mask" bindtap="closeGenderSheet">
+    <view class="edit-sheet" catchtap="noop">
+      <view class="edit-sheet-handle"></view>
+      <view class="edit-sheet-title">选择性别</view>
+      <view class="edit-sheet-options">
+        <view
+          wx:for="{{[
+            { value: 'not_set', label: '未设置' },
+            { value: 'male', label: '男' },
+            { value: 'female', label: '女' }
+          ]}}"
+          wx:key="value"
+          class="edit-sheet-option {{form.gender === item.value ? 'edit-sheet-option-active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="selectGenderOption"
+        >
+          <text>{{item.label}}</text>
+          <text wx:if="{{form.gender === item.value}}" class="edit-sheet-option-mark">当前</text>
+        </view>
+      </view>
+      <view class="edit-sheet-cancel" bindtap="closeGenderSheet">取消</view>
+    </view>
+  </view>
+</view>

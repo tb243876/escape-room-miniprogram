@@ -1,0 +1,23 @@
+<view class="custom-tabbar safe-area-inset-bottom">
+  <view
+    wx:for="{{tabList}}"
+    wx:key="key"
+    class="tab-item"
+    data-path="{{item.pagePath}}"
+    bindtap="switchTab"
+  >
+    <view class="tab-item-shell">
+      <view class="tab-icon-wrap">
+        <image
+          class="tab-icon {{selectedPath === item.pagePath ? 'tab-icon-active' : ''}}"
+          src="{{selectedPath === item.pagePath ? item.selectedIconPath : item.iconPath}}"
+          mode="aspectFit"
+        />
+      </view>
+      <view class="tab-text {{selectedPath === item.pagePath ? 'tab-text-active' : ''}}">
+        {{item.text}}
+      </view>
+      <view wx:if="{{selectedPath === item.pagePath}}" class="tab-item-indicator"></view>
+    </view>
+  </view>
+</view>

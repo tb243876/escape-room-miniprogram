@@ -1,0 +1,57 @@
+'use strict';
+
+function normalizeDashboard(dashboard = {}) {
+  const permissions = Array.isArray(dashboard.permissions) ? dashboard.permissions : [];
+  const authCodeList = Array.isArray(dashboard.authCodeList)
+    ? dashboard.authCodeList.map((item) => ({
+        ...item,
+        statusText:
+          item.status === 'active'
+            ? '可使用'
+            : item.status === 'used'
+              ? '已使用'
+              : item.status === 'disabled'
+                ? '已失效'
+                : item.status || '',
+        statusClass:
+          item.status === 'active'
+            ? 'status-ok'
+            : item.status === 'used'
+              ? 'status-pending'
+              : 'status-disabled',
+      }))
+    : [];
+  return {
+    ...dashboard,
+    permissions,
+    sessions: Array.isArray(dashboard.sessions) ? dashboard.sessions : [],
+    memberStats: dashboard.memberStats || {
+      totalUsers: 0,
+      activeUsers30d: 0,
+      completedSessions30d: 0,
+      newUsers7d: 0,
+    },
+    memberInsights: Array.isArray(dashboard.memberInsights) ? dashboard.memberInsights : [],
+    authCodeSummary: dashboard.authCodeSummary || {
+      availableCodes: 0,
+      activeStaff: 0,
+      latestCode: '',
+    },
+    authCodeActions: Array.isArray(dashboard.authCodeActions) ? dashboard.authCodeActions : [],
+    authCodeList,
+    staffMembers: Array.isArray(dashboard.staffMembers) ? dashboard.staffMembers : [],
+    managerTransfer: dashboard.managerTransfer || {
+      currentManager: '',
+      candidates: [],
+      candidateList: [],
+    },
+    canViewMemberStats: permissions.includes('view_statistics'),
+    canManageAuthCodes: permissions.includes('manage_auth_codes'),
+    canTransferManager: permissions.includes('transfer_manager'),
+    permissionsText: permissions.length ? `当前权限 ${permissions.length} 项` : '当前暂无特殊权限',
+  };
+}
+
+module.exports = {
+  normalizeDashboard,
+};

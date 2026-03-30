@@ -1,0 +1,92 @@
+<view class="screen">
+<view wx:if="{{errorText}}" class="card status-card">
+  <view class="status-title">主题页加载失败</view>
+  <view class="status-text">{{errorText}}</view>
+  <view class="button-primary status-action" bindtap="retryLoad">重新加载</view>
+</view>
+
+<view wx:elif="{{theme}}">
+  <view class="hero-banner">
+    <image class="banner-image" src="{{theme.coverImage}}" mode="aspectFill"></image>
+    <view class="banner-overlay"></view>
+    <view class="banner-kicker">主题详情</view>
+    <view class="banner-stamp">主题介绍</view>
+    <view class="banner-title">{{theme.name}}</view>
+    <view class="banner-subtitle">{{theme.slogan}}</view>
+  </view>
+
+  <view class="panel dossier-panel">
+    <view class="dossier-head">
+      <view class="dossier-title">主题信息</view>
+      <view class="dossier-note">{{theme.horror}} · {{theme.difficulty}}</view>
+    </view>
+    <view class="dossier-code">主题编号 {{theme.id}}</view>
+    <view class="info-grid">
+      <view class="info-item">
+        <text class="info-label">难度</text>
+        <text class="info-value">{{theme.difficulty}}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">恐怖度</text>
+        <text class="info-value">{{theme.horror}}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">恐怖星级</text>
+        <view class="info-value theme-star-line">
+          <text class="detail-star-active">{{theme.horrorStarsFilledText}}</text>
+          <text class="detail-star-inactive">{{theme.horrorStarsEmptyText}}</text>
+        </view>
+      </view>
+      <view class="info-item">
+        <text class="info-label">人数</text>
+        <text class="info-value">{{theme.people}}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">时长</text>
+        <text class="info-value">{{theme.duration}}</text>
+      </view>
+    </view>
+    <view class="tag-wrap">
+      <text class="tag" wx:for="{{theme.tags}}" wx:key="*this">{{item}}</text>
+    </view>
+  </view>
+
+  <view class="panel narrative-panel">
+    <view class="content-kicker">剧情介绍</view>
+    <view class="content-title">故事背景</view>
+    <view class="content-text">{{theme.story}}</view>
+  </view>
+
+  <view class="panel guide-panel">
+    <view class="content-kicker">游玩建议</view>
+    <view class="content-title">适合什么样的玩家</view>
+    <view class="guide-line" wx:for="{{theme.highlights}}" wx:key="*this">
+      <view class="guide-dot"></view>
+      <view class="guide-text">{{item}}</view>
+    </view>
+  </view>
+
+  <view class="panel review-panel">
+    <view class="content-kicker">现场反馈</view>
+    <view class="content-title">玩家评价</view>
+    <view class="quote" wx:for="{{theme.reviews}}" wx:key="*this">{{item}}</view>
+  </view>
+
+  <view class="action-row actions-split">
+    <view class="button-secondary" bindtap="contactStore">联系门店</view>
+    <view class="button-primary" bindtap="goGroup">去发起组局</view>
+  </view>
+</view>
+<view wx:else class="card status-card">
+  <view class="status-title">暂无主题数据</view>
+  <view class="status-text">当前还没有可展示的主题详情，请返回重试。</view>
+</view>
+
+<view wx:if="{{dialogVisible}}" class="detail-mask modal-mask-center" bindtap="closeDialog">
+  <view class="detail-dialog modal-card-common" catchtap="noop">
+    <view class="detail-dialog-title modal-title-common">{{dialogTitle}}</view>
+    <view class="detail-dialog-content modal-content-common">{{dialogContent}}</view>
+    <view class="button-primary detail-dialog-btn" bindtap="closeDialog">关闭</view>
+  </view>
+</view>
+</view>

@@ -1,0 +1,106 @@
+.sessions-hero {
+  padding: 30rpx;
+  background:
+    linear-gradient(160deg, rgba(22, 12, 10, 0.06), rgba(22, 12, 10, 0)),
+    radial-gradient(circle at top right, rgba(223, 241, 218, 0.24), transparent 34%),
+    linear-gradient(135deg, #37513f, #53735d 58%, #93b08d);
+  color: #f4fff5;
+}
+
+.sessions-kicker {
+  font-size: 22rpx;
+  letter-spacing: 4rpx;
+  opacity: 0.78;
+}
+
+.sessions-title {
+  margin-top: 18rpx;
+  font-size: 38rpx;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.sessions-subtitle {
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  line-height: 1.8;
+  color: rgba(244, 255, 245, 0.84);
+}
+
+.stat-grid {
+  margin-top: 18rpx;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+}
+
+.stat-item {
+  padding: 22rpx;
+  background:
+    radial-gradient(circle at top right, rgba(223, 241, 218, 0.28), transparent 32%),
+    linear-gradient(180deg, rgba(246, 251, 243, 0.98), rgba(231, 241, 225, 0.98));
+  border: 1rpx solid rgba(91, 128, 91, 0.08);
+}
+
+.stat-num {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #48674a;
+}
+
+.stat-label {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #6a7d69;
+}
+
+.session-card {
+  margin-top: 18rpx;
+  padding: 24rpx;
+  background:
+    radial-gradient(circle at top right, rgba(223, 241, 218, 0.2), transparent 30%),
+    linear-gradient(180deg, rgba(246, 251, 243, 0.98), rgba(231, 241, 225, 0.98));
+  border: 1rpx solid rgba(91, 128, 91, 0.08);
+}
+
+.session-title {
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.session-stage {
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+}
+
+.session-stage-pending_confirm {
+  background: linear-gradient(135deg, #f6e2c4, #e9bf85);
+  color: #8c4c1f;
+}
+
+.session-stage-ready {
+  background: linear-gradient(135deg, #dcefd7, #b8d7b1);
+  color: #4d744f;
+}
+
+.session-stage-playing {
+  background: linear-gradient(135deg, #dceaf3, #bdd5e4);
+  color: #486b84;
+}
+
+.session-stage-settled {
+  background: linear-gradient(135deg, #efe6c7, #dbc88a);
+  color: #7f6420;
+}
+
+.session-meta {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: #5d6c5d;
+}
+
+.session-btn {
+  margin-top: 18rpx;
+}

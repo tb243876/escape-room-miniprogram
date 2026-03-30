@@ -1,0 +1,112 @@
+.screen-inner {
+  min-height: 100%;
+}
+
+.badges-hero {
+  padding: 30rpx;
+  background:
+    linear-gradient(160deg, rgba(32, 19, 16, 0.06), rgba(32, 19, 16, 0)),
+    radial-gradient(circle at top right, rgba(231, 190, 126, 0.24), transparent 28%),
+    linear-gradient(135deg, #4a2d24, #815542 58%, #d0a060);
+  color: #fff4ea;
+}
+
+.badges-kicker {
+  font-size: 22rpx;
+  letter-spacing: 6rpx;
+  color: rgba(255, 244, 234, 0.72);
+}
+
+.badges-title {
+  margin-top: 16rpx;
+  font-size: 40rpx;
+  font-weight: 700;
+  letter-spacing: 1rpx;
+}
+
+.badges-subtitle {
+  margin-top: 14rpx;
+  font-size: 26rpx;
+  line-height: 1.8;
+  color: rgba(255, 244, 234, 0.84);
+}
+
+.badge-grid {
+  margin-top: 18rpx;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18rpx;
+}
+
+.profile-badge {
+  border-radius: 24rpx;
+  padding: 6rpx;
+}
+
+.profile-badge-unlocked {
+  background: linear-gradient(180deg, rgba(255, 244, 214, 0.96) 0%, rgba(243, 221, 169, 0.96) 100%);
+  box-shadow: 0 14rpx 30rpx rgba(128, 82, 40, 0.16);
+}
+
+.profile-badge-locked {
+  background: linear-gradient(180deg, rgba(239, 235, 231, 0.96) 0%, rgba(223, 216, 207, 0.96) 100%);
+}
+
+.profile-badge-inner {
+  position: relative;
+  min-height: 100%;
+  padding: 18rpx 16rpx 20rpx;
+  border-radius: 20rpx;
+  text-align: center;
+  background: rgba(255, 251, 246, 0.34);
+  border: 1rpx solid rgba(255, 255, 255, 0.3);
+}
+
+.profile-badge-status {
+  position: absolute;
+  top: 14rpx;
+  right: 14rpx;
+  padding: 6rpx 12rpx;
+  border-radius: 999rpx;
+  font-size: 18rpx;
+  letter-spacing: 2rpx;
+  background: rgba(255, 255, 255, 0.34);
+  color: #7a6558;
+}
+
+.profile-badge-icon {
+  width: 92rpx;
+  height: 92rpx;
+  margin: 24rpx auto 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.profile-badge-icon-unlocked {
+  background: linear-gradient(135deg, #f2d27f, #bb742e);
+  color: #fff8ee;
+  box-shadow: 0 12rpx 24rpx rgba(187, 116, 46, 0.22);
+}
+
+.profile-badge-icon-locked {
+  background: linear-gradient(135deg, #c6c0b6, #9a9185);
+  color: #f7f3ee;
+}
+
+.profile-badge-name {
+  margin-top: 14rpx;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #5a3b2b;
+}
+
+.profile-badge-desc {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  line-height: 1.7;
+  color: #7b695b;
+}
