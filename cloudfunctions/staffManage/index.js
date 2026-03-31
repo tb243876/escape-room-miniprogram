@@ -132,6 +132,54 @@ async function syncSessionsFromGroups() {
   }
 }
 
+async function ensureSessionDoc(sessionId = '') {
+  const normalizedSessionId = String(sessionId || '').trim();
+  if (!normalizedSessionId) {
+    return null;
+  }
+
+  let existingSession = null;
+  try {
+    const result = await db.collection('staff_sessions').doc(normalizedSessionId).get();
+    existingSession = result && result.data ? result.data : null;
+  } catch (error) {
+    if (!normalizedSessionId.startsWith('session-')) {
+      return null;
+    }
+  }
+
+  if (!normalizedSessionId.startsWith('session-')) {
+    return existingSession;
+  }
+
+  const groupId = normalizedSessionId.replace(/^session-/, '');
+  if (!groupId) {
+    return existingSession;
+  }
+
+  try {
+    const groupResult = await db.collection('groups').doc(groupId).get();
+    if (!groupResult || !groupResult.data) {
+      return existingSession;
+    }
+    const nextSession = staffDomain.buildSessionFromGroup(groupResult.data, {
+      ...(existingSession || {}),
+      _id: normalizedSessionId,
+    });
+    await db.collection('staff_sessions').doc(normalizedSessionId).set({
+      data: stripInternalId(nextSession),
+    });
+    return nextSession;
+  } catch (error) {
+    console.warn('[staffManage] ensureSessionDoc.failed', {
+      sessionId: normalizedSessionId,
+      groupId,
+      message: error && error.message,
+    });
+    return existingSession;
+  }
+}
+
 async function listSessions() {
   await syncSessionsFromGroups();
   const sessions = await listAll('staff_sessions');
@@ -261,7 +309,8 @@ async function buildDashboard(binding) {
           openId: String(item._id || ''),
           nickname: profileCard.nickname,
           avatarText:
-            profileCard.avatarText || String(((profile && profile.nickname) || item.roleLabel || '员').slice(0, 1)),
+            profileCard.avatarText ||
+            String(((profile && profile.nickname) || item.roleLabel || '员').slice(0, 1)),
           avatarUrl: profileCard.avatarUrl || '',
           role: item.role || 'staff',
           roleLabel: item.roleLabel || '店员',
@@ -299,7 +348,7 @@ async function buildDashboard(binding) {
   return dashboard;
 }
 
-async function updateGroupRoomSnapshot(session) {
+async function _updateGroupRoomSnapshot(session) {
   const groupRef = db.collection('groups').doc(session.groupId);
   const roomStage = session.stageKey;
   const roomMembers = (session.members || []).map((item) => ({
@@ -736,8 +785,8 @@ exports.main = async (event = {}) => {
       }
 
       await syncSessionsFromGroups();
-      const result = await db.collection('staff_sessions').doc(sessionId).get();
-      if (!result.data) {
+      const sessionDoc = await ensureSessionDoc(sessionId);
+      if (!sessionDoc) {
         return {
           ok: false,
           message: '没有找到这个场次，请返回工作台重试',
@@ -746,7 +795,7 @@ exports.main = async (event = {}) => {
 
       return {
         ok: true,
-        session: staffDomain.normalizeSessionForClient(result.data, binding),
+        session: staffDomain.normalizeSessionForClient(sessionDoc, binding),
       };
     }
 
@@ -758,8 +807,8 @@ exports.main = async (event = {}) => {
         };
       }
       const sessionId = String(event.sessionId || '');
-      const nickname = String(event.nickname || '');
-      if (!sessionId || !nickname) {
+      const targetOpenId = String(event.openId || '');
+      if (!sessionId || !targetOpenId) {
         return {
           ok: false,
           message: '操作参数缺失，请返回工作台重试',
@@ -773,12 +822,12 @@ exports.main = async (event = {}) => {
         };
       }
 
-      const toggleValidation = staffDomain.validateSessionMemberToggle(result.data, nickname);
+      const toggleValidation = staffDomain.validateSessionMemberToggle(result.data, targetOpenId);
       if (!toggleValidation.ok) {
         return toggleValidation;
       }
 
-      const nextSession = staffDomain.toggleSessionMemberCheckIn(result.data, nickname);
+      const nextSession = staffDomain.toggleSessionMemberCheckIn(result.data, targetOpenId);
       await db.runTransaction(async (transaction) => {
         await transaction
           .collection('staff_sessions')

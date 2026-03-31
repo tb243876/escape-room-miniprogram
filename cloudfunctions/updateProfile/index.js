@@ -8,7 +8,7 @@ cloud.init({
 
 const db = cloud.database();
 
-function stripInternalId(doc = {}) {
+function _stripInternalId(doc = {}) {
   if (!doc || typeof doc !== 'object') {
     return doc;
   }
@@ -45,7 +45,11 @@ function sanitizeAvatarUrl(value) {
   const url = String(value || '').trim();
   if (!url) return '';
   const lower = url.toLowerCase();
-  if (lower.startsWith('javascript:') || lower.startsWith('data:') || lower.startsWith('vbscript:')) {
+  if (
+    lower.startsWith('javascript:') ||
+    lower.startsWith('data:') ||
+    lower.startsWith('vbscript:')
+  ) {
     return '';
   }
   return url.slice(0, 512);

@@ -9,37 +9,6 @@ cloud.init({
 
 const db = cloud.database();
 
-function sanitizeText(value, maxLength) {
-  return String(value || '')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, maxLength);
-}
-
-function normalizePhone(value) {
-  return String(value || '')
-    .replace(/\D/g, '')
-    .slice(0, 11);
-}
-
-function matchParticipantByIdentity(participant = {}, identity = {}) {
-  const participantOpenId = String(participant.openId || '').trim();
-  const identityOpenId = String(identity.openId || '').trim();
-  if (participantOpenId && identityOpenId && participantOpenId === identityOpenId) {
-    return true;
-  }
-
-  const participantPhone = normalizePhone(participant.contactPhone);
-  const identityPhone = normalizePhone(identity.contactPhone);
-  if (participantPhone && identityPhone && participantPhone === identityPhone) {
-    return true;
-  }
-
-  const participantName = sanitizeText(participant.contactName, 12);
-  const identityName = sanitizeText(identity.contactName, 12);
-  return Boolean(participantName) && Boolean(identityName) && participantName === identityName;
-}
-
 function stripInternalId(doc = {}) {
   if (!doc || typeof doc !== 'object') {
     return doc;
@@ -276,7 +245,7 @@ async function handleJoinGroup(event, openId) {
   });
 }
 
-async function handleCancelActiveGroup(openId, groupId = '', identity = {}) {
+async function handleCancelActiveGroup(openId, groupId = '') {
   const normalizedGroupId = String(groupId || '').trim();
   const activeGroup = await getUserActiveGroup(openId);
   const targetGroupId = normalizedGroupId || (activeGroup && activeGroup._id) || '';
@@ -322,22 +291,9 @@ async function handleCancelActiveGroup(openId, groupId = '', identity = {}) {
       };
     }
 
-    // 优先通过 openId 查找参与者
-    let participant = (group.participants || []).find(
+    const participant = (group.participants || []).find(
       (item) => item.openId === openId && item.status === 'active'
     );
-
-    // 如果 openId 未匹配，尝试通过 phone/name 匹配
-    if (!participant) {
-      const participantIdentity = {
-        openId,
-        contactName: identity.contactName || (activeGroup && activeGroup.contactName) || '',
-        contactPhone: identity.contactPhone || (activeGroup && activeGroup.contactPhone) || '',
-      };
-      participant = (group.participants || []).find(
-        (item) => item.status === 'active' && matchParticipantByIdentity(item, participantIdentity)
-      );
-    }
 
     const isCreator =
       group.creatorOpenId === openId || (participant && participant.role === 'creator');
@@ -533,7 +489,7 @@ exports.main = async (event = {}) => {
       return handleJoinGroup(event, openId);
     }
     if (action === 'cancelActiveGroup') {
-      return handleCancelActiveGroup(openId, event.groupId, event.payload || {});
+      return handleCancelActiveGroup(openId, event.groupId);
     }
     if (action === 'deleteGroupRecord') {
       return handleDeleteGroupRecord(event, openId);

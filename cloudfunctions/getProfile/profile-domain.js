@@ -143,7 +143,7 @@ function getLevelInfo(totalPlayCount) {
 function buildNextLevelHint(totalPlayCount) {
   const current = getLevelInfo(totalPlayCount);
   if (!current.nextMin) {
-    return '你已经达到当前第一版最高等级，继续打卡会累计更多主题档案。';
+    return '你已经达到当前最高等级，继续打卡会累计更多主题档案';
   }
   return `再完成 ${current.nextMin - totalPlayCount} 次真实场次打卡即可解锁下一等级`;
 }
@@ -236,8 +236,7 @@ function normalizeProfile(profile) {
     ...baseProfile,
     avatarUrl: String(baseProfile.avatarUrl || '').trim(),
     signature:
-      String(baseProfile.signature || '').trim() ||
-      '还没有留下签名，等你写下第一句档案备注。',
+      String(baseProfile.signature || '').trim() || '还没有留下签名，等你写下第一句档案备注。',
     gender: GENDER_LABELS[baseProfile.gender] ? baseProfile.gender : 'not_set',
     totalPlayCount,
     badgeCount: badges.length,

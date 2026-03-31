@@ -509,8 +509,8 @@ function buildTeamRoom(groupDoc = {}, openId) {
             title: group.status === 'confirmed' ? '门店已确认' : '等待门店确认',
             content:
               group.status === 'confirmed'
-                ? '真实队伍已建立，等待店员开始场次。'
-                : '到店核验通过后，系统才会进入真实队伍状态。',
+                ? '队伍已确认，等待店员开始场次'
+                : '到店核验通过后，系统会更新队伍状态',
           },
         ];
 
@@ -523,16 +523,18 @@ function buildTeamRoom(groupDoc = {}, openId) {
     timeSlot: group.timeSlot,
     storeName: '迷场档案馆',
     creatorName: group.creatorName,
+    creatorOpenId: group.creatorOpenId,
     myContactName: myParticipant ? myParticipant.contactName : '',
+    myOpenId: myParticipant ? myParticipant.openId : '',
     stage: roomStage,
     stageHint:
       roomStage === 'settled'
-        ? '本场结果已更新，等待门店补齐集锦内容。'
+        ? '本场结果已更新，等待门店上传集锦'
         : roomStage === 'playing'
-          ? '场次正在进行中，玩家端会持续显示当前状态。'
+          ? '场次正在进行中'
           : roomStage === 'ready' || group.status === 'confirmed'
-            ? '门店确认已完成，等待店员开始场次。'
-            : '大厅报名完成后，还需要门店确认真实到店成员。',
+            ? '门店确认已完成，等待店员开始场次'
+            : '大厅报名完成后，还需要门店确认到店成员',
     teamSize: activeParticipants.length || group.currentPeople,
     memberCount: activeParticipants.length || group.currentPeople,
     expectedPeople: group.targetPeople,

@@ -95,35 +95,113 @@ function buildActions(stageKey, canConfirmMembers) {
           ? '所有成员已确认到店，可以进入待开始。'
           : '请先逐个确认到店成员，再进入待开始。',
       },
-      { key: 'start', text: '开始场次', tone: 'secondary', enabled: false, hint: '必须先完成成员确认。' },
-      { key: 'end', text: '结束场次', tone: 'secondary', enabled: false, hint: '开始后才能结束并自动结算。' },
-      { key: 'highlight', text: '上传集锦', tone: 'secondary', enabled: false, hint: '结算成功后才能上传本场集锦。' },
+      {
+        key: 'start',
+        text: '开始场次',
+        tone: 'secondary',
+        enabled: false,
+        hint: '必须先完成成员确认。',
+      },
+      {
+        key: 'end',
+        text: '结束场次',
+        tone: 'secondary',
+        enabled: false,
+        hint: '开始后才能结束并自动结算。',
+      },
+      {
+        key: 'highlight',
+        text: '上传集锦',
+        tone: 'secondary',
+        enabled: false,
+        hint: '结算成功后才能上传本场集锦。',
+      },
     ];
   }
 
   if (stageKey === 'ready') {
     return [
-      { key: 'confirm', text: '确认成员', tone: 'secondary', enabled: false, hint: '这场成员已确认完成。' },
-      { key: 'start', text: '开始场次', tone: 'primary', enabled: true, hint: '点击后进入进行中状态。' },
-      { key: 'end', text: '结束场次', tone: 'secondary', enabled: false, hint: '开始后才能执行结束。' },
-      { key: 'highlight', text: '上传集锦', tone: 'secondary', enabled: false, hint: '结算成功后开放上传。' },
+      {
+        key: 'confirm',
+        text: '确认成员',
+        tone: 'secondary',
+        enabled: false,
+        hint: '这场成员已确认完成。',
+      },
+      {
+        key: 'start',
+        text: '开始场次',
+        tone: 'primary',
+        enabled: true,
+        hint: '点击后进入进行中状态。',
+      },
+      {
+        key: 'end',
+        text: '结束场次',
+        tone: 'secondary',
+        enabled: false,
+        hint: '开始后才能执行结束。',
+      },
+      {
+        key: 'highlight',
+        text: '上传集锦',
+        tone: 'secondary',
+        enabled: false,
+        hint: '结算成功后开放上传。',
+      },
     ];
   }
 
   if (stageKey === 'playing') {
     return [
-      { key: 'confirm', text: '确认成员', tone: 'secondary', enabled: false, hint: '这场已经开始，无需再次确认。' },
-      { key: 'start', text: '开始场次', tone: 'secondary', enabled: false, hint: '当前已经在进行中。' },
-      { key: 'end', text: '结束场次', tone: 'primary', enabled: true, hint: '点击后触发自动结算链路。' },
-      { key: 'highlight', text: '上传集锦', tone: 'secondary', enabled: false, hint: '结束并结算后即可上传。' },
+      {
+        key: 'confirm',
+        text: '确认成员',
+        tone: 'secondary',
+        enabled: false,
+        hint: '这场已经开始，无需再次确认。',
+      },
+      {
+        key: 'start',
+        text: '开始场次',
+        tone: 'secondary',
+        enabled: false,
+        hint: '当前已经在进行中。',
+      },
+      {
+        key: 'end',
+        text: '结束场次',
+        tone: 'primary',
+        enabled: true,
+        hint: '点击后触发自动结算链路。',
+      },
+      {
+        key: 'highlight',
+        text: '上传集锦',
+        tone: 'secondary',
+        enabled: false,
+        hint: '结束并结算后即可上传。',
+      },
     ];
   }
 
   return [
-    { key: 'confirm', text: '确认成员', tone: 'secondary', enabled: false, hint: '这场已经结算完成。' },
+    {
+      key: 'confirm',
+      text: '确认成员',
+      tone: 'secondary',
+      enabled: false,
+      hint: '这场已经结算完成。',
+    },
     { key: 'start', text: '开始场次', tone: 'secondary', enabled: false, hint: '这场已经结束。' },
     { key: 'end', text: '结束场次', tone: 'secondary', enabled: false, hint: '这场已经完成结算。' },
-    { key: 'highlight', text: '上传集锦', tone: 'primary', enabled: true, hint: '现在可以去集锦库上传本场内容。' },
+    {
+      key: 'highlight',
+      text: '上传集锦',
+      tone: 'primary',
+      enabled: true,
+      hint: '现在可以去集锦库上传本场内容。',
+    },
   ];
 }
 
@@ -132,10 +210,12 @@ function findSessionAction(session = {}, actionKey) {
   if (!normalizedActionKey) {
     return null;
   }
-  const canConfirmMembers = session.stageKey === 'pending_confirm' && allMembersCheckedIn(session.members || []);
-  const actionList = Array.isArray(session.actions) && session.actions.length
-    ? session.actions
-    : buildActions(session.stageKey, canConfirmMembers);
+  const canConfirmMembers =
+    session.stageKey === 'pending_confirm' && allMembersCheckedIn(session.members || []);
+  const actionList =
+    Array.isArray(session.actions) && session.actions.length
+      ? session.actions
+      : buildActions(session.stageKey, canConfirmMembers);
   return actionList.find((item) => item.key === normalizedActionKey) || null;
 }
 
@@ -158,9 +238,9 @@ function validateSessionAction(session = {}, actionKey) {
   };
 }
 
-function validateSessionMemberToggle(session = {}, nickname) {
-  const normalizedNickname = String(nickname || '').trim();
-  if (!normalizedNickname) {
+function validateSessionMemberToggle(session = {}, openId) {
+  const normalizedOpenId = String(openId || '').trim();
+  if (!normalizedOpenId) {
     return {
       ok: false,
       message: '没有找到要确认的成员，请刷新后重试',
@@ -173,7 +253,7 @@ function validateSessionMemberToggle(session = {}, nickname) {
     };
   }
   const matchedMember = (session.members || []).find(
-    (item) => String(item.nickname || '').trim() === normalizedNickname
+    (item) => String(item.openId || '').trim() === normalizedOpenId
   );
   if (!matchedMember) {
     return {
@@ -186,7 +266,11 @@ function validateSessionMemberToggle(session = {}, nickname) {
   };
 }
 
-function buildSessionMembersFromGroup(group = {}, existingMembers = [], stageKey = 'pending_confirm') {
+function buildSessionMembersFromGroup(
+  group = {},
+  existingMembers = [],
+  stageKey = 'pending_confirm'
+) {
   const activeParticipants = Array.isArray(group.participants)
     ? group.participants.filter((item) => item.status !== 'left')
     : [];
@@ -218,18 +302,23 @@ function buildSessionMembersFromGroup(group = {}, existingMembers = [], stageKey
 
 function buildSessionFromGroup(group = {}, existingSession = null) {
   const roomStage = String(group.roomStage || '').trim();
-  const stageKey = existingSession && existingSession.stageKey
-    ? existingSession.stageKey
-    : roomStage === 'settled'
-      ? 'settled'
-      : roomStage === 'playing'
-        ? 'playing'
-        : roomStage === 'ready'
-          ? 'ready'
-          : group.status === 'confirmed'
+  const stageKey =
+    existingSession && existingSession.stageKey
+      ? existingSession.stageKey
+      : roomStage === 'settled'
+        ? 'settled'
+        : roomStage === 'playing'
+          ? 'playing'
+          : roomStage === 'ready'
             ? 'ready'
-            : 'pending_confirm';
-  const members = buildSessionMembersFromGroup(group, existingSession && existingSession.members, stageKey);
+            : group.status === 'confirmed'
+              ? 'ready'
+              : 'pending_confirm';
+  const members = buildSessionMembersFromGroup(
+    group,
+    existingSession && existingSession.members,
+    stageKey
+  );
   const canConfirmMembers = stageKey === 'pending_confirm' && allMembersCheckedIn(members);
   const dateText = `${group.date || ''} ${group.timeSlot || ''}`.trim();
 
@@ -263,7 +352,7 @@ function buildSessionFromGroup(group = {}, existingSession = null) {
             : `本场已完成 · ${members.length} 人已结算`,
     metaText:
       stageKey === 'pending_confirm'
-        ? `${dateText} · 组局大厅转真实队伍`
+        ? `${dateText} · 组局大厅已确认`
         : stageKey === 'ready'
           ? `${dateText} · 所有成员已确认`
           : stageKey === 'playing'
@@ -288,7 +377,7 @@ function buildSessionFromGroup(group = {}, existingSession = null) {
           ]
         : stageKey === 'ready'
           ? [
-              { title: '门店已确认成员', content: '真实队伍已固定，等待店员点击开始。' },
+              { title: '门店已确认成员', content: '队伍人员已固定，等待店员点击开始' },
               { title: '待开始', content: '开始后玩家端会看到“游戏中”，并锁定本场状态流转。' },
             ]
           : stageKey === 'playing'
@@ -303,20 +392,23 @@ function buildSessionFromGroup(group = {}, existingSession = null) {
     actions: buildActions(stageKey, canConfirmMembers),
     settlementApplied: Boolean(existingSession && existingSession.settlementApplied),
     result: existingSession && existingSession.result ? existingSession.result : null,
-    createdAt: existingSession && existingSession.createdAt ? existingSession.createdAt : new Date().toISOString(),
+    createdAt:
+      existingSession && existingSession.createdAt
+        ? existingSession.createdAt
+        : new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
 
   return session;
 }
 
-function toggleSessionMemberCheckIn(session = {}, nickname) {
+function toggleSessionMemberCheckIn(session = {}, openId) {
   if (session.stageKey !== 'pending_confirm') {
     return session;
   }
   const nextSession = JSON.parse(JSON.stringify(session));
   nextSession.members = (nextSession.members || []).map((item) => {
-    if (String(item.nickname || '') !== String(nickname || '')) {
+    if (String(item.openId || '').trim() !== String(openId || '').trim()) {
       return item;
     }
     return {
@@ -343,11 +435,12 @@ function buildNextSessionState(session = {}, actionKey) {
     nextSession.stageKey = 'ready';
     nextSession.stageLabel = '开始场次';
     nextSession.memberSummary = `当前已确认 ${nextSession.members.length}/${nextSession.members.length} 人`;
-    nextSession.metaText = `${nextSession.playDate || ''} ${nextSession.timeSlot || ''}`.trim() + ' · 所有成员已确认';
+    nextSession.metaText =
+      `${nextSession.playDate || ''} ${nextSession.timeSlot || ''}`.trim() + ' · 所有成员已确认';
     nextSession.note = '这场已经可以开场，开场后玩家端状态会自动切到游戏中。';
     nextSession.members = nextSession.members.map((item) => ({ ...item, status: '已确认' }));
     nextSession.timeline = [
-      { title: '门店已确认成员', content: '真实队伍已固定，等待店员点击开始。' },
+      { title: '门店已确认成员', content: '队伍人员已固定，等待店员点击开始' },
       { title: '待开始', content: '开始后玩家端会看到“游戏中”，并锁定本场状态流转。' },
     ];
     nextSession.actions = buildActions('ready', false);
@@ -399,6 +492,7 @@ function buildNextSessionState(session = {}, actionKey) {
 
 function normalizeSessionForClient(session = {}, binding = {}) {
   const members = Array.isArray(session.members) ? session.members : [];
+  const actions = Array.isArray(session.actions) ? session.actions : [];
   const checkedInCount = countCheckedInMembers(members);
   const totalMemberCount = members.length;
   const canConfirmMembers = session.stageKey === 'pending_confirm' && allMembersCheckedIn(members);
@@ -417,7 +511,7 @@ function normalizeSessionForClient(session = {}, binding = {}) {
     totalMemberCount,
     canConfirmMembers,
     timeline: Array.isArray(session.timeline) ? session.timeline : [],
-    actions: (session.actions || []).map(normalizeAction),
+    actions: actions.map(normalizeAction),
   };
 }
 
