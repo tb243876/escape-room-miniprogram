@@ -224,13 +224,17 @@ function validateSessionAction(session = {}, actionKey) {
   if (!targetAction) {
     return {
       ok: false,
+      errorCode: 'SESSION_ACTION_INVALID',
       message: '当前操作不存在或已失效，请刷新后重试',
+      retryable: false,
     };
   }
   if (!targetAction.enabled) {
     return {
       ok: false,
+      errorCode: 'SESSION_ACTION_FORBIDDEN',
       message: targetAction.hint || '当前阶段不能执行这个操作',
+      retryable: false,
     };
   }
   return {
@@ -243,13 +247,17 @@ function validateSessionMemberToggle(session = {}, openId) {
   if (!normalizedOpenId) {
     return {
       ok: false,
+      errorCode: 'SESSION_MEMBER_NOT_FOUND',
       message: '没有找到要确认的成员，请刷新后重试',
+      retryable: false,
     };
   }
   if (session.stageKey !== 'pending_confirm') {
     return {
       ok: false,
+      errorCode: 'SESSION_MEMBER_TOGGLE_FORBIDDEN',
       message: '当前阶段不能再调整成员到店状态',
+      retryable: false,
     };
   }
   const matchedMember = (session.members || []).find(
@@ -258,7 +266,9 @@ function validateSessionMemberToggle(session = {}, openId) {
   if (!matchedMember) {
     return {
       ok: false,
+      errorCode: 'SESSION_MEMBER_NOT_FOUND',
       message: '没有找到要确认的成员，请刷新后重试',
+      retryable: false,
     };
   }
   return {

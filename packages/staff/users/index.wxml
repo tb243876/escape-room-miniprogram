@@ -1,0 +1,151 @@
+<view class="screen">
+  <view wx:if="{{errorText}}" class="card status-card">
+    <view class="status-title">用户看板加载失败</view>
+    <view class="status-text">{{errorText}}</view>
+    <view class="button-primary status-action" bindtap="retryLoad">重新加载</view>
+  </view>
+
+  <block wx:elif="{{dashboard && dashboard.canViewMemberStats}}">
+    <view class="hero-card users-hero">
+      <view class="users-kicker">用户看板</view>
+      <view class="users-title">用户概况与活跃趋势</view>
+      <view class="users-subtitle">玩家数据与活跃趋势</view>
+    </view>
+
+    <view class="stat-grid">
+      <view class="card stat-item stat-item-total" data-key="totalUsers" bindtap="openMemberPanel">
+        <view class="stat-num">{{dashboard.memberStats.totalUsers}}</view>
+        <view class="stat-label">累计用户</view>
+        <view class="stat-note">查看最近更新档案</view>
+      </view>
+      <view class="card stat-item stat-item-active" data-key="activeUsers30d" bindtap="openMemberPanel">
+        <view class="stat-num">{{dashboard.memberStats.activeUsers30d}}</view>
+        <view class="stat-label">近30天活跃</view>
+        <view class="stat-note">查看真实活跃玩家</view>
+      </view>
+      <view class="card stat-item stat-item-sessions" data-key="completedSessions30d" bindtap="openMemberPanel">
+        <view class="stat-num">{{dashboard.memberStats.completedSessions30d}}</view>
+        <view class="stat-label">近30天完成场次</view>
+        <view class="stat-note">查看已结算场次</view>
+      </view>
+      <view class="card stat-item stat-item-new" data-key="newUsers7d" bindtap="openMemberPanel">
+        <view class="stat-num">{{dashboard.memberStats.newUsers7d}}</view>
+        <view class="stat-label">本周新增</view>
+        <view class="stat-note">查看新建档玩家</view>
+      </view>
+    </view>
+  </block>
+
+  <view wx:else class="card status-card">
+    <view class="status-title">当前无权限查看</view>
+    <view class="status-text">只有副店长及以上可以查看用户看板。</view>
+  </view>
+
+  <view wx:if="{{selectedPanel}}" class="modal-mask-center" bindtap="closePanel">
+    <view class="modal-card-common users-panel-dialog" catchtap="noop">
+      <view class="users-panel-head">
+        <view>
+          <view class="users-panel-kicker">数据明细</view>
+          <view class="users-panel-title">{{selectedPanel.title}}</view>
+        </view>
+        <view class="users-panel-close" bindtap="closePanel">关闭</view>
+      </view>
+      <view class="users-panel-subtitle">{{selectedPanel.subtitle}}</view>
+      <scroll-view class="users-panel-scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
+        <block wx:if="{{selectedPanel.type === 'members'}}">
+          <view wx:if="{{selectedPanel.items.length}}" class="member-list">
+            <view
+              class="card member-card"
+              wx:for="{{selectedPanel.visibleItems}}"
+              wx:key="openId"
+              data-openid="{{item.openId}}"
+              bindtap="openUserProfile"
+            >
+              <block wx:if="{{item.avatarUrl}}">
+                <image class="member-avatar member-avatar-image" src="{{item.avatarUrl}}" mode="aspectFill"></image>
+              </block>
+              <view wx:else class="member-avatar">{{item.avatarText}}</view>
+              <view class="member-copy">
+                <view class="member-name-row">
+                  <view class="member-name">{{item.nickname}}</view>
+                  <view wx:if="{{item.titleLabel}}" class="member-title">{{item.titleLabel}}</view>
+                </view>
+                <view class="member-summary">{{item.summaryText}}</view>
+                <view wx:if="{{item.signature}}" class="member-signature">{{item.signature}}</view>
+                <view class="member-meta">{{item.lastActiveText ? '最近活跃 ' + item.lastActiveText : item.createdAtText}}</view>
+              </view>
+            </view>
+            <view
+              wx:if="{{selectedPanel.hiddenItemCount > 0 || panelState.showAllItems}}"
+              class="users-panel-more"
+              bindtap="togglePanelItems"
+            >
+              {{panelState.showAllItems ? '收起明细' : '展开其余 ' + selectedPanel.hiddenItemCount + ' 条'}}
+            </view>
+          </view>
+          <view wx:else class="empty-text">当前没有符合条件的玩家数据。</view>
+        </block>
+        <block wx:elif="{{selectedPanel.type === 'sessions'}}">
+          <view wx:if="{{selectedPanel.items.length}}" class="users-session-list">
+            <view class="card users-session-card" wx:for="{{selectedPanel.visibleItems}}" wx:key="id">
+              <view class="users-session-theme">{{item.themeName}}</view>
+              <view class="users-session-meta">{{item.metaText}}</view>
+              <view class="users-session-time">{{item.endedAtText}}</view>
+            </view>
+            <view
+              wx:if="{{selectedPanel.hiddenItemCount > 0 || panelState.showAllItems}}"
+              class="users-panel-more"
+              bindtap="togglePanelItems"
+            >
+              {{panelState.showAllItems ? '收起明细' : '展开其余 ' + selectedPanel.hiddenItemCount + ' 条'}}
+            </view>
+          </view>
+          <view wx:else class="empty-text">当前没有符合条件的场次数据。</view>
+        </block>
+      </scroll-view>
+    </view>
+  </view>
+
+  <view wx:if="{{selectedUserProfile}}" class="modal-mask-center" bindtap="closeUserProfile">
+    <view class="modal-card-common leaderboard-player-dialog" catchtap="noop">
+      <scroll-view class="leaderboard-player-scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
+        <view class="player-card-head">
+          <block wx:if="{{selectedUserProfile.avatarUrl}}">
+            <image class="player-card-avatar-image" src="{{selectedUserProfile.avatarUrl}}" mode="aspectFill"></image>
+          </block>
+          <view wx:else class="player-card-avatar">{{selectedUserProfile.avatarText}}</view>
+          <view class="player-card-copy">
+            <view class="player-card-name">{{selectedUserProfile.nickname}}</view>
+            <view class="player-card-title">{{selectedUserProfile.titleLabel}}</view>
+            <view class="player-card-meta">{{selectedUserProfile.genderText}} · {{selectedUserProfile.summaryText}}</view>
+          </view>
+        </view>
+        <view class="player-card-section">
+          <view class="player-card-section-title">个性签名</view>
+          <view class="player-card-signature">{{selectedUserProfile.signature}}</view>
+        </view>
+        <view class="player-card-stats">
+          <view class="player-card-stat">
+            <view class="player-card-stat-num">{{selectedUserProfile.totalPlayCount}}</view>
+            <view class="player-card-stat-label">通关次数</view>
+          </view>
+          <view class="player-card-stat">
+            <view class="player-card-stat-num">{{selectedUserProfile.badgeCount}}</view>
+            <view class="player-card-stat-label">荣誉徽章</view>
+          </view>
+          <view class="player-card-stat">
+            <view class="player-card-stat-num">{{selectedUserProfile.growthValue}}</view>
+            <view class="player-card-stat-label">成长值</view>
+          </view>
+        </view>
+        <view class="player-card-section">
+          <view class="player-card-section-title">当前荣誉</view>
+          <view class="player-card-tag-list">
+            <view class="player-card-tag" wx:for="{{selectedUserProfile.honorLabels}}" wx:key="*this">{{item}}</view>
+          </view>
+        </view>
+      </scroll-view>
+      <view class="button-primary users-dialog-btn" bindtap="closeUserProfile">关闭资料</view>
+    </view>
+  </view>
+</view>

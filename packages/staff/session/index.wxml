@@ -1,0 +1,99 @@
+<view class="screen">
+  <view wx:if="{{errorText}}" class="card status-card">
+    <view class="status-title">场次管理加载失败</view>
+    <view class="status-text">{{errorText}}</view>
+    <view class="button-primary status-action" bindtap="retryLoad">重新加载</view>
+  </view>
+
+  <block wx:elif="{{session}}">
+    <view class="hero-card staff-session-hero">
+      <view class="staff-session-kicker">场次管理</view>
+      <view class="staff-session-title">{{session.themeName}}</view>
+      <view class="staff-session-subtitle">{{session.memberSummary}}</view>
+      <view class="staff-session-meta">{{session.metaText}}</view>
+    </view>
+
+    <view class="card staff-session-card staff-session-card-stage">
+      <view class="staff-session-card-title">当前流程</view>
+      <view class="stage-row">
+        <view class="stage-chip {{item.active ? 'active' : ''}}" wx:for="{{session.stageTips}}" wx:key="text">{{item.text}}</view>
+      </view>
+      <view class="staff-session-note">{{session.note}}</view>
+    </view>
+
+    <view class="card staff-session-card staff-session-card-members">
+      <view class="staff-session-card-title">成员确认状态</view>
+      <view wx:if="{{session.confirmProgressText}}" class="staff-session-progress">{{session.confirmProgressText}}</view>
+      <view class="staff-session-member" wx:for="{{session.visibleMembers}}" wx:key="index">
+        <view class="staff-session-member-left">
+          <block wx:if="{{item.avatarUrl}}">
+            <image class="staff-session-member-avatar staff-session-member-avatar-img" src="{{item.avatarUrl}}" mode="aspectFill"></image>
+          </block>
+          <view wx:else class="staff-session-member-avatar">{{item.avatarText}}</view>
+          <view class="staff-session-member-copy">
+            <view class="staff-session-member-name">{{item.nickname}}</view>
+            <view class="staff-session-member-status">{{item.status}}</view>
+          </view>
+        </view>
+        <view
+          wx:if="{{item.canToggle}}"
+          class="{{item.toggleClass}}"
+          data-openid="{{item.openId}}"
+          bindtap="toggleMemberConfirm"
+        >
+          {{item.toggleText}}
+        </view>
+        <view wx:else class="staff-session-member-status">{{item.status}}</view>
+      </view>
+      <view
+        wx:if="{{session.hiddenMemberCount > 0 || sectionState.showAllMembers}}"
+        class="staff-session-more-btn"
+        data-key="showAllMembers"
+        bindtap="toggleSection"
+      >
+        {{sectionState.showAllMembers ? '收起成员列表' : '展开其余 ' + session.hiddenMemberCount + ' 位成员'}}
+      </view>
+    </view>
+
+    <view class="card staff-session-card staff-session-card-timeline">
+      <view class="staff-session-card-title">处理记录</view>
+      <view class="staff-session-timeline-item" wx:for="{{session.visibleTimeline}}" wx:key="index">
+        <view class="staff-session-timeline-title">{{item.title}}</view>
+        <view class="staff-session-timeline-content">{{item.content}}</view>
+      </view>
+      <view
+        wx:if="{{session.hiddenTimelineCount > 0 || sectionState.showAllTimeline}}"
+        class="staff-session-more-btn"
+        data-key="showAllTimeline"
+        bindtap="toggleSection"
+      >
+        {{sectionState.showAllTimeline ? '收起处理记录' : '展开其余 ' + session.hiddenTimelineCount + ' 条记录'}}
+      </view>
+    </view>
+
+    <view class="card staff-session-card staff-session-card-actions">
+      <view class="staff-session-card-title">可操作项</view>
+      <view class="action-list">
+        <view class="{{item.buttonClass}}" wx:for="{{session.actions}}" wx:key="key" data-action="{{item.key}}" bindtap="showActionTip">
+          {{item.text}}
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <view wx:if="{{dialogVisible}}" class="staff-session-mask" bindtap="closeDialog">
+    <view class="staff-session-dialog" catchtap="noop">
+      <view class="staff-session-dialog-title">{{dialogTitle}}</view>
+      <view class="staff-session-dialog-content">{{dialogContent}}</view>
+      <view class="staff-session-dialog-actions">
+        <block wx:if="{{dialogMode === 'confirm'}}">
+          <view class="staff-session-dialog-btn staff-session-dialog-btn-secondary" bindtap="closeDialog">取消</view>
+          <view class="staff-session-dialog-btn staff-session-dialog-btn-primary" bindtap="confirmDialogAction">确认执行</view>
+        </block>
+        <block wx:else>
+          <view class="staff-session-dialog-btn staff-session-dialog-btn-single" bindtap="closeDialog">关闭</view>
+        </block>
+      </view>
+    </view>
+  </view>
+</view>

@@ -42,7 +42,12 @@ function buildTimestamp(dateValue, timeSlot) {
 function isGroupActiveForParticipation(group = {}) {
   const status = String(group.status || '').trim();
   const roomStage = String(group.roomStage || '').trim();
-  return status !== 'cancelled' && roomStage !== 'settled' && roomStage !== 'archived';
+  return (
+    status !== 'cancelled' &&
+    roomStage !== 'settled' &&
+    roomStage !== 'archived' &&
+    !isGroupExpired(group)
+  );
 }
 
 function isGroupExpired(group = {}) {
@@ -59,6 +64,58 @@ function isGroupRecordDeletable(group = {}) {
   );
 }
 
+function buildGroupSnapshotFromSession(sessionDoc = {}) {
+  const stageKey = String(sessionDoc.stageKey || '').trim();
+  const patch = {
+    sessionId: String(sessionDoc._id || '').trim(),
+    roomStage: stageKey,
+    roomMembers: Array.isArray(sessionDoc.members)
+      ? sessionDoc.members.map((item) => ({
+          openId: item.openId || '',
+          nickname: item.nickname || '玩家',
+          status: item.status || '待确认',
+        }))
+      : [],
+    roomTimeline: Array.isArray(sessionDoc.timeline) ? sessionDoc.timeline : [],
+    updatedAt: sessionDoc.updatedAt || sessionDoc.endedAt || sessionDoc.createdAt || '',
+  };
+
+  if (stageKey === 'settled') {
+    patch.status = 'settled';
+  } else if (stageKey === 'ready' || stageKey === 'playing') {
+    patch.status = 'confirmed';
+  } else if (stageKey === 'pending_confirm') {
+    patch.status = 'pending_store_confirm';
+  }
+
+  if (stageKey === 'settled' && sessionDoc.result) {
+    patch.roomResult = sessionDoc.result;
+  }
+
+  return patch;
+}
+
+function mergeGroupDocWithSession(groupDoc = {}, sessionDoc = null) {
+  if (!sessionDoc) {
+    return groupDoc;
+  }
+
+  const sessionPatch = buildGroupSnapshotFromSession(sessionDoc);
+  const groupUpdatedAt = new Date(groupDoc.updatedAt || groupDoc.createdAt || 0).getTime();
+  const sessionUpdatedAt = new Date(
+    sessionPatch.updatedAt || sessionDoc.endedAt || sessionDoc.createdAt || 0
+  ).getTime();
+
+  return {
+    ...groupDoc,
+    ...sessionPatch,
+    updatedAt:
+      sessionUpdatedAt > groupUpdatedAt
+        ? sessionPatch.updatedAt || sessionDoc.updatedAt || groupDoc.updatedAt
+        : groupDoc.updatedAt || sessionPatch.updatedAt,
+  };
+}
+
 function validateCreatePayload(payload = {}) {
   const themeId = sanitizeText(payload.themeId, 64);
   const themeName = sanitizeText(payload.themeName, 24);
@@ -72,22 +129,22 @@ function validateCreatePayload(payload = {}) {
   const targetPeople = Math.min(8, Math.max(2, Number(payload.targetPeople || 0)));
 
   if (!themeName) {
-    return { ok: false, message: '请选择组局主题' };
+    return { ok: false, errorCode: 'REQUEST_PARAM_INVALID', message: '请选择组局主题', retryable: false };
   }
   if (!dateValue) {
-    return { ok: false, message: '请选择组局日期' };
+    return { ok: false, errorCode: 'REQUEST_PARAM_INVALID', message: '请选择组局日期', retryable: false };
   }
   if (!timeSlot) {
-    return { ok: false, message: '请选择开场时间' };
+    return { ok: false, errorCode: 'REQUEST_PARAM_INVALID', message: '请选择开场时间', retryable: false };
   }
   if (!contactName) {
-    return { ok: false, message: '请输入联系人称呼' };
+    return { ok: false, errorCode: 'REQUEST_PARAM_INVALID', message: '请输入联系人称呼', retryable: false };
   }
   if (!/^1\d{10}$/.test(contactPhone)) {
-    return { ok: false, message: '请输入正确的手机号' };
+    return { ok: false, errorCode: 'REQUEST_PARAM_INVALID', message: '请输入正确的手机号', retryable: false };
   }
   if (targetPeople <= currentPeople) {
-    return { ok: false, message: '目标人数必须大于当前人数' };
+    return { ok: false, errorCode: 'REQUEST_PARAM_INVALID', message: '目标人数必须大于当前人数', retryable: false };
   }
 
   return {
@@ -113,10 +170,10 @@ function validateJoinPayload(payload = {}) {
   const contactPhone = normalizePhone(payload.contactPhone);
 
   if (!contactName) {
-    return { ok: false, message: '请输入联系人称呼' };
+    return { ok: false, errorCode: 'REQUEST_PARAM_INVALID', message: '请输入联系人称呼', retryable: false };
   }
   if (!/^1\d{10}$/.test(contactPhone)) {
-    return { ok: false, message: '请输入正确的手机号' };
+    return { ok: false, errorCode: 'REQUEST_PARAM_INVALID', message: '请输入正确的手机号', retryable: false };
   }
 
   return {
@@ -277,9 +334,9 @@ function buildRoomMembersFromParticipants(
 
   const fallbackStatus =
     roomStage === 'settled'
-      ? '已结算'
+      ? '冒险已归档'
       : roomStage === 'playing'
-        ? '游戏中'
+        ? '战斗中'
         : roomStage === 'ready' || groupStatus === 'confirmed'
           ? '已确认'
           : '已报名';
@@ -388,7 +445,8 @@ function toGroupListItem(doc = {}, openId = '') {
   const group = normalizeGroupDoc(doc);
   const activeParticipants = (group.participants || []).filter((item) => item.status !== 'left');
   const normalizedOpenId = String(openId || '').trim();
-  const viewer = activeParticipants.find((item) => item.openId === normalizedOpenId) || null;
+  const viewer = (group.participants || []).find((item) => item.openId === normalizedOpenId) || null;
+  const hiddenForViewer = (group.hiddenForOpenIds || []).includes(normalizedOpenId);
   return {
     id: group._id,
     themeId: group.themeId,
@@ -409,6 +467,7 @@ function toGroupListItem(doc = {}, openId = '') {
     joinedMemberNames: group.joinedMemberNames,
     participantNames: activeParticipants.map((item) => item.contactName).filter(Boolean),
     createdAt: group.createdAt,
+    hiddenForViewer,
     viewerRelated: Boolean(viewer),
     viewerRole: viewer ? viewer.role : '',
     viewerStatus: viewer ? viewer.status : '',
@@ -418,12 +477,17 @@ function toGroupListItem(doc = {}, openId = '') {
 
 function buildMyParticipation(groups = [], openId) {
   const normalizedOpenId = String(openId || '').trim();
+  const sortedGroups = (groups || []).slice().sort((left, right) => {
+    const leftTime = new Date(left.updatedAt || left.createdAt || 0).getTime();
+    const rightTime = new Date(right.updatedAt || right.createdAt || 0).getTime();
+    return rightTime - leftTime;
+  });
   const result = {
     activeGroup: null,
     recentGroup: null,
   };
 
-  groups.forEach((group) => {
+  sortedGroups.forEach((group) => {
     if ((group.hiddenForOpenIds || []).includes(normalizedOpenId)) {
       return;
     }
@@ -449,7 +513,9 @@ function buildMyParticipation(groups = [], openId) {
 
     if (
       !result.recentGroup &&
-      (!isGroupActiveForParticipation(group) || group.status === 'cancelled')
+      (matched.status !== 'active' ||
+        !isGroupActiveForParticipation(group) ||
+        group.status === 'cancelled')
     ) {
       result.recentGroup = {
         groupId: group._id,
@@ -477,7 +543,7 @@ function sortGroups(groups = []) {
   });
 }
 
-function buildTeamRoom(groupDoc = {}, openId) {
+function buildTeamRoom(groupDoc = {}, openId, highlights = []) {
   const group = normalizeGroupDoc(groupDoc);
   const activeParticipants = group.participants.filter((item) => item.status !== 'left');
   const myParticipant = activeParticipants.find((item) => item.openId === String(openId || ''));
@@ -502,15 +568,15 @@ function buildTeamRoom(groupDoc = {}, openId) {
       ? groupDoc.roomTimeline
       : [
           {
-            title: '意向组局已创建',
-            content: `${group.themeName || '该主题'} 已有 ${group.currentPeople} 人报名。`,
+            title: '组局意向已发起',
+            content: `${group.themeName || '该主题'} 已有 ${group.currentPeople} 人报名，等待凑齐。`,
           },
           {
-            title: group.status === 'confirmed' ? '门店已确认' : '等待门店确认',
+            title: group.status === 'confirmed' ? '店家已确认成局' : '等待店家核验',
             content:
               group.status === 'confirmed'
-                ? '队伍已确认，等待店员开始场次'
-                : '到店核验通过后，系统会更新队伍状态',
+                ? '队伍已确认，等待店员开场'
+                : '到店核验通过后，这里会同步更新队伍状态',
           },
         ];
 
@@ -529,12 +595,12 @@ function buildTeamRoom(groupDoc = {}, openId) {
     stage: roomStage,
     stageHint:
       roomStage === 'settled'
-        ? '本场结果已更新，等待门店上传集锦'
+        ? '本场冒险已归档，集锦上传后可在这里查看'
         : roomStage === 'playing'
-          ? '场次正在进行中'
+          ? '战斗正在进行中，稍后可查看结果'
           : roomStage === 'ready' || group.status === 'confirmed'
-            ? '门店确认已完成，等待店员开始场次'
-            : '大厅报名完成后，还需要门店确认到店成员',
+            ? '店家确认完成，等待开场'
+            : '组局成功后还需到店核验，店家确认后方可成局',
     teamSize: activeParticipants.length || group.currentPeople,
     memberCount: activeParticipants.length || group.currentPeople,
     expectedPeople: group.targetPeople,
@@ -545,7 +611,7 @@ function buildTeamRoom(groupDoc = {}, openId) {
     })),
     timeline: roomTimeline,
     result: groupDoc.roomResult || null,
-    highlights: [],
+    highlights: Array.isArray(highlights) ? highlights : [],
   };
 }
 
@@ -554,6 +620,8 @@ module.exports = {
   toGroupListItem,
   buildMyParticipation,
   buildTeamRoom,
+  buildGroupSnapshotFromSession,
+  mergeGroupDocWithSession,
   computeGroupStatus,
   normalizeParticipant,
   sortGroups,

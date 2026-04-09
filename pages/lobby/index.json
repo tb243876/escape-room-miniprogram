@@ -1,3 +1,4 @@
 {
-  "navigationBarTitleText": "组局大厅"
+  "navigationBarTitleText": "组队大厅",
+  "enablePullDownRefresh": true
 }

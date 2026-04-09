@@ -10,54 +10,85 @@
   <block wx:elif="{{profile}}">
     <scroll-view class="profile-scroll" scroll-y="true" enhanced="true" show-scrollbar="true">
       <view class="hero-card profile-card">
-        <view class="profile-head">
-          <block wx:if="{{profile.avatarUrl}}">
-            <image class="avatar avatar-image" src="{{profile.avatarUrl}}" mode="aspectFill"></image>
-          </block>
-          <view wx:else class="avatar">{{profile.avatarText}}</view>
+          <view class="profile-head">
+          <view class="profile-avatar-column">
+            <block wx:if="{{profile.avatarUrl}}">
+              <image class="avatar avatar-image" src="{{profile.avatarUrl}}" mode="aspectFill"></image>
+            </block>
+            <view wx:else class="avatar">{{profile.avatarText}}</view>
+            <view class="profile-level-chip" bindtap="openLevelBenefits">{{profile.level}}</view>
+          </view>
           <view class="profile-copy">
             <view class="profile-head-row">
               <view class="profile-name">{{profile.nickname}}</view>
               <view class="profile-edit-link" bindtap="openProfileEdit">编辑资料</view>
             </view>
-            <view class="profile-title-badge">{{profile.titleLabel}}</view>
+            <view wx:if="{{profile.displayLabelList.length}}" class="profile-title-row">
+              <view
+                class="profile-title-badge"
+                wx:for="{{profile.displayLabelList}}"
+                wx:key="*this"
+              >{{item}}</view>
+            </view>
             <view class="profile-signature">{{profile.signature}}</view>
             <view class="profile-inline-meta">
               <view class="profile-meta-pill pill-soft">{{profile.genderText}}</view>
-              <view class="profile-meta-pill pill-soft">成长值 {{profile.growthValue}}</view>
+              <view class="profile-meta-pill pill-soft profile-meta-pill-action" bindtap="openGrowthDetail">
+                成长值 {{profile.growthValue}}
+              </view>
+              <view class="profile-meta-pill pill-soft profile-meta-pill-action" bindtap="openReputationDetail">
+                信誉 {{profile.reputationScore}}
+              </view>
             </view>
           </view>
           <view class="profile-stat-stack">
-            <view class="profile-stat-compact">
+            <view class="profile-stat-compact profile-stat-compact-action" bindtap="openRecentSessions">
               <view class="profile-stat-num">{{profile.totalPlayCount}}</view>
               <view class="profile-stat-label">场次</view>
             </view>
-            <view class="profile-stat-compact">
+            <view class="profile-stat-compact profile-stat-compact-action" bindtap="openBadgeSummary">
               <view class="profile-stat-num">{{profile.badgeCount}}</view>
               <view class="profile-stat-label">徽章</view>
             </view>
           </view>
         </view>
-        <view class="profile-honor-list">
-          <view class="profile-honor-tag pill-soft" wx:for="{{profile.honorLabels}}" wx:for-item="honor" wx:for-index="index" wx:if="{{index < 2}}" wx:key="*this">{{honor}}</view>
-        </view>
-        <view class="profile-progress-inline">成长进度：{{profile.nextLevelHint}}</view>
       </view>
 
-      <view class="panel recent-panel recent-panel-archive">
-        <view class="panel-title">最近体验主题</view>
-        <block wx:if="{{profile.recentThemes.length}}">
-          <view class="recent-theme-chip" wx:for="{{profile.recentThemes}}" wx:key="*this">{{item}}</view>
-        </block>
-        <view wx:else class="list-line">还没有体验记录，等完成第一场真实场次后会自动沉淀到这里。</view>
+      <!-- 挑战任务模块预留，后续恢复时可直接放开这一段。
+      <view class="panel challenge-panel">
+        <view class="panel-title">挑战任务</view>
+        <view class="challenge-subtitle">把静默成长变成看得见的目标进度。</view>
+        <view class="challenge-list">
+          <view class="{{item.taskClass}}" wx:for="{{profile.challengeTasks}}" wx:key="key">
+            <view class="challenge-head">
+              <view class="challenge-name">{{item.name}}</view>
+              <view class="challenge-status">{{item.statusText}}</view>
+            </view>
+            <view class="challenge-desc">{{item.description}}</view>
+            <view class="challenge-progress-row">
+              <view class="challenge-progress-bar">
+                <view class="challenge-progress-fill" style="width: {{item.progressPercent}}%;"></view>
+              </view>
+              <view class="challenge-progress-text">{{item.progressText}}</view>
+            </view>
+          </view>
+        </view>
       </view>
+      -->
 
       <view class="panel tools-panel tools-panel-workbench">
         <view class="tools-head">
           <view class="panel-title">常用入口</view>
-          <view class="tools-subtitle">这里放你最常用的功能</view>
+          <view class="tools-subtitle">常用功能都在这里</view>
         </view>
         <view class="tool-list">
+          <view class="tool-item tool-item-pending" bindtap="openPendingReviews">
+            <view class="tool-item-icon tool-item-icon-pending">
+              评
+              <view wx:if="{{pendingReviewCount > 0}}" class="tool-item-count-badge">{{pendingReviewCount > 99 ? '99+' : pendingReviewCount}}</view>
+            </view>
+            <view class="tool-item-title">待评价</view>
+          </view>
           <view class="tool-item tool-item-badge" bindtap="goBadges">
             <view class="tool-item-icon tool-item-icon-badge">徽</view>
             <view class="tool-item-title">徽章</view>
@@ -76,7 +107,7 @@
           </view>
           <view class="tool-item tool-item-profile" bindtap="openProfileEdit">
             <view class="tool-item-icon tool-item-icon-profile">我</view>
-            <view class="tool-item-title">个人资料</view>
+            <view class="tool-item-title">编辑资料</view>
           </view>
         </view>
       </view>
@@ -85,7 +116,7 @@
         <view class="contact-layout">
           <view class="contact-copy">
             <view class="panel-title">联系门店</view>
-            <view class="contact-text">有新主题、活动或集锦需求时，可以直接联系门店。</view>
+            <view class="contact-text">想约场、问活动或咨询门店，都可以直接联系。</view>
           </view>
           <view class="button-primary contact-btn" bindtap="contactStore">联系门店</view>
         </view>
@@ -95,8 +126,8 @@
 
   <block wx:else>
     <view class="card status-card">
-      <view class="status-title">暂无个人数据</view>
-      <view class="status-text">当前还没有可展示的资料，请稍后重试。</view>
+      <view class="status-title">还没有档案信息</view>
+      <view class="status-text">暂时还没有资料内容，请稍后再试。</view>
     </view>
   </block>
 
@@ -104,12 +135,12 @@
     <view class="overlay-sheet" catchtap="noop" catchtouchmove="noop">
       <view class="overlay-head">
         <view>
-          <view class="overlay-kicker">我的徽章</view>
-          <view class="overlay-title">全部徽章</view>
+          <view class="overlay-kicker">徽章</view>
+          <view class="overlay-title">我的徽章</view>
         </view>
         <view class="overlay-close" bindtap="closePanels">关闭</view>
       </view>
-      <view class="overlay-subtitle">亮起的是已获得徽章，灰色的是还没拿到的徽章。</view>
+      <view class="overlay-subtitle">点开徽章可以看解锁说明，灰色代表暂未解锁。</view>
       <scroll-view class="overlay-scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
         <view wx:if="{{profile.badgeCatalog.length}}" class="overlay-badge-grid">
           <view class="overlay-badge-item {{item.overlayItemClass}}" wx:for="{{profile.badgeCatalog}}" wx:key="key" bindtap="openBadgeDetail" data-key="{{item.key}}">
@@ -117,20 +148,9 @@
             <view class="overlay-badge-name">{{item.name}}</view>
           </view>
         </view>
-        <view wx:else class="overlay-empty">当前还没有徽章数据。</view>
+        <view wx:else class="overlay-empty">还没拿到徽章。</view>
       </scroll-view>
 
-      <view wx:if="{{selectedBadge}}" class="badge-detail-mask" bindtap="closeBadgeDetail">
-        <view class="badge-detail-card" catchtap="noop">
-          <view class="badge-detail-kicker">{{selectedBadge.detailKicker}}</view>
-          <view class="badge-detail-medal {{selectedBadge.detailMedalClass}}">
-            <view class="badge-detail-medal-inner">{{selectedBadge.detailMedalText}}</view>
-          </view>
-          <view class="badge-detail-name">{{selectedBadge.name}}</view>
-          <view class="badge-detail-desc">{{selectedBadge.description}}</view>
-          <view class="button-primary badge-detail-btn" bindtap="closeBadgeDetail">关闭</view>
-        </view>
-      </view>
     </view>
   </view>
 
@@ -139,11 +159,11 @@
       <view class="overlay-head">
         <view>
           <view class="overlay-kicker">我的权益</view>
-          <view class="overlay-title">权益内容</view>
+          <view class="overlay-title">我的权益</view>
         </view>
         <view class="overlay-close" bindtap="closePanels">关闭</view>
       </view>
-      <view class="overlay-subtitle">先把第一版已有权益放进来，后面再扩成可领取、可核销和有效期状态。</view>
+      <view class="overlay-subtitle">解锁到的门店权益会收在这里，有效期内到店可用。</view>
       <scroll-view class="overlay-scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
         <view wx:if="{{profile.perks.length}}">
           <view class="overlay-perk-line" wx:for="{{profile.perks}}" wx:key="*this">
@@ -151,8 +171,197 @@
             <view class="overlay-perk-text">{{item}}</view>
           </view>
         </view>
-        <view wx:else class="overlay-empty">当前还没有权益内容。</view>
+        <view wx:else class="overlay-empty">暂时还没有可用权益。</view>
       </scroll-view>
+    </view>
+  </view>
+
+  <view wx:if="{{showStatsPanel && currentStatsPanel}}" class="modal-mask-center" bindtap="closeStatsPanel">
+    <view class="modal-card-common profile-stats-dialog {{currentStatsPanel.type === 'growth' ? 'profile-stats-dialog-compact' : ''}}" catchtap="noop">
+      <view class="profile-stats-head">
+        <view>
+          <view class="profile-stats-title">{{currentStatsPanel.title}}</view>
+        </view>
+        <view class="profile-stats-head-actions">
+          <view
+            wx:if="{{currentStatsPanel.type === 'pendingReviews'}}"
+            class="profile-stats-inline-action"
+            bindtap="openMyReviews"
+          >
+            <text>我的评价</text>
+            <view wx:if="{{myReviewCount > 0}}" class="profile-stats-inline-badge">{{myReviewCount > 99 ? '99+' : myReviewCount}}</view>
+          </view>
+          <view class="profile-stats-close" bindtap="closeStatsPanel">关闭</view>
+        </view>
+      </view>
+      <view
+        wx:if="{{!(currentStatsPanel.type === 'pendingReviews' && !currentStatsPanel.items.length)}}"
+        class="profile-stats-subtitle"
+      >{{currentStatsPanel.subtitle}}</view>
+      <scroll-view class="profile-stats-scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
+        <block wx:if="{{currentStatsPanel.type === 'badges'}}">
+          <view class="profile-stats-badge-grid">
+            <view
+              class="profile-stats-badge-item"
+              wx:for="{{currentStatsPanel.items}}"
+              wx:key="key"
+              bindtap="openBadgeDetail"
+              data-key="{{item.key}}"
+            >
+              <view class="profile-stats-badge-icon">徽</view>
+              <view class="profile-stats-badge-name">{{item.name}}</view>
+            </view>
+          </view>
+        </block>
+        <block wx:elif="{{currentStatsPanel.type === 'records'}}">
+          <view class="profile-stats-record-list">
+            <view class="profile-stats-record-item" wx:for="{{currentStatsPanel.items}}" wx:key="recordKey">
+              <view class="profile-stats-record-theme">{{item.displayThemeName}}</view>
+              <view class="profile-stats-record-meta">{{item.displayDateText || '时间待更新'}}</view>
+            </view>
+          </view>
+        </block>
+        <block wx:elif="{{currentStatsPanel.type === 'pendingReviews'}}">
+          <view class="profile-stats-record-list">
+            <block wx:if="{{currentStatsPanel.items.length}}">
+              <view class="profile-pending-review-item" wx:for="{{currentStatsPanel.items}}" wx:key="pendingKey">
+                <view class="profile-pending-review-cover-wrap">
+                  <image wx:if="{{item.coverImage}}" class="profile-pending-review-cover" src="{{item.coverImage}}" mode="aspectFill"></image>
+                  <view wx:else class="profile-pending-review-cover profile-pending-review-cover-text">评</view>
+                </view>
+                <view class="profile-pending-review-copy">
+                  <view class="profile-pending-review-theme">{{item.themeName}}</view>
+                  <view class="profile-pending-review-meta">
+                    <text wx:if="{{item.horror}}">{{item.horror}}</text>
+                    <text wx:if="{{item.horror && item.difficulty}}"> · </text>
+                    <text wx:if="{{item.difficulty}}">{{item.difficulty}}</text>
+                    <text wx:if="{{item.playedAtText}}"> · {{item.playedAtText}}</text>
+                  </view>
+                  <view class="profile-pending-review-session">{{item.sessionLabel}}</view>
+                </view>
+                <view
+                  class="button-primary profile-pending-review-btn"
+                  data-theme-id="{{item.themeId}}"
+                  data-session-id="{{item.sessionId}}"
+                  bindtap="goPendingReview"
+                >
+                  去评价
+                </view>
+              </view>
+            </block>
+            <view wx:else class="overlay-empty">现在没有待评价了，右上角可以看你写过的评价。</view>
+          </view>
+        </block>
+        <block wx:elif="{{currentStatsPanel.type === 'myReviews'}}">
+          <view class="profile-stats-record-list">
+            <block wx:if="{{currentStatsPanel.items.length}}">
+              <view class="profile-pending-review-item profile-my-review-item" wx:for="{{currentStatsPanel.items}}" wx:key="reviewKey">
+                <view class="profile-pending-review-cover-wrap">
+                  <image wx:if="{{item.coverImage}}" class="profile-pending-review-cover" src="{{item.coverImage}}" mode="aspectFill"></image>
+                  <view wx:else class="profile-pending-review-cover profile-pending-review-cover-text">评</view>
+                </view>
+                <view class="profile-pending-review-copy">
+                  <view class="profile-pending-review-theme">{{item.themeName}}</view>
+                  <view class="profile-pending-review-meta">
+                    <text>{{item.createdAtText}}</text>
+                  </view>
+                  <view class="profile-my-review-content">{{item.content}}</view>
+                </view>
+                <view
+                  wx:if="{{item.canDelete}}"
+                  class="profile-my-review-delete"
+                  data-review-id="{{item.reviewId}}"
+                  bindtap="openDeleteMyReview"
+                >
+                  删除
+                </view>
+              </view>
+            </block>
+            <view wx:else class="overlay-empty">你还没留下评价。</view>
+          </view>
+        </block>
+        <block wx:elif="{{currentStatsPanel.type === 'reputation'}}">
+          <view class="profile-reputation-hero">
+            <view class="profile-reputation-score">{{currentStatsPanel.score}}</view>
+            <view class="profile-reputation-hero-row">
+              <view class="profile-reputation-tier">{{currentStatsPanel.tierLabel}}</view>
+              <view class="profile-reputation-recovery-pill">{{currentStatsPanel.tomorrowRecoveryText}}</view>
+            </view>
+          </view>
+          <view class="profile-reputation-list profile-reputation-grid">
+            <view class="profile-reputation-item" wx:for="{{currentStatsPanel.items}}" wx:key="label">
+              <view class="profile-reputation-row">
+                <view class="profile-reputation-label">{{item.label}}</view>
+                <view class="profile-reputation-value">{{item.value}}</view>
+              </view>
+              <view class="profile-reputation-note">{{item.note}}</view>
+            </view>
+          </view>
+        </block>
+        <block wx:elif="{{currentStatsPanel.type === 'growth'}}">
+          <view class="profile-growth-hero">
+            <view class="profile-growth-score">{{currentStatsPanel.score}}</view>
+            <view class="profile-growth-tier">{{profile.level}}</view>
+            <view class="profile-growth-progress">
+              <view class="profile-growth-progress-fill" style="width: {{currentStatsPanel.progressPercent}}%;"></view>
+            </view>
+            <view class="profile-growth-hint">
+              {{currentStatsPanel.nextLevelName ? ('距离 ' + currentStatsPanel.nextLevelName + ' 还差 ' + currentStatsPanel.remainingGrowth + ' 成长值') : '当前已达到最高等级'}}
+            </view>
+          </view>
+          <view class="profile-growth-list">
+            <view class="profile-reputation-item" wx:for="{{currentStatsPanel.items}}" wx:key="label">
+              <view class="profile-reputation-row">
+                <view class="profile-reputation-label">{{item.label}}</view>
+                <view class="profile-reputation-value">{{item.value}}</view>
+              </view>
+              <view class="profile-reputation-note">{{item.note}}</view>
+            </view>
+          </view>
+        </block>
+        <block wx:elif="{{currentStatsPanel.type === 'levelBenefits'}}">
+          <view class="profile-level-hero">
+            <view class="profile-level-name">{{currentStatsPanel.levelName}}</view>
+            <view class="profile-level-hint">当前称号可享权益</view>
+          </view>
+          <view class="profile-level-benefit-list">
+            <view class="profile-level-benefit-item" wx:for="{{currentStatsPanel.items}}" wx:key="label">
+              <view class="profile-level-benefit-dot"></view>
+              <view class="profile-level-benefit-copy">
+                <view class="profile-level-benefit-title">{{item.label}}</view>
+                <view class="profile-level-benefit-note">{{item.note}}</view>
+              </view>
+            </view>
+          </view>
+        </block>
+        <view wx:else class="overlay-empty">这里暂时还没有内容。</view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <view wx:if="{{selectedBadge}}" class="badge-detail-mask" bindtap="closeBadgeDetail">
+    <view class="badge-detail-card" catchtap="noop">
+      <view class="badge-detail-kicker">{{selectedBadge.detailKicker}}</view>
+      <view class="badge-detail-medal {{selectedBadge.detailMedalClass}}">
+        <view class="badge-detail-medal-inner">{{selectedBadge.detailMedalText}}</view>
+      </view>
+      <view class="badge-detail-name">{{selectedBadge.name}}</view>
+      <view class="badge-detail-desc">{{selectedBadge.displayDescription}}</view>
+      <view class="button-primary badge-detail-btn" bindtap="closeBadgeDetail">关闭</view>
+    </view>
+  </view>
+
+  <view wx:if="{{reviewDeleteDialogVisible}}" class="badge-detail-mask" bindtap="closeReviewDeleteDialog">
+    <view class="badge-detail-card profile-review-delete-card" catchtap="noop">
+      <view class="badge-detail-kicker">我的评价</view>
+      <view class="badge-detail-name">删除评价</view>
+      <view class="badge-detail-desc">删除后，这条评价会从主题页和我的评价里移除。</view>
+      <view class="profile-review-delete-actions">
+        <view class="button-secondary profile-review-delete-btn" bindtap="closeReviewDeleteDialog">取消</view>
+        <view class="button-primary profile-review-delete-btn profile-review-delete-btn-danger" bindtap="confirmDeleteMyReview">
+          {{reviewDeleteSubmitting ? '删除中...' : '确认删除'}}
+        </view>
+      </view>
     </view>
   </view>
 </view>

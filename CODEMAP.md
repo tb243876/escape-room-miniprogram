@@ -2,270 +2,167 @@
 
 本文件用于减少每次进入项目时的全仓扫描成本。
 
-使用方式：
+## 1. 建议阅读顺序
 
-1. 先读 `PROJECT_CONTEXT.md`
-2. 再读 `CURRENT_STATUS.md`
-3. 再读 `IMPACT_MAP.md`
-4. 再读本文件，定位需求对应的代码入口
-5. 只继续阅读目标页面目录和相关 service / domain 文件
+1. `CHANGELOG.md`
+2. `PROJECT_CONTEXT.md`
+3. `AGENT_WORKFLOW.md`
+4. `STATE_MACHINE.md`
+5. `ERROR_CODES.md`
+6. `DB_SCHEMA.md`
+7. 本文件
 
----
-
-## 一、项目总入口
+## 2. 顶层入口
 
 - 小程序入口：`app.js`
-- 页面注册与 tab 配置：`app.json`
+- 环境路由：`utils/platform/env-config.js`
+- 页面注册：`app.json`
 - 工程配置：`project.config.json`
 - 服务编排总入口：`utils/cloudbase.js`
-- 长期上下文：`PROJECT_CONTEXT.md`
-- 当前状态：`CURRENT_STATUS.md`
-- 影响图与回归闭环：`IMPACT_MAP.md`
-- 架构边界：`ARCHITECTURE.md`
-
----
-
-## 二、页面功能到文件映射
-
-### 1. 首页
-
-- 页面目录：`pages/home/`
-- 主要文件：
-  - `pages/home/index.js`
-  - `pages/home/view-model.js`
-- 主要依赖：
-  - `utils/cloudbase.js`
-  - `utils/domain/theme.js`
-
-### 2. 主题列表
-
-- 页面目录：`pages/themes/`
-- 主要文件：
-  - `pages/themes/index.js`
-  - `pages/themes/view-model.js`
-- 主要依赖：
-  - `utils/cloudbase.js`
-  - `utils/domain/theme.js`
-
-### 3. 主题详情
-
-- 页面目录：`pages/theme-detail/`
-- 主要文件：
-  - `pages/theme-detail/index.js`
-  - `pages/theme-detail/view-model.js`
-- 主要依赖：
-  - `utils/cloudbase.js`
-  - `utils/domain/theme.js`
-
-### 4. 活动页
-
-- 页面目录：`pages/activities/`
-- 主要文件：
-  - `pages/activities/index.js`
-  - `pages/activities/view-model.js`
-- 主要依赖：
-  - `utils/cloudbase.js`
-  - `utils/domain/theme.js`
-
-### 5. 组局大厅
-
-- 页面目录：`pages/lobby/`
-- 主要文件：
-  - `pages/lobby/index.js`
-  - `pages/lobby/view-model.js`
-- 相关页面：
-  - `pages/lobby-create/`
-  - `pages/team-room/`
-- 主要依赖：
-  - `utils/cloudbase.js`
-  - `utils/domain/group.js`
-  - `utils/domain/team-room.js`
-
-### 6. 发起组局
-
-- 页面目录：`pages/lobby-create/`
-- 主要文件：
-  - `pages/lobby-create/index.js`
-  - `pages/lobby-create/view-model.js`
-- 主要依赖：
-  - `utils/cloudbase.js`
-  - `utils/domain/group.js`
-
-### 7. 队伍房间
-
-- 页面目录：`pages/team-room/`
-- 主要文件：
-  - `pages/team-room/index.js`
-  - `pages/team-room/view-model.js`
-- 主要依赖：
-  - `utils/cloudbase.js`
-  - `utils/domain/team-room.js`
-  - `utils/domain/group.js`
-  - `utils/domain/profile.js`
-
-### 8. 排行榜
-
-- 页面目录：`pages/leaderboard/`
-- 主要文件：
-  - `pages/leaderboard/index.js`
-  - `pages/leaderboard/view-model.js`
-- 主要依赖：
-  - `utils/cloudbase.js`
-  - `utils/domain/leaderboard.js`
-
-### 9. 我的页
-
-- 页面目录：`pages/profile/`
-- 主要文件：
-  - `pages/profile/index.js`
-  - `pages/profile/view-model.js`
-- 相关页面：
-  - `pages/profile-edit/`
-  - `pages/badges/`
-- 主要依赖：
-  - `utils/cloudbase.js`
-  - `utils/domain/profile.js`
-  - `utils/domain/staff.js`
-
-### 10. 徽章页
-
-- 页面目录：`pages/badges/`
-- 主要文件：
-  - `pages/badges/index.js`
-  - `pages/badges/view-model.js`
-- 主要依赖：
-  - `utils/cloudbase.js`
-  - `utils/domain/profile.js`
-
-### 11. 工作台授权
-
-- 页面目录：`pages/staff-auth-code/`
-- 主要文件：
-  - `pages/staff-auth-code/index.js`
-- 主要依赖：
-  - `utils/cloudbase.js`
-  - `utils/domain/staff.js`
-
-### 12. 工作台首页
-
-- 页面目录：`pages/staff-dashboard/`
-- 主要文件：
-  - `pages/staff-dashboard/index.js`
-  - `pages/staff-dashboard/view-model.js`
-- 主要依赖：
-  - `utils/cloudbase.js`
-  - `utils/domain/staff.js`
-
-### 13. 场次管理
-
-- 页面目录：`pages/staff-session/`
-- 主要文件：
-  - `pages/staff-session/index.js`
-  - `pages/staff-session/view-model.js`
-- 主要依赖：
-  - `utils/cloudbase.js`
-  - `utils/domain/staff.js`
-  - `utils/domain/profile.js`
-
-### 14. 集锦页
-
-- 页面目录：`pages/staff-highlights/`
-- 主要文件：
-  - `pages/staff-highlights/index.js`
-- 主要依赖：
-  - `utils/cloudbase.js`
-  - `utils/domain/staff.js`
-
----
-
-## 三、公共层代码地图
-
-### 1. 服务编排层
-
-- `utils/cloudbase.js`
-  - 页面统一调用入口
-  - 聚合 mock、本地缓存、CloudBase、领域规则
-
-### 2. 平台层
-
-- `utils/platform/runtime.js`
-  - 运行模式
-  - app 全局配置读取
-  - CloudBase 调用
-- `utils/platform/storage.js`
-  - 本地缓存读写
-  - 业务缓存清理
-- `utils/platform/perf.js`
-  - 性能追踪和调试日志
-
-### 3. 领域层
-
-- `utils/domain/theme.js`
-  - 主题展示整理
-  - 恐怖星级兜底
-  - 活动展示整理
-- `utils/domain/profile.js`
-  - 档案归一化
-  - 徽章、成长值、称号整理
-- `utils/domain/group.js`
-  - 组局列表归一化
-  - 发起 / 加入 / 取消 / 删除相关规则
-- `utils/domain/team-room.js`
-  - 队伍房间展示结构
-  - 房间时间轴和成员卡片数据整理
-- `utils/domain/staff.js`
-  - 工作台授权
-  - 员工角色
-  - 场次状态和操作映射
-- `utils/domain/leaderboard.js`
-  - 排行榜字段整理
-
----
-
-## 四、云函数地图
-
 - 云函数目录：`cloudfunctions/`
-- 当前已落地：
+
+## 3. 业务链路到代码入口
+
+### 3.1 内容浏览链路
+
+- 首页：`pages/home/`
+- 主题列表：`pages/themes/`
+- 主题详情：`pages/theme-detail/`
+- 活动页：`pages/activities/`
+- 领域模块：`utils/domain/theme.js`
+
+### 3.2 组局与房间链路
+
+- 大厅：`pages/lobby/`
+- 发起组局：`pages/lobby-create/`
+- 队伍房间：`pages/team-room/`
+- 前端领域模块：
+  - `utils/domain/group.js`
+  - `utils/domain/team-room.js`
+- 云端领域模块：
+  - `cloudfunctions/groupManage/index.js`
+  - `cloudfunctions/groupManage/group-domain.js`
+
+### 3.3 玩家资料与排行榜链路
+
+- 我的页：`pages/profile/`
+- 资料编辑：`packages/profile/edit/`
+- 徽章页：`packages/profile/badges/`
+- 排行榜：`pages/leaderboard/`
+- 前端领域模块：
+  - `utils/domain/profile.js`
+  - `utils/domain/leaderboard.js`
+- 云端模块：
   - `cloudfunctions/getProfile/`
   - `cloudfunctions/updateProfile/`
-- 阅读顺序建议：
-  - `cloudfunctions/README.md`
-  - `cloudfunctions/ARCHITECTURE.md`
-  - 具体云函数目录下的 `index.js`
-  - 同目录领域模块
+  - `cloudfunctions/getLeaderboard/`
 
----
+### 3.4 工作台与场次链路
 
-## 五、测试与回归入口
+- 工作台授权：`packages/staff/auth-code/`
+- 工作台首页：`packages/staff/dashboard/`
+- 员工列表：`packages/staff/users/`
+- 场次列表：`packages/staff/sessions/`
+- 场次详情：`packages/staff/session/`
+- 集锦管理：`packages/staff/highlights/`
+- 门店管理：`packages/staff/store/`
+- 前端领域模块：`utils/domain/staff.js`
+- 云端模块：
+  - `cloudfunctions/staffManage/index.js`
+  - `cloudfunctions/staffManage/staff-domain.js`
+  - `cloudfunctions/staffManage/profile-domain.js`
 
-- `npm run lint`
-- `npm run test:phase1`
-- `npm run test:business`
-- `npm run test:flows`
-- `npm run test:api`
-- `npm run test:perf`
-- `npm run test:ui`
-- `npm run test:ui:player`
-- `npm run test:ui:staff`
-- `npm run test:ui:session`
-- `npm run test:regression`
+## 4. 云函数地图
 
----
+当前物理云函数分两层理解：
 
-## 六、以后提需求时建议这样描述
+- 物理函数：真正部署到 CloudBase 的目录
+- 逻辑接口：通过 `action` 或动作参数暴露的业务能力
 
-示例一：
+### 4.1 物理函数总表
 
-`先读 PROJECT_CONTEXT.md、CODEMAP.md。这次只看 pages/lobby、pages/team-room、utils/domain/group.js。问题是大厅已取消队伍还在公共列表显示。`
+| 物理函数 | 主要逻辑接口 | 主要调用方 | 主要写集合 |
+| --- | --- | --- | --- |
+| `getProfile` | 当前用户档案、批量成员档案 | `pages/profile`、`pages/team-room`、工作台成员资料 | `profiles` |
+| `updateProfile` | 更新头像/昵称/签名/性别 | `packages/profile/edit` | `profiles` |
+| `groupManage` | `listGroups/createGroup/joinGroup/cancelActiveGroup/deleteGroupRecord/getTeamRoom` | `pages/lobby`、`pages/lobby-create`、`pages/team-room` | `groups`、`profiles` |
+| `staffManage` | `redeemAuthCode/getDashboard/getSession/toggleSessionMember/runSessionAction/getHighlights/saveHighlights/...` | 所有 `packages/staff/*` 页面 | `staff_bindings`、`staff_auth_codes`、`staff_sessions`、`staff_highlights`、`groups`、`profiles` |
+| `getLeaderboard` | 排行榜聚合读取 | `pages/leaderboard` | 无直接写入 |
+| `initData` | 测试数据初始化 | 开发/测试工具 | 多个测试集合 |
+| `runtimeReset` | 测试环境重置 | 开发/测试工具 | 多个测试集合 |
+| `clearData` | 维护清理 | 脚本工具 | 多个测试集合 |
 
-示例二：
+### 4.2 契约标准入口
 
-`先读 CURRENT_STATUS.md、CODEMAP.md。这次只看 pages/profile、pages/profile-edit、utils/domain/profile.js。我想继续做资料编辑链路。`
+- 云函数统一返回、入参/出参、错误码基线：`cloudfunctions/README.md`
+- 状态流转：`STATE_MACHINE.md`
+- 错误码：`ERROR_CODES.md`
+- 集合结构与索引：`DB_SCHEMA.md`
 
----
+### 4.3 当前关键事实
 
-## 七、维护要求
+- 组局并没有拆成独立的 `createGroup/joinGroup/cancelGroup` 物理函数，当前统一收敛在 `groupManage.action`
+- 场次开始/结束也不是独立物理函数，当前统一收敛在 `staffManage.action='runSessionAction'` + `actionKey='start'|'end'`
+- 当前没有独立“排行榜写入云函数”；排行榜通过 `getLeaderboard` 从 `profiles` 聚合读取，正式结算写入发生在 `staffManage` 的结束场次链路
+
+## 5. 回归脚本入口
+
+| 命令 | 覆盖内容 |
+| --- | --- |
+| `npm run lint` | JS 静态检查 |
+| `npm run test:phase1` | 核心页面/文档/模块存在性 |
+| `npm run test:business` | 业务规则、环境路由、状态推进 |
+| `npm run test:ui` | UI 总冒烟 |
+| `npm run test:ui:player` | 玩家 UI 链路 |
+| `npm run test:ui:staff` | 员工 UI 链路 |
+| `npm run test:ui:session` | 场次 UI 链路 |
+| `npm run test:ui:online` | 真实云测试链路 |
+| `npm run test:regression` | 串行全量回归 |
+
+补充说明：
+
+- 已移除依赖本地 mock / 假玩家样本的离线脚本，当前仓库不再维护“人机数据”回归通道。
+
+## 6. 分包策略
+
+当前状态：
+
+- 当前分包已真实落地到 `app.json`
+- 工作台页和档案扩展页已物理迁移到 `packages/` 目录
+
+主包：
+
+- `pages/home/index`
+- `pages/lobby/index`
+- `pages/lobby-create/index`
+- `pages/team-room/index`
+- `pages/activities/index`
+- `pages/themes/index`
+- `pages/theme-detail/index`
+- `pages/profile/index`
+- `pages/leaderboard/index`
+
+当前已落地分包：
+
+- 玩家扩展分包：
+  - `packages/profile/edit/index`
+  - `packages/profile/badges/index`
+- 工作台分包：
+  - `packages/staff/auth-code/index`
+  - `packages/staff/dashboard/index`
+  - `packages/staff/users/index`
+  - `packages/staff/sessions/index`
+  - `packages/staff/store/index`
+  - `packages/staff/session/index`
+  - `packages/staff/highlights/index`
+
+### 维护要求
+
+1. 新增工作台或档案扩展页时，默认优先进入已有分包，不要重新塞回主包
+2. 变更分包页面路径后，必须同步回归所有 `navigateTo/reLaunch/switchTab`
+
+## 7. 维护要求
 
 1. 新增页面后，要把页面目录和主要依赖补到本文件
-2. 新增公共模块后，要把职责补到本文件
-3. 如果某个功能主链路发生迁移，要更新本文件，不要继续沿用旧入口
+2. 新增云函数或新增 `action` 后，要把契约和调用方补到本文件
+3. 状态、错误码、集合结构变更时，要同步更新对应权威文档

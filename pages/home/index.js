@@ -14,6 +14,8 @@ Page({
     isLoading: false,
     errorText: '',
     hasLoaded: false,
+    emptyStateTitle: '',
+    emptyStateText: '',
   },
   allThemes: [],
 
@@ -40,6 +42,7 @@ Page({
     try {
       await perf.traceAsync('home.loadHomeData', async (trace) => {
         const data = await service.getHomeData();
+        const hasThemeGroups = Boolean(data.themeGroups && data.themeGroups.length);
         console.info('[home] loadHomeData.service.success', {
           themeGroupCount: ((data && data.themeGroups) || []).length,
           heroTitle: data && data.hero ? data.hero.title : '',
@@ -52,6 +55,8 @@ Page({
           searchingThemes: [],
           isLoading: false,
           hasLoaded: true,
+          emptyStateTitle: hasThemeGroups ? '' : '暂无主题数据',
+          emptyStateText: hasThemeGroups ? '' : '当前环境未配置首页数据，请联系管理员处理',
         });
         perf.stepTrace(trace, 'setData');
       });
@@ -63,9 +68,11 @@ Page({
       });
       this.setData({
         isLoading: false,
-        errorText: '首页加载失败，请检查网络或云开发配置后重试',
+        errorText: '首页加载失败，请检查网络后重试',
         themeGroups: [],
         hasLoaded: false,
+        emptyStateTitle: '',
+        emptyStateText: '',
       });
       wx.showToast({
         title: '首页加载失败',
@@ -111,18 +118,6 @@ Page({
   openTheme(event) {
     const { id } = event.currentTarget.dataset;
     wx.navigateTo({ url: `/pages/theme-detail/index?id=${id}` });
-  },
-
-  goActivities() {
-    wx.switchTab({ url: '/pages/activities/index' });
-  },
-
-  goLobby() {
-    wx.switchTab({ url: '/pages/lobby/index' });
-  },
-
-  goProfile() {
-    wx.switchTab({ url: '/pages/profile/index' });
   },
 
   retryLoad() {

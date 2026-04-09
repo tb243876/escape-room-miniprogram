@@ -1,0 +1,317 @@
+.store-hero {
+  padding: 28rpx;
+  background:
+    linear-gradient(160deg, rgba(82, 58, 42, 0.1), rgba(82, 58, 42, 0)),
+    radial-gradient(circle at top right, rgba(255, 236, 205, 0.22), transparent 34%),
+    linear-gradient(135deg, #53392e, #745246 58%, #cb9b70);
+  color: var(--cream-primary);
+}
+
+.store-kicker {
+  font-size: 22rpx;
+  letter-spacing: 4rpx;
+  opacity: 0.78;
+}
+
+.store-title {
+  margin-top: 18rpx;
+  font-size: 38rpx;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.store-subtitle {
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  line-height: 1.8;
+  color: var(--cream-muted);
+}
+
+.store-card {
+  margin-top: 18rpx;
+  padding: 20rpx;
+  background:
+    radial-gradient(circle at top right, rgba(255, 232, 202, 0.18), transparent 30%),
+    linear-gradient(180deg, rgba(255, 249, 241, 0.98), rgba(246, 234, 218, 0.98));
+  border: 1rpx solid rgba(141, 98, 60, 0.08);
+}
+
+.section-title-inline {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #7b4a31;
+}
+
+.store-summary {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+.store-tip {
+  margin-top: 14rpx;
+  font-size: 22rpx;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.store-empty-tip {
+  margin-top: 16rpx;
+  padding: 18rpx 20rpx;
+  border-radius: 18rpx;
+  background: rgba(158, 61, 34, 0.08);
+  border: 1rpx dashed rgba(141, 98, 60, 0.16);
+  font-size: 22rpx;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.auth-code-action-row {
+  margin-top: 16rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.auth-code-action-chip,
+.staff-roster-action,
+.staff-transfer-btn {
+  min-height: 58rpx;
+  padding: 0 20rpx;
+  border-radius: 999rpx;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20rpx;
+  font-weight: 700;
+  box-sizing: border-box;
+}
+
+.auth-code-action-chip,
+.staff-transfer-btn {
+  background: linear-gradient(135deg, var(--red-deep), var(--red-primary) 58%, #c99462);
+  color: var(--cream-primary);
+}
+
+.staff-roster-action {
+  background: rgba(158, 61, 34, 0.1);
+  color: var(--red-deep);
+}
+
+.auth-code-list,
+.staff-roster-list,
+.staff-transfer-list {
+  margin-top: 16rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.auth-code-item,
+.staff-roster-item,
+.staff-transfer-item {
+  padding: 16rpx 18rpx;
+  border-radius: 18rpx;
+  background: rgba(255, 255, 255, 0.74);
+  border: 1rpx solid rgba(141, 98, 60, 0.08);
+}
+
+.auth-code-item-head,
+.staff-roster-item,
+.staff-transfer-item,
+.staff-roster-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12rpx;
+}
+
+.auth-code-item-head-side {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.auth-code-item-code {
+  font-size: 28rpx;
+  font-weight: 700;
+  letter-spacing: 4rpx;
+  color: #7b4a31;
+}
+
+.auth-code-item-role,
+.staff-roster-role,
+.staff-roster-self {
+  padding: 4rpx 10rpx;
+  border-radius: 999rpx;
+  font-size: 18rpx;
+  font-weight: 700;
+}
+
+.auth-code-item-status {
+  padding: 4rpx 10rpx;
+  border-radius: 999rpx;
+  font-size: 18rpx;
+  font-weight: 700;
+}
+
+.auth-code-item-role,
+.staff-roster-role {
+  background: rgba(158, 61, 34, 0.1);
+  color: var(--red-deep);
+}
+
+.staff-roster-self {
+  background: rgba(78, 122, 82, 0.12);
+  color: #4c7a52;
+}
+
+.auth-code-item-meta,
+.staff-roster-meta,
+.staff-transfer-meta {
+  margin-top: 8rpx;
+  font-size: 20rpx;
+  color: var(--text-secondary);
+}
+
+.store-more-btn {
+  min-height: 64rpx;
+  margin-top: 4rpx;
+  border-radius: 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(158, 61, 34, 0.08);
+  border: 1rpx dashed rgba(141, 98, 60, 0.16);
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #7b4a31;
+}
+
+.staff-roster-signature {
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.staff-roster-main {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+
+.staff-roster-main:active {
+  opacity: 0.78;
+}
+
+.staff-roster-avatar {
+  width: 62rpx;
+  height: 62rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: block;
+}
+
+.staff-roster-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--red-deep), #c99462);
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.staff-roster-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.staff-roster-name,
+.staff-transfer-name {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #7b4a31;
+}
+
+.store-dialog-actions {
+  margin-top: 24rpx;
+}
+
+.store-dialog-btn {
+  min-height: 76rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.store-dialog-btn-secondary {
+  background: rgba(158, 61, 34, 0.1);
+  color: var(--red-deep);
+}
+
+.store-dialog-btn-primary {
+  background: linear-gradient(135deg, var(--red-deep), var(--red-primary) 58%, #c99462);
+  color: var(--cream-primary);
+}
+
+.store-dialog-single {
+  width: auto;
+  min-width: 188rpx;
+  align-self: center;
+  margin-top: 18rpx;
+  padding: 14rpx 30rpx;
+  font-size: 22rpx;
+}
+
+.room-dialog {
+  max-height: calc(100vh - 160rpx);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.store-dialog-scroll {
+  flex: 1;
+  min-height: 0;
+}
+
+.auth-code-modal-kicker {
+  font-size: 22rpx;
+  letter-spacing: 4rpx;
+  color: rgba(123, 74, 49, 0.72);
+  text-align: center;
+}
+
+.auth-code-modal-title {
+  margin-top: 14rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #7b4a31;
+  text-align: center;
+}
+
+.auth-code-modal-desc {
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.auth-code-modal-box {
+  margin-top: 24rpx;
+  padding: 26rpx 22rpx;
+  border-radius: 24rpx;
+  background:
+    linear-gradient(160deg, rgba(255, 248, 239, 0.98), rgba(248, 235, 219, 0.98));
+  border: 1rpx dashed rgba(141, 98, 60, 0.24);
+  font-size: 40rpx;
+  font-weight: 700;
+  letter-spacing: 8rpx;
+  color: #7b4a31;
+  text-align: center;
+}

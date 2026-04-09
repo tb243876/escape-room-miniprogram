@@ -1,6 +1,6 @@
 <view class="screen">
 <view wx:if="{{errorText}}" class="card status-card">
-  <view class="status-title">主题页加载失败</view>
+  <view class="status-title">主题加载失败</view>
   <view class="status-text">{{errorText}}</view>
   <view class="button-primary status-action" bindtap="retryLoad">重新加载</view>
 </view>
@@ -10,9 +10,14 @@
     <image class="banner-image" src="{{theme.coverImage}}" mode="aspectFill"></image>
     <view class="banner-overlay"></view>
     <view class="banner-kicker">主题详情</view>
-    <view class="banner-stamp">主题介绍</view>
+    <view class="banner-stamp">沉浸式档案</view>
     <view class="banner-title">{{theme.name}}</view>
     <view class="banner-subtitle">{{theme.slogan}}</view>
+    <view wx:if="{{theme.horror || theme.people || theme.duration}}" class="banner-tags">
+      <view wx:if="{{theme.horror}}" class="banner-tag">{{theme.horror}}</view>
+      <view wx:if="{{theme.people}}" class="banner-tag">{{theme.people}}</view>
+      <view wx:if="{{theme.duration}}" class="banner-tag">{{theme.duration}}</view>
+    </view>
   </view>
 
   <view class="panel dossier-panel">
@@ -51,35 +56,96 @@
     </view>
   </view>
 
-  <view class="panel narrative-panel">
-    <view class="content-kicker">剧情介绍</view>
-    <view class="content-title">故事背景</view>
-    <view class="content-text">{{theme.story}}</view>
-  </view>
-
-  <view class="panel guide-panel">
-    <view class="content-kicker">游玩建议</view>
-    <view class="content-title">适合什么样的玩家</view>
-    <view class="guide-line" wx:for="{{theme.highlights}}" wx:key="*this">
-      <view class="guide-dot"></view>
-      <view class="guide-text">{{item}}</view>
+  <view class="panel narrative-panel detail-accordion-panel">
+    <view class="detail-accordion-head" data-key="story" bindtap="toggleDetailSection">
+      <view>
+        <view class="content-kicker">剧情介绍</view>
+        <view class="content-title">故事背景</view>
+      </view>
+      <view class="detail-accordion-toggle">{{activeDetailSection === 'story' ? '收起' : '展开'}}</view>
+    </view>
+    <view wx:if="{{activeDetailSection === 'story'}}" class="detail-accordion-body">
+      <view class="content-text">{{theme.story}}</view>
     </view>
   </view>
 
-  <view class="panel review-panel">
-    <view class="content-kicker">现场反馈</view>
-    <view class="content-title">玩家评价</view>
-    <view class="quote" wx:for="{{theme.reviews}}" wx:key="*this">{{item}}</view>
+  <view class="panel guide-panel detail-accordion-panel">
+    <view class="detail-accordion-head" data-key="guide" bindtap="toggleDetailSection">
+      <view>
+        <view class="content-kicker">游玩建议</view>
+        <view class="content-title">适合什么样的玩家</view>
+      </view>
+      <view class="detail-accordion-toggle">{{activeDetailSection === 'guide' ? '收起' : '展开'}}</view>
+    </view>
+    <view wx:if="{{activeDetailSection === 'guide'}}" class="detail-accordion-body">
+      <view class="guide-line" wx:for="{{theme.highlights}}" wx:key="*this">
+        <view class="guide-dot"></view>
+        <view class="guide-text">{{item}}</view>
+      </view>
+    </view>
   </view>
 
-  <view class="action-row actions-split">
-    <view class="button-secondary" bindtap="contactStore">联系门店</view>
-    <view class="button-primary" bindtap="goGroup">去发起组局</view>
+  <view class="panel review-panel detail-accordion-panel">
+    <view class="detail-accordion-head" data-key="reviews" bindtap="toggleDetailSection">
+      <view>
+        <view class="content-kicker">现场反馈</view>
+        <view class="content-title">玩家评价 {{reviewStats.totalCount}}</view>
+      </view>
+      <view class="detail-accordion-toggle">{{activeDetailSection === 'reviews' ? '收起' : '展开'}}</view>
+    </view>
+    <view wx:if="{{activeDetailSection === 'reviews'}}" class="detail-accordion-body">
+      <view class="review-summary-card">
+        <view class="review-summary-item">
+          <view class="review-summary-value">{{reviewStats.totalCount}}</view>
+          <view class="review-summary-label">评价数</view>
+        </view>
+        <view class="review-summary-item">
+          <view class="review-summary-value">{{reviewStats.avgScore}}</view>
+          <view class="review-summary-label">综合评分</view>
+        </view>
+        <view class="review-summary-item">
+          <view class="review-summary-value">{{reviewStats.positiveRate}}%</view>
+          <view class="review-summary-label">推荐率</view>
+        </view>
+      </view>
+
+      <view class="review-highlight-box">
+        <view class="review-highlight-head" bindtap="toggleReviewHighlights">
+          <view>
+            <view class="review-subtitle">精选评价</view>
+            <view class="review-subdesc">先看看大家最常提到的真实感受。</view>
+          </view>
+          <view class="detail-accordion-toggle">{{reviewHighlightsExpanded ? '收起' : '展开'}}</view>
+        </view>
+        <view wx:if="{{reviewHighlightsExpanded}}" class="review-highlight-list">
+          <view wx:if="{{theme.reviewHighlights.length}}">
+            <view class="review-highlight-item" wx:for="{{theme.reviewHighlights}}" wx:for-item="highlight" wx:key="reviewId">
+              <view class="review-highlight-meta">
+                <text class="review-highlight-name">{{highlight.authorNicknameSnapshot || '匿名玩家'}}</text>
+                <text>{{highlight.authorRoleLabel}}</text>
+                <text>{{highlight.rating}} 分</text>
+              </view>
+              <view class="review-highlight-content">{{highlight.content}}</view>
+            </view>
+          </view>
+          <view wx:else class="empty-text review-empty-text">还没有精选评价。</view>
+        </view>
+      </view>
+
+      <view class="review-page-entry-row">
+        <view class="button-primary review-page-entry-btn" bindtap="openThemeReviews">查看全部评价</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="action-row">
+    <view class="button-primary" bindtap="goGroup">发起队伍</view>
   </view>
 </view>
+
 <view wx:else class="card status-card">
-  <view class="status-title">暂无主题数据</view>
-  <view class="status-text">当前还没有可展示的主题详情，请返回重试。</view>
+  <view class="status-title">暂时无法查看主题</view>
+  <view class="status-text">这个主题暂时无法查看，请稍后再试。</view>
 </view>
 
 <view wx:if="{{dialogVisible}}" class="detail-mask modal-mask-center" bindtap="closeDialog">

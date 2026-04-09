@@ -1,6 +1,5 @@
 'use strict';
 
-const mockData = require('../../mock/data');
 const profileService = require('./profile');
 
 function normalizeLeaderboardItem(item = {}, index) {
@@ -14,6 +13,7 @@ function normalizeLeaderboardItem(item = {}, index) {
     ? {
         nickname,
         avatarUrl: item.avatarUrl || '',
+        avatarFileId: item.avatarFileId || '',
         avatarText: item.avatarText || String(nickname).slice(0, 1),
         signature: item.signature || '这位玩家还没有公开更多档案信息。',
         genderText: item.genderText || '未设置',
@@ -22,15 +22,17 @@ function normalizeLeaderboardItem(item = {}, index) {
         totalPlayCount: playedCount,
         badgeCount,
         growthValue,
-        summaryText: item.summaryText || `已玩 ${playedCount} 场 · 徽章 ${badgeCount} 枚 · 连续活跃 ${streakDays} 天`,
+        summaryText:
+          item.summaryText || `已玩 ${playedCount} 场 · 徽章 ${badgeCount} 枚 · 连续活跃 ${streakDays} 天`,
       }
-    : buildMockProfileCard(item, rank);
+    : profileService.getPlayerCardByNickname(nickname);
 
   return {
     openId: item.openId || '',
     rank,
     nickname,
     avatarUrl: profileCard.avatarUrl || '',
+    avatarFileId: profileCard.avatarFileId || item.avatarFileId || '',
     avatarText: profileCard.avatarText || String(nickname).slice(0, 1),
     growthValue,
     playedCount,
@@ -47,23 +49,6 @@ function normalizeLeaderboardItem(item = {}, index) {
   };
 }
 
-function buildMockProfileCard(item = {}, rank = 1) {
-  const nickname = item.nickname || `玩家 ${rank}`;
-  const fromMockProfile = (mockData.playerProfiles || []).find(
-    (player) => String(player.nickname || '') === String(nickname || '')
-  );
-  if (fromMockProfile) {
-    return profileService.buildPlayerCard({
-      ...fromMockProfile,
-      nickname,
-      totalPlayCount: Number(item.playedCount || fromMockProfile.totalPlayCount || 0),
-      badgeCount: Number(item.badgeCount || fromMockProfile.badgeCount || 0),
-      growthValue: Number(item.growthValue || fromMockProfile.growthValue || 0),
-    });
-  }
-  return profileService.getPlayerCardByNickname(nickname);
-}
-
 function normalizeLeaderboardList(list = []) {
   return (list || []).map(normalizeLeaderboardItem);
 }
@@ -73,11 +58,13 @@ function buildLeaderboardSummary(list = []) {
   const totalPlayers = normalizedList.length;
   const totalGrowth = normalizedList.reduce((sum, item) => sum + item.growthValue, 0);
   const totalBadges = normalizedList.reduce((sum, item) => sum + item.badgeCount, 0);
+  const totalPlayed = normalizedList.reduce((sum, item) => sum + item.playedCount, 0);
 
   return {
     totalPlayers,
     totalGrowth,
     totalBadges,
+    totalPlayed,
   };
 }
 

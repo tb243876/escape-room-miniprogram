@@ -1,8 +1,22 @@
 <view class="screen">
   <view class="hero-card leaderboard-hero">
     <view class="leaderboard-kicker">玩家排行榜</view>
-    <view class="leaderboard-title">真实结算后，成长值和徽章会自动沉淀到榜单</view>
-    <view class="leaderboard-subtitle">第一阶段先用本地演示数据跑通展示和结构，后续再接真实云端结算。</view>
+    <view class="leaderboard-title">完成主题后，成长值和徽章会自动沉淀到榜单</view>
+    <view class="leaderboard-subtitle">榜单按成长值排序，资料卡会同步展示通关记录与荣誉标签</view>
+    <view class="leaderboard-hero-tags">
+      <view class="leaderboard-hero-tag">{{activePeriod === 'month' ? '近30天榜' : '全时间总榜'}}</view>
+      <view class="leaderboard-hero-tag">点击可看玩家资料</view>
+    </view>
+  </view>
+
+  <view class="leaderboard-period-tabs">
+    <view
+      wx:for="{{periodTabs}}"
+      wx:key="key"
+      class="leaderboard-period-tab {{item.active ? 'leaderboard-period-tab-active' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="changePeriod"
+    >{{item.text}}</view>
   </view>
 
   <view wx:if="{{errorText}}" class="card status-card">
@@ -13,22 +27,18 @@
 
   <block wx:elif="{{summary}}">
     <view class="leaderboard-summary">
-      <view class="card leaderboard-summary-card">
-        <view class="leaderboard-summary-num">{{summary.totalPlayers}}</view>
-        <view class="leaderboard-summary-label">上榜玩家</view>
-      </view>
-      <view class="card leaderboard-summary-card">
-        <view class="leaderboard-summary-num">{{summary.totalGrowth}}</view>
-        <view class="leaderboard-summary-label">总成长值</view>
-      </view>
-      <view class="card leaderboard-summary-card">
-        <view class="leaderboard-summary-num">{{summary.totalBadges}}</view>
-        <view class="leaderboard-summary-label">总徽章数</view>
+      <view
+        class="card leaderboard-summary-card"
+        wx:for="{{summaryCards}}"
+        wx:key="key"
+      >
+        <view class="leaderboard-summary-num">{{item.value}}</view>
+        <view class="leaderboard-summary-label">{{item.label}}</view>
       </view>
     </view>
 
     <view class="section-title">
-      <text>榜单列表</text>
+      <text>{{activePeriod === 'month' ? '近30天排名' : '总榜排名'}}</text>
     </view>
 
     <view wx:if="{{leaderboard.length}}">
@@ -57,8 +67,8 @@
     </view>
 
     <view wx:else class="card status-card">
-      <view class="status-title">当前还没有榜单数据</view>
-      <view class="status-text">等真实结算链路接通后，这里会展示玩家排名。</view>
+      <view class="status-title">暂无榜单数据</view>
+      <view class="status-text">完成主题后会自动登榜</view>
     </view>
   </block>
 

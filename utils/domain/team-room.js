@@ -44,8 +44,10 @@ function getThemeById(themeId) {
 function normalizeHighlight(item = {}, index) {
   return {
     id: item.id || `highlight-${index}`,
-    type: item.type || 'photo',
+    type: item.type === 'video' ? 'video' : 'image',
     title: item.title || '集锦内容',
+    fileId: item.fileId || item.fileID || '',
+    previewUrl: item.previewUrl || '',
   };
 }
 
@@ -53,7 +55,7 @@ function shouldSyncRoomMembersWithGroup(room = {}) {
   return ['pending_confirm', 'ready'].includes(String(room.stage || ''));
 }
 
-function buildDynamicMembers(group = {}) {
+function buildDynamicMembers(group = {}, currentProfile = null) {
   const memberNames =
     Array.isArray(group.participantNames) && group.participantNames.length
       ? group.participantNames
@@ -61,17 +63,26 @@ function buildDynamicMembers(group = {}) {
         ? group.members
         : [group.creatorName || '发起人'].concat(group.joinedMemberNames || []);
 
-  // 获取当前用户的 openId 和 contactName
-  const currentProfile = profileService.getLocalProfile();
   const currentOpenId = String((currentProfile && currentProfile._id) || '').trim();
+  const currentNickname = String((currentProfile && currentProfile.nickname) || '').trim();
+  const creatorOpenId = String(group.creatorOpenId || '').trim();
 
   return memberNames.filter(Boolean).map((nickname) => {
-    const isCreator = nickname === (group.creatorName || '发起人');
-    // 发起人或当前用户匹配时设置 openId
-    const shouldSetOpenId = isCreator && String(group.creatorOpenId || '').trim() === currentOpenId;
+    const trimmedName = String(nickname || '').trim();
+    const isCreator = trimmedName === String(group.creatorName || '发起人').trim();
+    let openId = '';
+
+    if (isCreator && creatorOpenId) {
+      openId = creatorOpenId;
+    }
+
+    if (!openId && currentNickname && trimmedName === currentNickname) {
+      openId = currentOpenId;
+    }
+
     return {
-      openId: shouldSetOpenId ? currentOpenId : '',
-      nickname,
+      openId,
+      nickname: trimmedName,
       status: '已报名',
     };
   });
@@ -90,38 +101,21 @@ function buildProfileMap(profileList = []) {
 function extractRoomMemberOpenIds(room = {}) {
   const members = Array.isArray(room && room.members) ? room.members : [];
   return Array.from(
-    new Set(
-      members
-        .map((item) => String((item && item.openId) || '').trim())
-        .filter(Boolean)
-    )
+    new Set(members.map((item) => String((item && item.openId) || '').trim()).filter(Boolean))
   );
 }
 
 function buildMemberPlayerCard(member = {}, currentProfile = null, profileMap = {}) {
-  const openId = String(member.openId || '').trim();
-  const nickname = member.nickname || '玩家';
-  const selfOpenId = String((currentProfile && currentProfile._id) || '').trim();
-  const isSelfByOpenId = Boolean(openId) && openId === selfOpenId;
-  const isSelfByNickname =
-    !openId && currentProfile && String(currentProfile.nickname || '') === String(nickname || '');
-
-  if (isSelfByOpenId || isSelfByNickname) {
-    return profileService.buildPlayerCard({
-      ...currentProfile,
-      nickname: (currentProfile && currentProfile.nickname) || nickname,
-      avatarUrl: (currentProfile && currentProfile.avatarUrl) || '',
-    });
-  }
-
-  if (openId && profileMap[openId]) {
-    return profileService.buildPlayerCard({
-      ...profileMap[openId],
-      nickname: profileMap[openId].nickname || nickname,
-    });
-  }
-
-  return profileService.getPlayerCardByNickname(nickname, currentProfile);
+  return profileService.buildPlayerCardByIdentity(
+    {
+      openId: member.openId || '',
+      nickname: member.nickname || '玩家',
+    },
+    {
+      currentProfile,
+      profileMap,
+    }
+  );
 }
 
 function normalizeRoomItem(room = {}, options = {}) {
@@ -129,7 +123,9 @@ function normalizeRoomItem(room = {}, options = {}) {
   const members = Array.isArray(room.members) ? room.members : [];
   const highlights = Array.isArray(room.highlights) ? room.highlights : [];
   const theme = getThemeById(room.themeId);
-  const currentProfile = profileService.getLocalProfile();
+  const currentProfile =
+    options.currentProfile === undefined ? profileService.getLocalProfile() : options.currentProfile;
+  const currentOpenId = String((currentProfile && currentProfile._id) || '').trim();
   const profileMap = options.profileMap || {};
 
   return {
@@ -141,7 +137,9 @@ function normalizeRoomItem(room = {}, options = {}) {
     timeSlot: room.timeSlot || '',
     storeName: room.storeName || '迷场档案馆',
     creatorName: room.creatorName || '',
+    creatorOpenId: room.creatorOpenId || '',
     myContactName: room.myContactName || '',
+    myOpenId: room.myOpenId || currentOpenId,
     stage: room.stage || 'pending_confirm',
     stageLabel: room.stageLabel || stageInfo.label,
     stageHint: room.stageHint || '',
@@ -152,7 +150,16 @@ function normalizeRoomItem(room = {}, options = {}) {
     expectedPeople: Number(room.expectedPeople || members.length || 0),
     members: members.map((member) => {
       const nickname = member.nickname || '玩家';
-      const playerCard = buildMemberPlayerCard(member, currentProfile, profileMap);
+      const cloudPlayerCard =
+        member.playerCard && typeof member.playerCard === 'object' ? member.playerCard : null;
+      const resolvedPlayerCard = buildMemberPlayerCard(member, currentProfile, profileMap);
+      const playerCard = {
+        ...resolvedPlayerCard,
+        ...(cloudPlayerCard || {}),
+        avatarUrl:
+          String((resolvedPlayerCard && resolvedPlayerCard.avatarUrl) || '').trim() ||
+          String((cloudPlayerCard && cloudPlayerCard.avatarUrl) || '').trim(),
+      };
 
       return {
         openId: member.openId || '',
@@ -178,25 +185,30 @@ function normalizeRoomItem(room = {}, options = {}) {
 }
 
 function getLocalRooms() {
+  const currentProfile = profileService.getLocalProfile();
   const stored = storage.safeGetStorage(storage.TEAM_ROOM_STORAGE_KEY);
   const source = Array.isArray(stored) && stored.length ? stored : cloneDefaultRooms();
-  return source.map(normalizeRoomItem);
+  return source.map((item) => normalizeRoomItem(item, { currentProfile }));
 }
 
 function saveLocalRooms(rooms) {
-  const normalized = Array.isArray(rooms) ? rooms.map(normalizeRoomItem) : [];
+  const currentProfile = profileService.getLocalProfile();
+  const normalized = Array.isArray(rooms)
+    ? rooms.map((item) => normalizeRoomItem(item, { currentProfile }))
+    : [];
   storage.safeSetStorage(storage.TEAM_ROOM_STORAGE_KEY, normalized);
   return normalized;
 }
 
 function buildPreviewRoomFromGroup(group = {}, activeGroup = null) {
+  const currentProfile = profileService.getLocalProfile();
   const theme = getThemeById(group.themeId);
   const currentPeople =
     Array.isArray(group.participantNames) && group.participantNames.length
       ? group.participantNames.length
       : Math.max(1, Number(group.currentPeople || 0));
   const targetPeople = Math.max(currentPeople, Number(group.targetPeople || currentPeople));
-  const members = buildDynamicMembers(group);
+  const members = buildDynamicMembers(group, currentProfile);
 
   return normalizeRoomItem({
     roomId: `room-preview-${group.id}`,
@@ -213,8 +225,8 @@ function buildPreviewRoomFromGroup(group = {}, activeGroup = null) {
     stage: group.status === 'confirmed' ? 'ready' : 'pending_confirm',
     stageHint:
       group.status === 'confirmed'
-        ? '门店确认已完成，等待店员开始场次。'
-        : '大厅报名完成后，还需要门店确认真实到店成员。',
+        ? '门店确认已完成，等待店员开始场次'
+        : '大厅报名完成后，还需要门店确认到店成员',
     teamSize: currentPeople,
     memberCount: currentPeople,
     expectedPeople: targetPeople,
@@ -228,15 +240,16 @@ function buildPreviewRoomFromGroup(group = {}, activeGroup = null) {
         title: group.status === 'confirmed' ? '门店已确认' : '等待门店确认',
         content:
           group.status === 'confirmed'
-            ? '真实队伍已建立，等待店员开始场次。'
-            : '到店核验通过后，系统才会进入真实队伍状态。',
+            ? '队伍已确认，等待店员开始场次'
+            : '到店核验通过后，系统会更新队伍状态',
       },
     ],
     coverImage: (theme && theme.coverImage) || '',
-  });
+  }, { currentProfile });
 }
 
 function mergeRoomWithGroup(room = {}, group = {}, activeGroup = null) {
+  const currentProfile = profileService.getLocalProfile();
   if (!room || !group || !shouldSyncRoomMembersWithGroup(room)) {
     return normalizeRoomItem({
       ...room,
@@ -244,7 +257,7 @@ function mergeRoomWithGroup(room = {}, group = {}, activeGroup = null) {
         activeGroup && String(activeGroup.groupId || '') === String(room.groupId || '')
           ? activeGroup.contactName || ''
           : room.myContactName || '',
-    });
+    }, { currentProfile });
   }
 
   return normalizeRoomItem({
@@ -263,44 +276,47 @@ function mergeRoomWithGroup(room = {}, group = {}, activeGroup = null) {
         ? group.participantNames.length
         : Number(group.currentPeople || room.teamSize || 0),
     expectedPeople: Number(group.targetPeople || room.expectedPeople || 0),
-    members: buildDynamicMembers(group),
+    members: buildDynamicMembers(group, currentProfile),
     stageHint:
       group.rawStatus === 'confirmed'
         ? '门店确认已完成，等待店员开始场次。'
         : '大厅报名完成后，还需要门店确认真实到店成员。',
-  });
+  }, { currentProfile });
 }
 
 function ensureActiveMemberInRoom(room = {}, activeGroup = null) {
+  const currentProfile = profileService.getLocalProfile();
   if (!room || !activeGroup || String(activeGroup.groupId || '') !== String(room.groupId || '')) {
-    return normalizeRoomItem(room);
+    return normalizeRoomItem(room, { currentProfile });
   }
 
   const contactName = String(activeGroup.contactName || '').trim();
   if (!contactName) {
-    return normalizeRoomItem(room);
+    return normalizeRoomItem(room, { currentProfile });
   }
 
-  const currentProfile = profileService.getLocalProfile();
   const currentOpenId = String((currentProfile && currentProfile._id) || '').trim();
+  const currentNickname = String((currentProfile && currentProfile.nickname) || '').trim();
 
   const members = Array.isArray(room.members) ? room.members.slice() : [];
 
-  // 优先通过 openId 检查是否已存在
   const existsByOpenId = currentOpenId
     ? members.some((item) => String(item.openId || '').trim() === currentOpenId)
     : false;
 
-  // 通过 nickname 检查是否已存在
   const existsByNickname = members.some(
     (item) => String(item.nickname || '').trim() === contactName
   );
 
-  if (existsByOpenId || existsByNickname) {
+  const existsByProfileNickname = currentNickname
+    ? members.some((item) => String(item.nickname || '').trim() === currentNickname)
+    : false;
+
+  if (existsByOpenId || existsByNickname || existsByProfileNickname) {
     return normalizeRoomItem({
       ...room,
       myContactName: contactName,
-    });
+    }, { currentProfile });
   }
 
   const nextMembers = members.concat({
@@ -316,7 +332,7 @@ function ensureActiveMemberInRoom(room = {}, activeGroup = null) {
     memberCount: nextMembers.length,
     teamSize: nextMembers.length,
     expectedPeople: Math.max(Number(room.expectedPeople || 0), nextMembers.length),
-  });
+  }, { currentProfile });
 }
 
 function getRoomByGroupId(groupId) {
@@ -353,10 +369,10 @@ function updateRoomMembersByGroupId(groupId, members = [], nextStage = '') {
 
   const stage = String(nextStage || rooms[index].stage || '');
   const stageHintMap = {
-    pending_confirm: '大厅报名完成后，还需要门店确认真实到店成员。',
-    ready: '门店确认已完成，等待店员开始场次。',
-    playing: '场次正在进行中，玩家端会持续显示游戏状态。',
-    settled: '本场已结算完成，可查看结果并等待上传集锦。',
+    pending_confirm: '大厅报名完成后，还需要门店确认到店成员',
+    ready: '门店确认已完成，等待店员开始场次',
+    playing: '场次正在进行中',
+    settled: '本场已结算完成，可查看结果并等待上传集锦',
   };
 
   const nextRooms = rooms.slice();

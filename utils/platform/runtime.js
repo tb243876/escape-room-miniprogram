@@ -1,28 +1,45 @@
 'use strict';
 
+const dataEnv = require('./data-env');
+
 function getAppConfig() {
-  try {
-    return getApp().globalData || {};
-  } catch (error) {
-    return {};
-  }
+  return dataEnv.getAppConfig();
 }
 
 function useMock() {
   const appConfig = getAppConfig();
-  return appConfig.useMockData !== false || !wx.cloud;
+  const enabled = appConfig.useMockData === true;
+  if (!wx.cloud && enabled) {
+    console.warn('[runtime] useMock explicitly enabled while wx.cloud is unavailable');
+  }
+  return enabled;
 }
 
 function useMockGroups() {
   const appConfig = getAppConfig();
-  return appConfig.useMockGroups !== false;
+  return appConfig.useMockGroups === true;
 }
 
 function getDb() {
-  console.info('[runtime] getDb', {
-    hasWxCloud: Boolean(wx.cloud),
-  });
+  if (!wx.cloud || typeof wx.cloud.database !== 'function') {
+    console.error('[runtime] getDb unavailable', {
+      hasWxCloud: Boolean(wx.cloud),
+    });
+    throw new Error('cloud-db-unavailable');
+  }
   return wx.cloud.database();
+}
+
+function shouldLogRuntimeInfo() {
+  const appConfig = getAppConfig();
+  return appConfig.enablePerfTracing === true && appConfig.enableVerboseRuntimeLogs === true;
+}
+
+function logRuntimeInfo(message, payload) {
+  if (!shouldLogRuntimeInfo()) {
+    return;
+  }
+  console.info(message, payload);
 }
 
 async function callCloudFunction(name, data, timeout) {
@@ -32,14 +49,20 @@ async function callCloudFunction(name, data, timeout) {
     });
     throw new Error('cloud-call-unavailable');
   }
-  console.info('[runtime] callCloudFunction.start', {
+  const appConfig = getAppConfig();
+  const payload = {
+    ...(data || {}),
+    __dataEnvTag: dataEnv.getDataEnvTag(),
+    __envVersion: String(appConfig.envVersion || '').trim() || 'develop',
+  };
+  logRuntimeInfo('[runtime] callCloudFunction.start', {
     name,
-    data,
+    data: payload,
   });
 
   const callPromise = wx.cloud.callFunction({
     name,
-    data,
+    data: payload,
   });
 
   const effectiveTimeout = timeout || 15000;
@@ -48,7 +71,7 @@ async function callCloudFunction(name, data, timeout) {
   });
   const response = await Promise.race([callPromise, timeoutPromise]);
 
-  console.info('[runtime] callCloudFunction.success', {
+  logRuntimeInfo('[runtime] callCloudFunction.success', {
     name,
     result: response.result || {},
   });
@@ -68,4 +91,6 @@ module.exports = {
   getDb,
   callCloudFunction,
   delay,
+  getDataEnvTag: dataEnv.getDataEnvTag,
+  resolveCollectionName: dataEnv.resolveCollectionName,
 };

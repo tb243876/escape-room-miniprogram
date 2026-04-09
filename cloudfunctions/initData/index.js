@@ -1,127 +1,190 @@
 'use strict';
 
 const cloud = require('wx-server-sdk');
+const seedData = require('./seed-data');
+const {
+  normalizeDataEnvTag,
+  getCollectionName,
+  stripInternalId,
+  getStoreManagerBinding,
+} = require('./utils');
 
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV,
 });
 
 const db = cloud.database();
+const CONFIRM_TEXT = 'INIT_ESCAPE_ROOM_DATA';
 
-const themes = [
-  {
-    id: 'theme-tonglingren',
-    name: '瞳灵人',
-    horrorLevel: '重恐',
-    horrorStars: 5,
-    players: '5-8人',
-    duration: '90分钟',
-    slogan: '废弃的瞳灵人研究室内，藏着不为人知的秘密...',
-    coverImage: '/assets/themes/tonglingren.jpeg',
-    status: 'online',
-    sort: 1,
-  },
-  {
-    id: 'theme-wenchuan',
-    name: '文川中学',
-    horrorLevel: '中恐',
-    horrorStars: 3,
-    players: '4-6人',
-    duration: '60分钟',
-    slogan: '废弃的中学深处，隐藏着令人胆寒的秘密...',
-    coverImage: '/assets/themes/wenchuanzhongxue.jpeg',
-    status: 'online',
-    sort: 2,
-  },
-  {
-    id: 'theme-shixiong',
-    name: '尸兄',
-    horrorLevel: '微恐',
-    horrorStars: 1,
-    players: '2-4人',
-    duration: '45分钟',
-    slogan: '变异源头等你来探寻...',
-    coverImage: '/assets/themes/shixiong.jpeg',
-    status: 'online',
-    sort: 3,
-  },
-  {
-    id: 'theme-yixueyuan',
-    name: '医学院',
-    horrorLevel: '中恐',
-    horrorStars: 3,
-    players: '3-6人',
-    duration: '60分钟',
-    slogan: '废弃的医学楼里还残留着未完成的实验...',
-    coverImage: '/assets/themes/yixueyuan.jpeg',
-    status: 'online',
-    sort: 4,
-  },
-  {
-    id: 'theme-xishiren',
-    name: '西市人',
-    horrorLevel: '重恐',
-    horrorStars: 5,
-    players: '4-8人',
-    duration: '75分钟',
-    slogan: '西市开发区某个废弃工厂内...',
-    coverImage: '/assets/themes/xishiren.jpeg',
-    status: 'online',
-    sort: 5,
-  },
-  {
-    id: 'theme-jishengchong',
-    name: '寄生虫',
-    horrorLevel: '微恐',
-    horrorStars: 1,
-    players: '2-4人',
-    duration: '45分钟',
-    slogan: '研究院内的寄生虫实验正在变异...',
-    coverImage: '/assets/themes/jishengchong.jpeg',
-    status: 'online',
-    sort: 6,
-  },
-];
+function fail(errorCode, message, retryable = false, extra = {}) {
+  return {
+    ok: false,
+    errorCode,
+    message,
+    retryable,
+    ...extra,
+  };
+}
 
-const activities = [
-  {
-    id: 'activity-spring',
-    title: '春季双人队伍周',
-    subtitle: '工作日夜场队伍成功可获饮品券和主题徽章',
-    highlight: '双人组合专属福利',
-    status: 'online',
-    sort: 1,
-  },
-];
-
-exports.main = async (_event, _context) => {
-  const results = { themes: 0, activities: 0 };
-
-  for (const theme of themes) {
-    try {
-      await db.collection('themes').add({
-        data: theme,
-      });
-      results.themes++;
-    } catch (e) {
-      console.error('add theme error:', e);
+async function upsertSeedDocs(collectionName, docs = [], getDocId) {
+  let count = 0;
+  for (const item of docs) {
+    const docId = String(getDocId(item) || '').trim();
+    if (!docId) {
+      continue;
     }
+    await db
+      .collection(collectionName)
+      .doc(docId)
+      .set({
+        data: stripInternalId({
+          ...item,
+          id: item.id || docId,
+          updatedAt: new Date().toISOString(),
+        }),
+      });
+    count += 1;
+  }
+  console.info('initData upsertSeedDocs done', {
+    collectionName,
+    count,
+  });
+  return count;
+}
+
+function buildSeedTasks(dataEnvTag) {
+  const baseTasks = [
+    {
+      key: 'themes',
+      collectionName: getCollectionName('themes', dataEnvTag),
+      docs: seedData.themes,
+      getDocId: (item) => item._id || item.id,
+    },
+    {
+      key: 'activities',
+      collectionName: getCollectionName('activities', dataEnvTag),
+      docs: seedData.activities,
+      getDocId: (item) => item._id || item.id,
+    },
+  ];
+
+  // `prod` is blocked at function entry. This branch is intentionally omitted so this helper
+  // only models the executable test-environment seed plan.
+
+  return baseTasks.concat([
+    {
+      key: 'profiles',
+      collectionName: getCollectionName('profiles', dataEnvTag),
+      docs: seedData.profiles,
+      getDocId: (item) => item._id || item.id,
+    },
+    {
+      key: 'groups',
+      collectionName: getCollectionName('groups', dataEnvTag),
+      docs: seedData.groups,
+      getDocId: (item) => item._id || item.id,
+    },
+    {
+      key: 'staffAuthCodes',
+      collectionName: getCollectionName('staff_auth_codes', dataEnvTag),
+      docs: seedData.staffAuthCodes,
+      getDocId: (item) => item._id || item.id,
+    },
+    {
+      key: 'staffSessions',
+      collectionName: getCollectionName('staff_sessions', dataEnvTag),
+      docs: seedData.staffSessions,
+      getDocId: (item) => item._id || item.id,
+    },
+    {
+      key: 'staffHighlights',
+      collectionName: getCollectionName('staff_highlights', dataEnvTag),
+      docs: seedData.staffHighlights,
+      getDocId: (item) => item._id || item.id,
+    },
+    {
+      key: 'punchCodes',
+      collectionName: getCollectionName('punch_codes', dataEnvTag),
+      docs: seedData.punchCodes,
+      getDocId: (item) => item._id || item.id,
+    },
+  ]);
+}
+
+exports.main = async (event = {}) => {
+  const wxContext = cloud.getWXContext();
+  const openId = String(wxContext.OPENID || '');
+  const dataEnvTag = normalizeDataEnvTag(event.__dataEnvTag);
+  console.info('initData start', {
+    openId,
+    dataEnvTag,
+    envVersion: String(event.__envVersion || ''),
+    hasConfirmText: Boolean(event.confirmText),
+  });
+
+  if (!openId) {
+    console.warn('initData blocked', {
+      reason: 'openid-missing',
+    });
+    return fail('AUTH_OPENID_MISSING', '当前身份校验失败，未执行初始化');
   }
 
-  for (const activity of activities) {
-    try {
-      await db.collection('activities').add({
-        data: activity,
-      });
-      results.activities++;
-    } catch (e) {
-      console.error('add activity error:', e);
-    }
+  if (String(event.confirmText || '') !== CONFIRM_TEXT) {
+    console.warn('initData blocked', {
+      reason: 'confirm-text-invalid',
+      confirmText: String(event.confirmText || ''),
+    });
+    return fail('REQUEST_PARAM_INVALID', '确认口令不正确，未执行初始化');
   }
+
+  if (dataEnvTag === 'prod') {
+    console.warn('initData blocked', {
+      reason: 'prod-env-forbidden',
+    });
+    return fail('MAINTENANCE_FORBIDDEN', '正式运营环境禁止通过小程序初始化种子数据');
+  }
+
+  const binding = await getStoreManagerBinding(db, openId, dataEnvTag);
+  console.info('initData binding', {
+    hasBinding: Boolean(binding),
+    role: binding && binding.role ? binding.role : '',
+  });
+  if (!binding || String(binding.role || '') !== 'store_manager') {
+    console.warn('initData blocked', {
+      reason: 'permission-denied',
+      role: binding && binding.role ? binding.role : '',
+    });
+    return fail('STAFF_PERMISSION_DENIED', '仅店长账号可以初始化测试环境种子数据');
+  }
+
+  const results = {};
+
+  try {
+    const seedTasks = buildSeedTasks(dataEnvTag);
+    for (const task of seedTasks) {
+      console.info('initData task start', {
+        key: task.key,
+        collectionName: task.collectionName,
+        docsCount: Array.isArray(task.docs) ? task.docs.length : 0,
+      });
+      results[task.key] = await upsertSeedDocs(task.collectionName, task.docs, task.getDocId);
+      console.info('initData task done', {
+        key: task.key,
+        count: results[task.key],
+      });
+    }
+  } catch (error) {
+    console.error('init data failed:', error);
+    return fail('INTERNAL_SERVICE_ERROR', '云端演示数据初始化失败', true);
+  }
+
+  console.info('initData success', {
+    results,
+  });
 
   return {
     ok: true,
-    message: `已导入 ${results.themes} 个主题和 ${results.activities} 个活动`,
+    message: '测试环境种子数据已同步',
     results,
   };
 };

@@ -1,0 +1,70 @@
+interface:
+  display_name: "密室小程序整改"
+  short_description: "密室小程序项目规则、状态机、回归与发布要求"
+paths:
+  bootstrap:
+    summary: "恢复项目上下文"
+    reads:
+      - CHANGELOG.md
+      - PROJECT_CONTEXT.md
+      - AGENT_WORKFLOW.md
+      - CODEMAP.md
+      - STATE_MACHINE.md
+      - ERROR_CODES.md
+      - DB_SCHEMA.md
+  business_change:
+    summary: "改业务链路前需要对齐的权威文档"
+    reads:
+      - PROJECT_CONTEXT.md
+      - STATE_MACHINE.md
+      - ERROR_CODES.md
+      - cloudfunctions/README.md
+  release_gate:
+    summary: "发布前必须通过的检查"
+    reads:
+      - AGENT_WORKFLOW.md
+      - AGENT_PROMPT.md
+      - CHANGELOG.md
+components:
+  schemas:
+    CloudFunctionFailure:
+      type: object
+      required:
+        - ok
+        - errorCode
+        - message
+        - retryable
+      properties:
+        ok:
+          type: boolean
+          enum: [false]
+        errorCode:
+          type: string
+          description: "唯一机器可读错误码，取值见 ERROR_CODES.md"
+        message:
+          type: string
+          description: "直接展示给前端用户的可读文案"
+        retryable:
+          type: boolean
+          description: "前端是否应展示重试动作"
+    StateMachineRef:
+      type: object
+      required:
+        - groupStatus
+        - roomStage
+        - sessionStageKey
+      properties:
+        groupStatus:
+          type: string
+          description: "groups.status，取值见 STATE_MACHINE.md"
+        roomStage:
+          type: string
+          description: "groups.roomStage，取值见 STATE_MACHINE.md"
+        sessionStageKey:
+          type: string
+          description: "staff_sessions.stageKey，取值见 STATE_MACHINE.md"
+security:
+  mode: "local-workspace-only"
+  auth:
+    type: "documentation-first"
+    description: "修改业务链路前先读取仓库内权威文档，不依赖外部猜测"

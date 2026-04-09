@@ -10,18 +10,18 @@ const {
 } = require('./test-helpers/ui-automator-helper.cjs');
 
 async function openFirstSession(miniProgram) {
-  let page = await miniProgram.reLaunch('/pages/staff-auth-code/index');
+  let page = await miniProgram.reLaunch('/packages/staff/auth-code/index');
   await waitForCondition(async () => {
     const currentPage = await miniProgram.currentPage();
-    return currentPage.path === 'pages/staff-auth-code/index';
+    return currentPage.path === 'packages/staff/auth-code/index';
   }, '授权页路由');
   const authInput = await ensureElement(page, '.staff-auth-input', '授权码输入框');
-  await authInput.input('OWNER2026');
+  await authInput.input('OWN826');
   const authButton = await ensureElement(page, '.staff-auth-submit', '授权提交按钮');
   await authButton.tap();
   await waitForCondition(async () => {
     const currentPage = await miniProgram.currentPage();
-    return currentPage.path === 'pages/staff-dashboard/index';
+    return currentPage.path === 'packages/staff/dashboard/index';
   }, '工作台跳转', 45000);
 
   page = await miniProgram.currentPage();
@@ -34,13 +34,13 @@ async function openFirstSession(miniProgram) {
   await waitForCondition(async () => {
     const currentPage = await miniProgram.currentPage();
     return (
-      currentPage.path === 'pages/staff-sessions/index' ||
-      currentPage.path === 'pages/staff-session/index'
+      currentPage.path === 'packages/staff/sessions/index' ||
+      currentPage.path === 'packages/staff/session/index'
     );
   }, '进入场次管理');
 
   page = await miniProgram.currentPage();
-  if (page.path === 'pages/staff-sessions/index') {
+  if (page.path === 'packages/staff/sessions/index') {
     const sessionEntryButton = await ensureElement(
       page,
       '.session-btn',
@@ -49,7 +49,7 @@ async function openFirstSession(miniProgram) {
     await sessionEntryButton.tap();
     await waitForCondition(async () => {
       const currentPage = await miniProgram.currentPage();
-      return currentPage.path === 'pages/staff-session/index';
+      return currentPage.path === 'packages/staff/session/index';
     }, '进入场次详情');
   }
 

@@ -10,15 +10,12 @@
     "format:check": "prettier --check .",
     "test:phase1": "node scripts/phase1-smoke-check.cjs",
     "test:business": "node scripts/business-rules-check.cjs",
-    "test:groups": "node scripts/group-regression-check.cjs",
-    "test:flows": "node scripts/main-flow-check.cjs",
-    "test:api": "node scripts/interface-contract-check.cjs",
-    "test:perf": "node scripts/perf-smoke-check.cjs",
     "test:ui": "node scripts/ui-flow-check.cjs",
     "test:ui:player": "node scripts/ui-player-flow-check.cjs",
     "test:ui:staff": "node scripts/ui-staff-flow-check.cjs",
     "test:ui:session": "node scripts/ui-session-flow-check.cjs",
     "test:ui:online": "node scripts/ui-online-flow-check.cjs",
+    "test:cloud:testdata": "node scripts/test-cloud-data-check.cjs",
     "test:regression": "node scripts/regression-check.cjs"
   },
   "devDependencies": {

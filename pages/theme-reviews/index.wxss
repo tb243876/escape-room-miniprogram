@@ -1,0 +1,231 @@
+@import "../theme-detail/index.wxss";
+
+.review-page-hero {
+  margin-top: 4rpx;
+  padding: 14rpx 16rpx;
+  background:
+    radial-gradient(circle at top right, rgba(182, 119, 67, 0.12), transparent 32%),
+    linear-gradient(180deg, rgba(255, 249, 241, 0.98), rgba(246, 234, 218, 0.98));
+  border: 1rpx solid var(--border-subtle);
+}
+
+.review-page-hero .content-kicker {
+  font-size: 18rpx;
+  letter-spacing: 3rpx;
+}
+
+.review-page-hero .content-title {
+  margin-top: 6rpx;
+  font-size: 28rpx;
+}
+
+.review-page-subtitle {
+  margin-top: 4rpx;
+  font-size: 20rpx;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.review-page-tags {
+  margin-top: 8rpx;
+  gap: 8rpx;
+}
+
+.review-page-tags .banner-tag {
+  padding: 5rpx 10rpx;
+  font-size: 17rpx;
+}
+
+.review-page-actions {
+  margin-top: 10rpx;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+
+.review-page-action {
+  flex: none;
+  min-width: 132rpx;
+  min-height: 52rpx;
+  line-height: 52rpx;
+  padding: 0 16rpx;
+  font-size: 18rpx;
+}
+
+.review-page-panel {
+  margin-top: 14rpx;
+  padding: 14rpx;
+}
+
+.review-page-panel .review-summary-card {
+  gap: 8rpx;
+}
+
+.review-page-panel .review-summary-item {
+  padding: 12rpx 8rpx;
+  border-radius: 16rpx;
+}
+
+.review-page-panel .review-summary-value {
+  font-size: 28rpx;
+}
+
+.review-page-panel .review-summary-label {
+  margin-top: 4rpx;
+  font-size: 18rpx;
+}
+
+.review-page-panel .review-chip {
+  padding: 6rpx 10rpx;
+  font-size: 18rpx;
+}
+
+.review-page-panel .review-item {
+  margin-top: 8rpx;
+  padding: 10rpx 12rpx;
+  border-radius: 14rpx;
+}
+
+.review-page-panel .review-item-head {
+  gap: 8rpx;
+}
+
+.review-page-panel .review-author {
+  gap: 8rpx;
+}
+
+.review-page-panel .review-avatar {
+  width: 46rpx;
+  height: 46rpx;
+}
+
+.review-page-panel .review-avatar-text {
+  font-size: 18rpx;
+}
+
+.review-page-panel .review-author-row {
+  gap: 6rpx;
+}
+
+.review-page-panel .review-author-name {
+  font-size: 21rpx;
+}
+
+.review-page-panel .review-author-role {
+  padding: 2rpx 8rpx;
+  font-size: 15rpx;
+}
+
+.review-page-panel .review-author-time {
+  margin-top: 2rpx;
+  font-size: 16rpx;
+}
+
+.review-page-panel .review-rating {
+  font-size: 19rpx;
+}
+
+.review-page-panel .review-content {
+  margin-top: 6rpx;
+  font-size: 21rpx;
+  line-height: 1.5;
+}
+
+.review-page-panel .review-tag-row {
+  margin-top: 8rpx;
+  gap: 6rpx;
+}
+
+.review-page-panel .review-mini-tag {
+  padding: 3rpx 8rpx;
+  font-size: 16rpx;
+}
+
+.review-page-panel .review-action-row,
+.review-page-panel .review-reply-action-row {
+  margin-top: 8rpx;
+  gap: 8rpx;
+}
+
+.review-page-panel .review-action-btn {
+  gap: 4rpx;
+  padding: 6rpx 10rpx;
+  font-size: 18rpx;
+}
+
+.review-page-panel .review-action-btn-danger {
+  color: #b2412b;
+  background: rgba(178, 65, 43, 0.08);
+  border-color: rgba(178, 65, 43, 0.18);
+}
+
+.review-page-panel .review-action-btn-mini {
+  padding: 5rpx 9rpx;
+  font-size: 16rpx;
+}
+
+.review-page-panel .review-reply-list {
+  margin-top: 8rpx;
+  padding: 8rpx 10rpx;
+  border-radius: 12rpx;
+}
+
+.review-page-panel .review-reply-item + .review-reply-item {
+  margin-top: 8rpx;
+  padding-top: 8rpx;
+}
+
+.review-page-panel .review-reply-name {
+  font-size: 18rpx;
+}
+
+.review-page-panel .review-reply-target,
+.review-page-panel .review-reply-time {
+  font-size: 15rpx;
+}
+
+.review-page-panel .review-reply-content {
+  margin-top: 4rpx;
+  font-size: 19rpx;
+  line-height: 1.5;
+}
+
+.review-page-panel .review-more-replies {
+  margin-top: 8rpx;
+  font-size: 18rpx;
+}
+
+.review-page-panel .review-reply-toggle {
+  margin-top: 8rpx;
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 6rpx 10rpx;
+  border-radius: 999rpx;
+  background: rgba(158, 61, 34, 0.06);
+  border: 1rpx solid var(--border-subtle);
+  font-size: 18rpx;
+  color: var(--red-deep);
+}
+
+.review-delete-dialog {
+  width: 560rpx;
+  max-width: calc(100vw - 72rpx);
+}
+
+.review-delete-actions {
+  margin-top: 20rpx;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12rpx;
+}
+
+.review-delete-btn {
+  min-width: 170rpx;
+}
+
+.review-delete-btn-danger {
+  background: linear-gradient(135deg, #b2412b, #8f2e1a);
+  color: #fffaf4;
+}

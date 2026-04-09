@@ -17,6 +17,7 @@ async function main() {
         name: 'runtimeReset',
         data: {
           confirmText: 'RESET_GROUP_RUNTIME',
+          __dataEnvTag: 'prod',
         },
       }).then((res) => {
         resolve(res && res.result ? res.result : { ok: false, message: 'no-result' });

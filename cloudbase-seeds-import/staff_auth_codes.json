@@ -1,3 +1,3 @@
-{"_id":"STAFF2026","role":"staff","roleLabel":"店员","storeName":"迷场档案馆","status":"active","createdAt":"2026-03-01T10:00:00.000Z"}
-{"_id":"MANAGER2026","role":"assistant_manager","roleLabel":"副店长","storeName":"迷场档案馆","status":"active","createdAt":"2026-03-02T10:00:00.000Z"}
-{"_id":"OWNER2026","role":"store_manager","roleLabel":"店长","storeName":"迷场档案馆","status":"active","createdAt":"2026-03-03T10:00:00.000Z"}
+{"_id":"STF826","role":"staff","roleLabel":"店员","storeName":"迷场档案馆","status":"active","createdAt":"2026-03-01T10:00:00.000Z"}
+{"_id":"MGR826","role":"assistant_manager","roleLabel":"副店长","storeName":"迷场档案馆","status":"active","createdAt":"2026-03-02T10:00:00.000Z"}
+{"_id":"OWN826","role":"store_manager","roleLabel":"店长","storeName":"迷场档案馆","status":"active","createdAt":"2026-03-03T10:00:00.000Z"}

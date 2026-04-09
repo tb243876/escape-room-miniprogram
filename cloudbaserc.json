@@ -1,0 +1,162 @@
+{
+  "envId": "mini-escape-main-9f3bjb2e7249ec8",
+  "framework": {
+    "plugins": {
+      "database": {
+        "use": "@cloudbase/framework-plugin-database",
+        "inputs": {
+          "collections": [
+            {
+              "collectionName": "groups",
+              "description": "组队大厅与队伍房间聚合入口",
+              "createIndexes": [
+                {
+                  "name": "idx_groups_roomStage_updatedAt",
+                  "unique": false,
+                  "keys": [
+                    { "name": "roomStage", "direction": 1 },
+                    { "name": "updatedAt", "direction": -1 }
+                  ]
+                },
+                {
+                  "name": "idx_groups_status_sortTime",
+                  "unique": false,
+                  "keys": [
+                    { "name": "status", "direction": 1 },
+                    { "name": "sortTime", "direction": 1 }
+                  ]
+                },
+                {
+                  "name": "idx_groups_creatorOpenId_updatedAt",
+                  "unique": false,
+                  "keys": [
+                    { "name": "creatorOpenId", "direction": 1 },
+                    { "name": "updatedAt", "direction": -1 }
+                  ]
+                }
+              ]
+            },
+            {
+              "collectionName": "staff_sessions",
+              "description": "工作台场次与玩家房间状态真相源",
+              "createIndexes": [
+                {
+                  "name": "uidx_staff_sessions_groupId",
+                  "unique": true,
+                  "keys": [
+                    { "name": "groupId", "direction": 1 }
+                  ]
+                },
+                {
+                  "name": "idx_staff_sessions_stageKey_updatedAt",
+                  "unique": false,
+                  "keys": [
+                    { "name": "stageKey", "direction": 1 },
+                    { "name": "updatedAt", "direction": -1 }
+                  ]
+                }
+              ]
+            },
+            {
+              "collectionName": "theme_reviews",
+              "description": "主题评价、回复与分页读取",
+              "createIndexes": [
+                {
+                  "name": "idx_theme_reviews_theme_latest",
+                  "unique": false,
+                  "keys": [
+                    { "name": "themeId", "direction": 1 },
+                    { "name": "type", "direction": 1 },
+                    { "name": "status", "direction": 1 },
+                    { "name": "latestOrderKey", "direction": -1 }
+                  ]
+                },
+                {
+                  "name": "idx_theme_reviews_theme_hot",
+                  "unique": false,
+                  "keys": [
+                    { "name": "themeId", "direction": 1 },
+                    { "name": "type", "direction": 1 },
+                    { "name": "status", "direction": 1 },
+                    { "name": "hotOrderKey", "direction": -1 }
+                  ]
+                },
+                {
+                  "name": "idx_theme_reviews_root_latest",
+                  "unique": false,
+                  "keys": [
+                    { "name": "rootReviewId", "direction": 1 },
+                    { "name": "type", "direction": 1 },
+                    { "name": "status", "direction": 1 },
+                    { "name": "latestOrderKey", "direction": -1 }
+                  ]
+                },
+                {
+                  "name": "idx_theme_reviews_author_latest",
+                  "unique": false,
+                  "keys": [
+                    { "name": "authorOpenId", "direction": 1 },
+                    { "name": "type", "direction": 1 },
+                    { "name": "status", "direction": 1 },
+                    { "name": "latestOrderKey", "direction": -1 }
+                  ]
+                },
+                {
+                  "name": "idx_theme_reviews_author_theme_status",
+                  "unique": false,
+                  "keys": [
+                    { "name": "authorOpenId", "direction": 1 },
+                    { "name": "themeId", "direction": 1 },
+                    { "name": "type", "direction": 1 },
+                    { "name": "status", "direction": 1 }
+                  ]
+                }
+              ]
+            },
+            {
+              "collectionName": "theme_review_likes",
+              "description": "主题评价点赞去重与批量清理",
+              "createIndexes": [
+                {
+                  "name": "idx_theme_review_likes_reviewId",
+                  "unique": false,
+                  "keys": [
+                    { "name": "reviewId", "direction": 1 }
+                  ]
+                },
+                {
+                  "name": "idx_theme_review_likes_openId_reviewId",
+                  "unique": false,
+                  "keys": [
+                    { "name": "openId", "direction": 1 },
+                    { "name": "reviewId", "direction": 1 }
+                  ]
+                }
+              ]
+            },
+            {
+              "collectionName": "staff_highlights",
+              "description": "队伍集锦内容与房间预览",
+              "createIndexes": [
+                {
+                  "name": "idx_staff_highlights_groupId",
+                  "unique": false,
+                  "keys": [
+                    { "name": "groupId", "direction": 1 }
+                  ]
+                },
+                {
+                  "name": "idx_staff_highlights_sessionId",
+                  "unique": false,
+                  "keys": [
+                    { "name": "sessionId", "direction": 1 }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,19 +1,46 @@
 'use strict';
 
+const envConfig = require('./utils/platform/env-config');
+
+function detectMiniProgramEnvVersion() {
+  try {
+    const accountInfo = wx.getAccountInfoSync();
+    return (
+      accountInfo &&
+      accountInfo.miniProgram &&
+      accountInfo.miniProgram.envVersion
+    ) || 'develop';
+  } catch (error) {
+    return 'develop';
+  }
+}
+
+function resolveRuntimeConfig() {
+  return envConfig.getRuntimeConfig(detectMiniProgramEnvVersion());
+}
+
 App({
-  globalData: {
-    envId: 'mini-escape-main-9f3bjb2e7249ec8',
-    useMockData: false,
-    useMockGroups: false,
-    enablePerfTracing: true,
-    storeName: '迷场档案馆',
-  },
+  globalData: envConfig.getDefaultGlobalData(),
 
   onLaunch() {
+    const runtimeConfig = resolveRuntimeConfig();
+    Object.assign(this.globalData, runtimeConfig);
+
+    if (!this.globalData.envId && !this.globalData.useMockData) {
+      console.error('[app] missing envId', {
+        envVersion: this.globalData.envVersion,
+      });
+    }
+
     console.info('[app] launch config', {
+      envVersion: this.globalData.envVersion,
       envId: this.globalData.envId,
+      dataEnvTag: this.globalData.dataEnvTag,
       useMockData: this.globalData.useMockData,
       useMockGroups: this.globalData.useMockGroups,
+      allowMockFallback: this.globalData.allowMockFallback,
+      allowInitData: this.globalData.allowInitData,
+      allowCloudDataReset: this.globalData.allowCloudDataReset,
       hasWxCloud: Boolean(wx.cloud),
     });
 
@@ -23,27 +50,25 @@ App({
     }
 
     if (!wx.cloud) {
-      console.error('[app] wx.cloud unavailable, fallback to mock mode');
-      this.globalData.useMockData = true;
+      console.error('[app] wx.cloud unavailable', {
+        envVersion: this.globalData.envVersion,
+      });
       return;
     }
 
-    if (wx.cloud) {
-      try {
-        wx.cloud.init({
-          env: this.globalData.envId,
-          traceUser: true,
-        });
-        console.info('[app] cloud init success', {
-          envId: this.globalData.envId,
-        });
-      } catch (error) {
-        console.error('[app] cloud init failed, fallback to mock mode', {
-          message: error && error.message,
-          stack: error && error.stack,
-        });
-        this.globalData.useMockData = true;
-      }
+    try {
+      wx.cloud.init({
+        env: this.globalData.envId,
+        traceUser: true,
+      });
+      console.info('[app] cloud init success', {
+        envId: this.globalData.envId,
+      });
+    } catch (error) {
+      console.error('[app] cloud init failed', {
+        message: error && error.message,
+        stack: error && error.stack,
+      });
     }
   },
 });

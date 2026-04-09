@@ -1,5 +1,10 @@
 <view class="screen screen-with-tabbar">
-  <view wx:if="{{errorText}}" class="card status-card">
+  <view wx:if="{{emptyStateTitle}}" class="card status-card">
+    <view class="status-title">{{emptyStateTitle}}</view>
+    <view class="status-text">{{emptyStateText}}</view>
+  </view>
+
+  <view wx:elif="{{errorText}}" class="card status-card">
     <view class="status-title">页面加载失败</view>
     <view class="status-text">{{errorText}}</view>
     <view class="button-primary status-action" bindtap="retryLoad">重新加载</view>
@@ -9,7 +14,7 @@
   <view class="home-stage">
     <view class="home-stage-card">
       <view class="home-stage-kicker">主题推荐</view>
-      <view class="home-stage-stamp">按等级浏览</view>
+      <view class="home-stage-stamp">沉浸式选题</view>
       <view class="home-stage-title">{{hero.title || '先挑主题，再决定今晚玩哪一场'}}</view>
       <view class="home-stage-subtitle">{{hero.subtitle || '首页只保留最关键的信息：快速找主题、看推荐、直接进详情。'}}</view>
       <view class="home-stage-meta">

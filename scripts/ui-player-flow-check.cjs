@@ -53,7 +53,7 @@ async function main() {
     await submitButton.tap();
     await page.waitFor(600);
     assert.equal(await page.data('errorField'), 'contactPhone');
-    await contactPhoneInput.input('13800138000');
+    await contactPhoneInput.input('13900000000');
     await submitButton.tap();
     await waitForCondition(async () => {
       const currentPage = await miniProgram.currentPage();

@@ -1,28 +1,34 @@
 <view class="screen">
   <view class="hero-card create-hero">
-    <view class="create-kicker">发起组局</view>
+    <view class="create-kicker">发起队伍</view>
     <view class="create-title">把今晚想玩的场挂出来，等同频的人加入</view>
-    <view class="create-subtitle">第一版先收最少字段，后续由门店继续确认真实到店成员，不做重预约系统。</view>
+    <view class="create-subtitle">填写基本信息发起队伍，门店会确认到店成员</view>
   </view>
 
   <view class="card form-card">
     <view class="field-label">选择主题</view>
-    <picker mode="selector" range="{{themeOptions}}" range-key="name" value="{{form.themeIndex}}" bindchange="onThemeChange">
-      <view class="picker-field">{{themeLabel}}</view>
-    </picker>
+    <view class="picker-field create-theme-picker-trigger" bindtap="openThemePicker">
+      <text>{{themeLabel}}</text>
+      <text class="create-theme-picker-arrow">选择</text>
+    </view>
+    <view wx:if="{{errorField === 'theme'}}" class="field-error">{{errorText}}</view>
 
     <view class="field-row">
       <view class="field-half">
         <view class="field-label">日期</view>
-        <picker mode="date" value="{{form.dateValue}}" bindchange="onDateChange">
-          <view class="picker-field">{{dateLabel}}</view>
-        </picker>
+        <view class="picker-field create-theme-picker-trigger" bindtap="openDatePicker">
+          <text>{{dateLabel}}</text>
+          <text class="create-theme-picker-arrow">选择</text>
+        </view>
+        <view wx:if="{{errorField === 'date'}}" class="field-error">{{errorText}}</view>
       </view>
       <view class="field-half">
         <view class="field-label">时间</view>
-        <picker mode="time" value="{{form.timeSlot}}" bindchange="onTimeChange">
-          <view class="picker-field">{{timeLabel}}</view>
-        </picker>
+        <view class="picker-field create-theme-picker-trigger" bindtap="openTimePicker">
+          <text>{{timeLabel}}</text>
+          <text class="create-theme-picker-arrow">选择</text>
+        </view>
+        <view wx:if="{{errorField === 'time'}}" class="field-error">{{errorText}}</view>
       </view>
     </view>
 
@@ -44,6 +50,79 @@
 
     <view class="action-row create-action-row">
       <view class="button-primary {{submitClass}}" bindtap="submitCreate">{{submitText}}</view>
+    </view>
+  </view>
+
+  <view wx:if="{{themePickerVisible}}" class="modal-mask-center" bindtap="closeThemePicker">
+    <view class="modal-card-common create-theme-dialog" catchtap="noop">
+      <view class="create-theme-dialog-head">
+        <view>
+          <view class="create-theme-dialog-kicker">主题选择</view>
+          <view class="create-theme-dialog-title">选择今晚想开的主题</view>
+        </view>
+        <view class="create-theme-dialog-close" bindtap="closeThemePicker">关闭</view>
+      </view>
+      <scroll-view class="create-theme-dialog-scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
+        <view
+          class="create-theme-option {{form.themeIndex === index ? 'create-theme-option-active' : ''}}"
+          wx:for="{{themeOptions}}"
+          wx:key="id"
+          data-index="{{index}}"
+          bindtap="selectTheme"
+        >
+          <view class="create-theme-option-main">
+            <view class="create-theme-option-name">{{item.name}}</view>
+            <view class="create-theme-option-meta">{{item.difficulty}} · {{item.horror}} · {{item.people}} · {{item.duration}}</view>
+          </view>
+          <view class="create-theme-option-check">{{form.themeIndex === index ? '已选' : '选择'}}</view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <view wx:if="{{optionPickerVisible}}" class="modal-mask-center" bindtap="closeOptionPicker">
+    <view class="modal-card-common create-theme-dialog create-option-dialog" catchtap="noop">
+      <view class="create-theme-dialog-head">
+        <view>
+          <view class="create-theme-dialog-kicker">快捷选择</view>
+          <view class="create-theme-dialog-title">{{optionPickerTitle}}</view>
+        </view>
+        <view class="create-theme-dialog-close" bindtap="closeOptionPicker">关闭</view>
+      </view>
+      <picker-view
+        class="create-wheel-picker"
+        indicator-class="create-wheel-indicator"
+        value="{{optionPickerIndex}}"
+        bindchange="onOptionPickerChange"
+      >
+        <block wx:if="{{optionPickerType === 'date'}}">
+          <picker-view-column>
+            <view
+              class="create-wheel-option {{optionPickerIndex[0] === index ? 'create-wheel-option-active' : ''}}"
+              wx:for="{{dateOptions}}"
+              wx:key="value"
+            >
+              <view class="create-wheel-option-name">{{item.fullLabel}}</view>
+              <view wx:if="{{item.hint}}" class="create-wheel-option-meta">{{item.hint}}</view>
+            </view>
+          </picker-view-column>
+        </block>
+        <block wx:elif="{{optionPickerType === 'time'}}">
+          <picker-view-column>
+            <view
+              class="create-wheel-option create-wheel-option-time {{optionPickerIndex[0] === index ? 'create-wheel-option-active' : ''}}"
+              wx:for="{{timeOptions}}"
+              wx:key="value"
+            >
+              <view class="create-wheel-option-name">{{item.label}}</view>
+            </view>
+          </picker-view-column>
+        </block>
+      </picker-view>
+      <view class="create-option-dialog-actions">
+        <view class="create-option-dialog-btn create-option-dialog-btn-secondary" bindtap="closeOptionPicker">取消</view>
+        <view class="create-option-dialog-btn create-option-dialog-btn-primary" bindtap="confirmOptionPicker">确认</view>
+      </view>
     </view>
   </view>
 </view>

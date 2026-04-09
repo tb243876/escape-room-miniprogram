@@ -1,6 +1,11 @@
 'use strict';
 
 const cloud = require('wx-server-sdk');
+const {
+  normalizeDataEnvTag,
+  getCollectionName,
+  getStoreManagerBinding,
+} = require('./utils');
 
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV,
@@ -9,7 +14,27 @@ cloud.init({
 const db = cloud.database();
 const CONFIRM_TEXT = 'CLEAR_ESCAPE_ROOM_DATA';
 
-const COLLECTIONS_TO_CLEAR = ['profiles', 'groups', 'staff_sessions', 'staff_highlights'];
+const COLLECTIONS_TO_CLEAR = [
+  'themes',
+  'activities',
+  'profiles',
+  'groups',
+  'staff_auth_codes',
+  'staff_bindings',
+  'staff_sessions',
+  'staff_highlights',
+  'punch_codes',
+];
+
+function fail(errorCode, message, retryable = false, extra = {}) {
+  return {
+    ok: false,
+    errorCode,
+    message,
+    retryable,
+    ...extra,
+  };
+}
 
 async function listAll(collectionName) {
   const collection = db.collection(collectionName);
@@ -30,18 +55,6 @@ async function listAll(collectionName) {
   return results.reduce((list, item) => list.concat(item.data || []), []);
 }
 
-async function getStoreManagerBinding(openId) {
-  if (!openId) {
-    return null;
-  }
-  try {
-    const result = await db.collection('staff_bindings').doc(openId).get();
-    return result && result.data ? result.data : null;
-  } catch (error) {
-    return null;
-  }
-}
-
 async function clearCollection(collectionName) {
   const docs = await listAll(collectionName);
   if (!docs.length) {
@@ -54,7 +67,23 @@ async function clearCollection(collectionName) {
   const deleteResults = await Promise.allSettled(
     docs.map((doc) => db.collection(collectionName).doc(String(doc._id || '')).remove())
   );
-  const failed = deleteResults.filter((item) => item.status === 'rejected');
+  const failed = deleteResults
+    .map((item, index) => ({
+      status: item.status,
+      id: String((docs[index] && docs[index]._id) || ''),
+      reason: item.status === 'rejected' ? item.reason : null,
+    }))
+    .filter((item) => item.status === 'rejected');
+
+  if (failed.length) {
+    console.warn('clearCollection partial failure:', {
+      collectionName,
+      failedIds: failed.map((item) => item.id).filter(Boolean),
+      failedMessages: failed.map((item) =>
+        item.reason && item.reason.message ? item.reason.message : String(item.reason || '')
+      ),
+    });
+  }
 
   return {
     ok: failed.length === 0,
@@ -65,37 +94,35 @@ async function clearCollection(collectionName) {
 }
 
 exports.main = async (event = {}) => {
+  const dataEnvTag = normalizeDataEnvTag(event.__dataEnvTag);
+
+  if (dataEnvTag === 'prod') {
+    return fail('MAINTENANCE_FORBIDDEN', '正式运营环境禁止执行云端清除');
+  }
+
   const wxContext = cloud.getWXContext();
   const openId = String(wxContext.OPENID || '');
 
   if (!openId) {
-    return {
-      ok: false,
-      message: '当前身份校验失败，未执行清除',
-    };
+    return fail('AUTH_OPENID_MISSING', '当前身份校验失败，未执行清除');
   }
 
   if (String(event.confirmText || '') !== CONFIRM_TEXT) {
-    return {
-      ok: false,
-      message: '确认口令不正确，未执行清除',
-    };
+    return fail('REQUEST_PARAM_INVALID', '确认口令不正确，未执行清除');
   }
 
-  const binding = await getStoreManagerBinding(openId);
+  const binding = await getStoreManagerBinding(db, openId, dataEnvTag);
   if (!binding || String(binding.role || '') !== 'store_manager') {
-    return {
-      ok: false,
-      message: '仅店长账号可以清除云端运行数据',
-    };
+    return fail('STAFF_PERMISSION_DENIED', '仅店长账号可以清除云端运行数据');
   }
 
   const results = {};
   let hasError = false;
 
   for (const collectionName of COLLECTIONS_TO_CLEAR) {
+    const targetCollectionName = getCollectionName(collectionName, dataEnvTag);
     try {
-      results[collectionName] = await clearCollection(collectionName);
+      results[collectionName] = await clearCollection(targetCollectionName);
     } catch (error) {
       results[collectionName] = {
         ok: false,

@@ -16,18 +16,18 @@ async function main() {
     await setupMockMode(miniProgram);
 
     console.log('[ui-staff] auth');
-    let page = await miniProgram.reLaunch('/pages/staff-auth-code/index');
+    let page = await miniProgram.reLaunch('/packages/staff/auth-code/index');
     await waitForCondition(async () => {
       const currentPage = await miniProgram.currentPage();
-      return currentPage.path === 'pages/staff-auth-code/index';
+      return currentPage.path === 'packages/staff/auth-code/index';
     }, '授权页路由');
     const authInput = await ensureElement(page, '.staff-auth-input', '授权码输入框');
-    await authInput.input('OWNER2026');
+    await authInput.input('OWN826');
     const authButton = await ensureElement(page, '.staff-auth-submit', '授权提交按钮');
     await authButton.tap();
     await waitForCondition(async () => {
       const currentPage = await miniProgram.currentPage();
-      return currentPage.path === 'pages/staff-dashboard/index';
+      return currentPage.path === 'packages/staff/dashboard/index';
     }, '工作台跳转', 45000);
 
     console.log('[ui-staff] dashboard');

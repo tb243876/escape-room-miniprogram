@@ -1,0 +1,275 @@
+<view class="screen">
+<view wx:if="{{errorText}}" class="card status-card">
+  <view class="status-title">评价加载失败</view>
+  <view class="status-text">{{errorText}}</view>
+  <view class="button-primary status-action" bindtap="retryLoad">重新加载</view>
+</view>
+
+<view wx:elif="{{theme}}">
+  <view class="panel review-page-hero">
+    <view class="content-kicker">玩家反馈</view>
+    <view class="content-title">{{theme.name}}</view>
+    <view class="review-page-subtitle">{{theme.slogan}}</view>
+    <view wx:if="{{theme.horror || theme.people || theme.duration}}" class="banner-tags review-page-tags">
+      <view wx:if="{{theme.horror}}" class="banner-tag">{{theme.horror}}</view>
+      <view wx:if="{{theme.people}}" class="banner-tag">{{theme.people}}</view>
+      <view wx:if="{{theme.duration}}" class="banner-tag">{{theme.duration}}</view>
+    </view>
+    <view class="review-page-actions">
+      <view class="button-secondary review-page-action" bindtap="openThemeDetail">返回主题</view>
+      <view class="button-primary review-page-action" bindtap="openReviewComposer">写评价</view>
+    </view>
+  </view>
+
+  <view class="panel review-panel review-page-panel">
+    <view class="review-summary-card">
+      <view class="review-summary-item">
+        <view class="review-summary-value">{{reviewStats.totalCount}}</view>
+        <view class="review-summary-label">评价数</view>
+      </view>
+      <view class="review-summary-item">
+        <view class="review-summary-value">{{reviewStats.avgScore}}</view>
+        <view class="review-summary-label">综合评分</view>
+      </view>
+      <view class="review-summary-item">
+        <view class="review-summary-value">{{reviewStats.positiveRate}}%</view>
+        <view class="review-summary-label">推荐率</view>
+      </view>
+    </view>
+
+    <view class="review-filter-strip">
+      <view
+        wx:for="{{reviewFilterOptions}}"
+        wx:for-item="filterOption"
+        wx:key="key"
+        class="review-chip {{filterOption.active ? 'review-chip-active' : ''}}"
+        data-key="{{filterOption.key}}"
+        bindtap="changeReviewFilter"
+      >
+        <text>{{filterOption.label}}</text>
+        <text class="review-chip-count">{{filterOption.count}}</text>
+      </view>
+    </view>
+
+    <view class="review-sort-strip">
+      <view
+        wx:for="{{reviewSortOptions}}"
+        wx:for-item="sortOption"
+        wx:key="key"
+        class="review-chip {{sortOption.active ? 'review-chip-active' : ''}}"
+        data-key="{{sortOption.key}}"
+        bindtap="changeReviewSort"
+      >
+        <text>{{sortOption.label}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{!viewerReviewMeta.canReview && viewerReviewMeta.reason}}" class="review-tip-note">
+      {{viewerReviewMeta.reason}}
+    </view>
+
+    <view wx:if="{{reviewErrorText && !reviewList.length}}" class="review-tip-note review-error-note">
+      {{reviewErrorText}}
+    </view>
+    <view wx:if="{{reviewLoading && !reviewList.length}}" class="empty-text review-empty-text">评价加载中...</view>
+    <view wx:elif="{{!reviewList.length && !reviewErrorText}}" class="empty-text review-empty-text">还没有人写评价，来写下第一条吧。</view>
+    <view wx:else>
+      <view class="review-item" wx:for="{{reviewList}}" wx:for-item="review" wx:key="id">
+        <view class="review-item-head">
+          <view class="review-author">
+            <block wx:if="{{review.authorAvatarUrl}}">
+              <image class="review-avatar" src="{{review.authorAvatarUrl}}" mode="aspectFill"></image>
+            </block>
+            <view wx:else class="review-avatar review-avatar-text">{{review.authorAvatarText}}</view>
+            <view class="review-author-main">
+              <view class="review-author-row">
+                <text class="review-author-name">{{review.authorNickname}}</text>
+                <text class="review-author-role">{{review.authorRoleLabel}}</text>
+              </view>
+              <view class="review-author-time">{{review.createdText}}</view>
+            </view>
+          </view>
+          <view wx:if="{{review.rating}}" class="review-rating">{{review.ratingText}}</view>
+        </view>
+
+        <view class="review-content">{{review.content}}</view>
+
+        <view wx:if="{{review.tags.length}}" class="review-tag-row">
+          <text class="review-mini-tag" wx:for="{{review.tags}}" wx:for-item="reviewTag" wx:key="*this">{{reviewTag}}</text>
+        </view>
+
+        <view class="review-action-row">
+          <view
+            class="review-action-btn {{review.liked ? 'review-action-btn-active' : ''}}"
+            data-id="{{review.id}}"
+            bindtap="toggleReviewLike"
+          >
+            <text>点赞</text>
+            <text wx:if="{{review.likeCount}}">{{review.likeCount}}</text>
+          </view>
+          <view
+            class="review-action-btn"
+            data-id="{{review.id}}"
+            data-nickname="{{review.authorNickname}}"
+            bindtap="openReplyComposer"
+          >
+            <text>回复</text>
+            <text wx:if="{{review.replyCount}}">{{review.replyCount}}</text>
+          </view>
+          <view
+            wx:if="{{review.canDelete}}"
+            class="review-action-btn review-action-btn-danger"
+            data-id="{{review.id}}"
+            data-type="review"
+            data-reply-count="{{review.replyCount}}"
+            bindtap="openDeleteDialog"
+          >
+            <text>删除</text>
+          </view>
+        </view>
+
+        <view
+          wx:if="{{review.replyCount || review.replies.length || review.hasMoreReplies}}"
+          class="review-reply-toggle"
+          data-id="{{review.id}}"
+          bindtap="toggleReviewReplies"
+        >
+          <text>{{review.repliesExpanded ? '收起回复' : '展开回复'}}</text>
+          <text wx:if="{{review.replyCount}}">{{review.replyCount}}</text>
+        </view>
+
+        <view wx:if="{{review.repliesExpanded && review.replies.length}}" class="review-reply-list">
+          <view class="review-reply-item" wx:for="{{review.replies}}" wx:for-item="reply" wx:key="id">
+            <view class="review-reply-head">
+              <view class="review-reply-name-row">
+                <text class="review-reply-name">{{reply.authorNickname}}</text>
+                <text class="review-author-role">{{reply.authorRoleLabel}}</text>
+                <text wx:if="{{reply.replyToNickname}}" class="review-reply-target">回复 {{reply.replyToNickname}}</text>
+              </view>
+              <text class="review-reply-time">{{reply.createdText}}</text>
+            </view>
+            <view class="review-reply-content">{{reply.content}}</view>
+            <view class="review-reply-action-row">
+              <view
+                class="review-action-btn review-action-btn-mini {{reply.liked ? 'review-action-btn-active' : ''}}"
+                data-id="{{reply.id}}"
+                data-root-id="{{reply.rootReviewId}}"
+                bindtap="toggleReviewLike"
+              >
+                <text>点赞</text>
+                <text wx:if="{{reply.likeCount}}">{{reply.likeCount}}</text>
+              </view>
+              <view
+                class="review-action-btn review-action-btn-mini"
+                data-id="{{reply.id}}"
+                data-nickname="{{reply.authorNickname}}"
+                bindtap="openReplyComposer"
+              >
+                <text>回复TA</text>
+              </view>
+              <view
+                wx:if="{{reply.canDelete}}"
+                class="review-action-btn review-action-btn-mini review-action-btn-danger"
+                data-id="{{reply.id}}"
+                data-type="reply"
+                bindtap="openDeleteDialog"
+              >
+                <text>删除</text>
+              </view>
+            </view>
+          </view>
+          <view
+            wx:if="{{review.hasMoreReplies}}"
+            class="review-more-replies"
+            data-id="{{review.id}}"
+            bindtap="loadMoreReplies"
+          >
+            展开更多回复
+          </view>
+        </view>
+      </view>
+
+      <view wx:if="{{reviewHasMore}}" class="button-secondary review-load-more" bindtap="loadMoreReviews">
+        {{reviewLoadingMore ? '加载中...' : '查看更多评价'}}
+      </view>
+    </view>
+  </view>
+</view>
+
+<view wx:else class="card status-card">
+  <view class="status-title">还没有玩家评价</view>
+  <view class="status-text">这个主题暂时还没有玩家反馈。</view>
+</view>
+
+<view wx:if="{{reviewComposerVisible}}" class="detail-mask modal-mask-center" bindtap="closeReviewComposer">
+  <view class="detail-dialog modal-card-common review-composer-dialog" catchtap="noop">
+    <view class="detail-dialog-title modal-title-common">{{reviewComposerMode === 'reply' ? '回复这条评价' : '写下体验'}}</view>
+    <view class="detail-dialog-content modal-content-common">
+      {{reviewComposerMode === 'reply' ? ('回复 ' + (reviewTargetNickname || '这条评价')) : '选一场已完成体验，写下这次游玩的真实感受。'}}
+    </view>
+
+    <view wx:if="{{reviewComposerMode === 'review'}}" class="review-composer-rating">
+      <view
+        wx:for="{{starOptions}}"
+        wx:for-item="star"
+        wx:key="*this"
+        class="review-rate-star {{star <= reviewDraftRating ? 'review-rate-star-active' : ''}}"
+        data-rating="{{star}}"
+        bindtap="chooseReviewRating"
+      >
+        ★
+      </view>
+    </view>
+
+    <view wx:if="{{reviewComposerMode === 'review' && viewerReviewMeta.eligibleSessions.length}}" class="review-session-list">
+      <view
+        wx:for="{{viewerReviewMeta.eligibleSessions}}"
+        wx:for-item="sessionOption"
+        wx:key="sessionId"
+        class="review-session-chip {{reviewDraftSessionId === sessionOption.sessionId ? 'review-session-chip-active' : ''}}"
+        data-session-id="{{sessionOption.sessionId}}"
+        bindtap="chooseReviewSession"
+      >
+        <view class="review-session-chip-label">{{sessionOption.sessionLabel}}</view>
+        <view class="review-session-chip-time">{{sessionOption.playedAtText || sessionOption.playedAt}}</view>
+      </view>
+    </view>
+
+    <textarea
+      class="review-composer-textarea"
+      maxlength="{{reviewComposerMode === 'reply' ? 180 : 280}}"
+      placeholder="{{reviewComposerMode === 'reply' ? '写下你的回复...' : '写下这次体验的真实感受...'}}"
+      value="{{reviewDraftContent}}"
+      bindinput="onReviewDraftInput"
+    ></textarea>
+
+    <view class="review-composer-actions">
+      <view class="button-secondary review-composer-btn" bindtap="closeReviewComposer">稍后再写</view>
+      <view class="button-primary review-composer-btn" bindtap="submitReviewComposer">
+        {{reviewSubmitting ? '提交中...' : (reviewComposerMode === 'reply' ? '发送回复' : '发布评价')}}
+      </view>
+    </view>
+  </view>
+</view>
+
+<view wx:if="{{deleteDialogVisible}}" class="detail-mask modal-mask-center" bindtap="closeDeleteDialog">
+  <view class="detail-dialog modal-card-common review-delete-dialog" catchtap="noop">
+    <view class="detail-dialog-title modal-title-common">
+      {{deleteTargetType === 'reply' ? '删除回复' : '删除这条评价'}}
+    </view>
+    <view class="detail-dialog-content modal-content-common">
+      {{deleteTargetType === 'reply'
+        ? '删除后，这条回复会从页面中移除。'
+        : (deleteTargetReplyCount > 0
+          ? ('删除后，这条评价和下面的 ' + deleteTargetReplyCount + ' 条回复会一起移除。')
+          : '删除后，这条评价会从页面中移除。')}}
+    </view>
+    <view class="review-delete-actions">
+      <view class="button-secondary review-delete-btn" bindtap="closeDeleteDialog">取消</view>
+      <view class="button-primary review-delete-btn review-delete-btn-danger" bindtap="confirmDeleteReview">
+        {{deleteSubmitting ? '删除中...' : '确认删除'}}
+      </view>
+    </view>
+  </view>
+</view>
+</view>

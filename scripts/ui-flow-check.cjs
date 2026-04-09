@@ -20,7 +20,9 @@ async function main() {
     let page = await miniProgram.reLaunch('/pages/home/index');
     await waitForCondition(async () => {
       const data = await page.data();
-      return Boolean((Array.isArray(data.themeGroups) && data.themeGroups.length) || data.errorText);
+      return Boolean(
+        (Array.isArray(data.themeGroups) && data.themeGroups.length) || data.errorText
+      );
     }, '首页数据');
     const homeData = await page.data();
     assert.equal(Array.isArray(homeData.themeGroups), true);
@@ -33,21 +35,31 @@ async function main() {
       return Boolean((Array.isArray(data.groups) && data.groups.length) || data.errorText);
     }, '大厅数据');
     const lobbyButton = await ensureElement(page, '.lobby-hero-btn', '大厅发起按钮');
-    assert.equal((await lobbyButton.text()).includes('发起组局'), true);
+    assert.equal((await lobbyButton.text()).includes('去发起队伍'), true);
 
     console.log('[ui] lobby-create');
     page = await miniProgram.navigateTo('/pages/lobby-create/index');
     await waitForCondition(async () => {
       const data = await page.data();
-      return Boolean((Array.isArray(data.themeOptions) && data.themeOptions.length) || data.errorText);
+      return Boolean(
+        (Array.isArray(data.themeOptions) && data.themeOptions.length) || data.errorText
+      );
     }, '发起组局页数据');
     const targetPeopleInput = await ensureElement(page, '.create-target-input', '目标人数输入框');
     const contactNameInput = await ensureElement(page, '.create-contact-input', '联系人称呼输入框');
-    const contactPhoneInput = await ensureElement(page, '.create-phone-input', '联系人手机号输入框');
+    const contactPhoneInput = await ensureElement(
+      page,
+      '.create-phone-input',
+      '联系人手机号输入框'
+    );
     assert.equal(Boolean(targetPeopleInput && contactNameInput && contactPhoneInput), true);
     await contactNameInput.input('阿杰');
     await contactPhoneInput.input('12345');
-    const submitButton = await ensureElement(page, '.create-action-row .button-primary', '创建组局提交按钮');
+    const submitButton = await ensureElement(
+      page,
+      '.create-action-row .button-primary',
+      '创建组局提交按钮'
+    );
     await submitButton.tap();
     await page.waitFor(600);
     assert.equal(await page.data('errorField'), 'contactPhone');
@@ -64,7 +76,7 @@ async function main() {
     await editLink.tap();
     await waitForCondition(async () => {
       const currentPage = await miniProgram.currentPage();
-      return currentPage.path === 'pages/profile-edit/index';
+        return currentPage.path === 'packages/profile/edit/index';
     }, '进入资料编辑页');
     page = await miniProgram.currentPage();
     const editInputs = await page.$$('.edit-input');
@@ -74,10 +86,14 @@ async function main() {
     await editTextarea.input('这是 UI 自动化改写的签名');
     const saveButton = await ensureElement(page, '.edit-actions .button-primary', '资料保存按钮');
     await saveButton.tap();
-    await waitForCondition(async () => {
-      const currentPage = await miniProgram.currentPage();
-      return currentPage.path === 'pages/profile/index';
-    }, '保存资料返回档案页', 45000);
+    await waitForCondition(
+      async () => {
+        const currentPage = await miniProgram.currentPage();
+        return currentPage.path === 'pages/profile/index';
+      },
+      '保存资料返回档案页',
+      45000
+    );
     page = await miniProgram.currentPage();
     await waitForCondition(async () => {
       const nickname = await page.data('profile.nickname');
@@ -87,19 +103,23 @@ async function main() {
     assert.equal((await refreshedProfileName.text()).includes('自动化昵称'), true);
 
     console.log('[ui] staff-auth');
-    page = await miniProgram.reLaunch('/pages/staff-auth-code/index');
+    page = await miniProgram.reLaunch('/packages/staff/auth-code/index');
     await waitForCondition(async () => {
       const currentPage = await miniProgram.currentPage();
-      return currentPage.path === 'pages/staff-auth-code/index';
+      return currentPage.path === 'packages/staff/auth-code/index';
     }, '授权页路由');
     const authInput = await ensureElement(page, '.staff-auth-input', '授权码输入框');
-    await authInput.input('OWNER2026');
+    await authInput.input('OWN826');
     const authButton = await ensureElement(page, '.staff-auth-submit', '授权提交按钮');
     await authButton.tap();
-    await waitForCondition(async () => {
-      const currentPage = await miniProgram.currentPage();
-      return currentPage.path === 'pages/staff-dashboard/index';
-    }, '工作台跳转', 45000);
+    await waitForCondition(
+      async () => {
+        const currentPage = await miniProgram.currentPage();
+        return currentPage.path === 'packages/staff/dashboard/index';
+      },
+      '工作台跳转',
+      45000
+    );
 
     console.log('[ui] staff-dashboard');
     page = await miniProgram.currentPage();

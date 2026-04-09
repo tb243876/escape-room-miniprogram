@@ -54,6 +54,13 @@ Component({
     this.syncSelectedPath();
   },
 
+  detached() {
+    if (this.syncTimer) {
+      clearTimeout(this.syncTimer);
+      this.syncTimer = null;
+    }
+  },
+
   pageLifetimes: {
     show() {
       this.syncSelectedPath();
@@ -62,15 +69,26 @@ Component({
 
   methods: {
     syncSelectedPath() {
-      this.updateSelected();
-      setTimeout(() => {
-        this.updateSelected();
-      }, 32);
+      const nextPath = getCurrentRoute();
+      this.updateSelected(nextPath);
+      if (this.syncTimer) {
+        clearTimeout(this.syncTimer);
+      }
+      if (!nextPath) {
+        this.syncTimer = setTimeout(() => {
+          this.updateSelected(getCurrentRoute());
+          this.syncTimer = null;
+        }, 32);
+      }
     },
 
-    updateSelected() {
+    updateSelected(nextPath = '') {
+      const resolvedPath = nextPath || getCurrentRoute();
+      if (!resolvedPath || resolvedPath === this.data.selectedPath) {
+        return;
+      }
       this.setData({
-        selectedPath: getCurrentRoute(),
+        selectedPath: resolvedPath,
       });
     },
 

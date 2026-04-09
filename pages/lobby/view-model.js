@@ -3,27 +3,27 @@
 function getStatusMeta(rawStatus) {
   const map = {
     recruiting: {
-      text: '招募中',
+      text: '正在凑队',
       pillClass: 'status-pill-recruiting',
     },
     full: {
-      text: '已满员',
+      text: '人数已满',
       pillClass: 'status-pill-full',
     },
     pending_store_confirm: {
-      text: '待门店确认',
+      text: '等店家确认',
       pillClass: 'status-pill-pending',
     },
     confirmed: {
-      text: '确认成功',
+      text: '已确认成局',
       pillClass: 'status-pill-confirmed',
     },
     playing: {
-      text: '游戏中',
+      text: '战斗中',
       pillClass: 'status-pill-confirmed',
     },
     settled: {
-      text: '已结算',
+      text: '冒险已归档',
       pillClass: 'status-pill-confirmed',
     },
     cancelled: {
@@ -34,7 +34,7 @@ function getStatusMeta(rawStatus) {
 
   return (
     map[rawStatus] || {
-      text: rawStatus || '招募中',
+      text: rawStatus || '正在凑队',
       pillClass: 'status-pill-default',
     }
   );
@@ -58,11 +58,24 @@ function buildPrimaryTabs(activePage) {
 function normalizeLobbyList(groups) {
   return (groups || []).map((item) => {
     const neededPeople = Math.max(0, Number(item.neededPeople || 0));
+    const viewerRelated = Boolean(item.viewerRelated || item.viewerRole || item.viewerStatus);
+    const activeViewerParticipation = viewerRelated && item.viewerStatus === 'active';
+    const isExpired = Boolean(Number(item.sortTime || 0)) && Number(item.sortTime || 0) < Date.now();
+    const canDelete = Boolean(
+      viewerRelated &&
+      (
+        item.viewerStatus !== 'active' ||
+        item.rawStatus === 'cancelled' ||
+        item.rawStatus === 'settled' ||
+        isExpired
+      )
+    );
     const canJoin =
       item.rawStatus === 'recruiting' &&
       neededPeople > 0 &&
       !item.isMyActiveGroup &&
-      !item.hasOtherActiveGroup;
+      !item.hasOtherActiveGroup &&
+      !activeViewerParticipation;
     const canOpenRoom =
       item.rawStatus === 'pending_store_confirm' ||
       item.rawStatus === 'confirmed' ||
@@ -85,22 +98,22 @@ function normalizeLobbyList(groups) {
       cardClass: item.participationClass || 'group-card-public',
       riskHint:
         item.rawStatus === 'pending_store_confirm'
-          ? '人数已接近成局，仍需门店确认真实到店成员。'
+          ? '人数刚好凑满，等店家到店核验后即可成局。'
           : item.rawStatus === 'confirmed'
-            ? '门店已确认，可进入真实队伍房间查看状态。'
+            ? '店家已确认，可进房间查看状态。'
             : item.rawStatus === 'playing'
-              ? '场次已经开始，后续状态和结果会在房间里更新。'
+              ? '战斗已打响，结果和集锦会在房间里同步。'
               : item.rawStatus === 'settled'
-                ? '这场已经结算完成，可进入房间查看结果。'
+                ? '这场冒险已归档，可进房间查看结果。'
                 : '大厅只表示组队意向，不代表最终一定开场。',
       cancelButtonText:
-        item.isMyActiveGroup && item.myGroupRole === '我发起的' ? '取消组局' : '退出组局',
+        item.isMyActiveGroup && item.myGroupRole === '我发起的' ? '取消队伍' : '退出队伍',
       joinButtonText: item.isMyActiveGroup
         ? '当前已参与'
         : item.hasOtherActiveGroup
-          ? '已有其他组局'
+          ? '已有其他队伍'
           : canJoin
-            ? '加入组局'
+            ? '加入队伍'
             : '暂不可加入',
       joinButtonClass: canJoin ? '' : 'button-disabled',
       canJoin,
@@ -108,14 +121,10 @@ function normalizeLobbyList(groups) {
       roomButtonClass: canOpenRoom ? 'button-primary' : 'button-secondary',
       canOpenRoom,
       canCancel: Boolean(
-        item.isMyActiveGroup &&
+        (item.isMyActiveGroup || activeViewerParticipation) &&
         ['recruiting', 'pending_store_confirm', 'confirmed'].includes(item.rawStatus)
       ),
-      canDelete:
-        !item.isMyActiveGroup &&
-        (item.rawStatus === 'cancelled' ||
-          item.rawStatus === 'settled' ||
-          Number(item.sortTime || 0) < Date.now()),
+      canDelete,
       statusKey: item.rawStatus || 'recruiting',
       statusText: statusMeta.text,
       statusPillClass: statusMeta.pillClass,
@@ -141,10 +150,19 @@ function buildFilterTabs(groups, activeFilter) {
 function filterByPage(groups, activePage) {
   const list = groups || [];
   if (activePage === 'mine') {
-    return list.filter((item) => item.isMyActiveGroup || item.isMyRecentGroup);
+    return list.filter(
+      (item) =>
+        (!item.hiddenForViewer && item.isMyActiveGroup) ||
+        (!item.hiddenForViewer && item.isMyRecentGroup) ||
+        (!item.hiddenForViewer && Boolean(item.viewerRelated || item.viewerRole || item.viewerStatus))
+    );
   }
   return list.filter(
-    (item) => item.rawStatus === 'recruiting' && !item.isMyActiveGroup && !item.isMyRecentGroup
+    (item) =>
+      item.rawStatus === 'recruiting' &&
+      !item.isMyActiveGroup &&
+      !(Boolean(item.viewerRelated || item.viewerRole || item.viewerStatus) && item.viewerStatus === 'active') &&
+      item.viewerRole !== 'creator'
   );
 }
 

@@ -1,0 +1,152 @@
+.dashboard-hero {
+  padding: 30rpx;
+  background:
+    radial-gradient(circle at top right, rgba(255, 228, 186, 0.22), transparent 34%),
+    linear-gradient(135deg, #4a332c, #6f5043 58%, #d0a06d);
+  color: var(--cream-primary);
+  border: 1rpx solid rgba(141, 98, 60, 0.14);
+}
+
+.dashboard-kicker {
+  font-size: 22rpx;
+  letter-spacing: 4rpx;
+  opacity: 0.78;
+}
+
+.dashboard-title {
+  margin-top: 18rpx;
+  font-size: 38rpx;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.dashboard-subtitle {
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  line-height: 1.8;
+  color: var(--text-secondary);
+}
+
+.dashboard-permissions {
+  margin-top: 14rpx;
+  font-size: 22rpx;
+  color: var(--text-secondary);
+}
+
+.dashboard-sync-note {
+  margin-top: 14rpx;
+  font-size: 20rpx;
+  letter-spacing: 2rpx;
+  color: var(--text-muted);
+}
+
+.dashboard-actions {
+  margin-top: 18rpx;
+  display: flex;
+  justify-content: center;
+}
+
+.dashboard-action-btn {
+  max-width: 320rpx;
+  min-height: 72rpx;
+  padding: 0 26rpx;
+  border-radius: 999rpx;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  line-height: 1.2;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.dashboard-highlight-strip {
+  margin-top: 18rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+
+.dashboard-highlight-card {
+  flex: 1 1 180rpx;
+  min-width: 180rpx;
+  padding: 18rpx 14rpx;
+  border-radius: 20rpx;
+  background:
+    radial-gradient(circle at top right, rgba(255, 230, 188, 0.22), transparent 32%),
+    linear-gradient(180deg, rgba(255, 249, 241, 0.98), rgba(246, 234, 218, 0.98));
+  border: 1rpx solid rgba(141, 98, 60, 0.08);
+  text-align: center;
+}
+
+.dashboard-highlight-value {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #7b4a31;
+}
+
+.dashboard-highlight-label {
+  margin-top: 10rpx;
+  font-size: 21rpx;
+  color: var(--text-secondary);
+}
+
+.staff-entry-grid {
+  margin-top: 18rpx;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16rpx;
+}
+
+.staff-entry-card {
+  min-height: 196rpx;
+  padding: 22rpx;
+  border: 1rpx solid rgba(141, 98, 60, 0.08);
+  background: rgba(255, 249, 242, 0.96);
+  box-sizing: border-box;
+}
+
+.staff-entry-card-users {
+  background:
+    radial-gradient(circle at top right, rgba(255, 232, 202, 0.24), transparent 34%),
+    linear-gradient(180deg, #fff8f2, #f2e3d0);
+}
+
+.staff-entry-card-sessions {
+  background:
+    radial-gradient(circle at top right, rgba(255, 227, 194, 0.22), transparent 34%),
+    linear-gradient(180deg, #fff9f4, #efe1cd);
+}
+
+.staff-entry-card-store {
+  background:
+    radial-gradient(circle at top right, rgba(255, 236, 212, 0.22), transparent 34%),
+    linear-gradient(180deg, #fffaf5, #f5e8d8);
+}
+
+.staff-entry-card-analytics {
+  background:
+    radial-gradient(circle at top right, rgba(255, 230, 201, 0.22), transparent 34%),
+    linear-gradient(180deg, #fff8f3, #efe0d2);
+}
+
+.staff-entry-kicker {
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  color: var(--text-secondary);
+}
+
+.staff-entry-title {
+  margin-top: 12rpx;
+  font-size: 30rpx;
+  line-height: 1.3;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.staff-entry-meta {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}

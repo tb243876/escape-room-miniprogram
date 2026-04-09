@@ -1,14 +1,20 @@
 <view class="screen screen-with-tabbar">
   <view wx:if="{{errorText}}" class="card status-card">
-    <view class="status-title">组局大厅加载失败</view>
+    <view class="status-title">队伍大厅加载失败</view>
     <view class="status-text">{{errorText}}</view>
     <view class="button-primary status-action" bindtap="retryLoad">重新加载</view>
   </view>
 
   <block wx:else>
-    <view class="section-title">
-      <text>{{activePage === 'mine' ? '我的组局' : '最近可拼场次'}}</text>
-      <text class="lobby-hero-btn" bindtap="openCreatePage">去发起组局</text>
+    <view class="lobby-atmosphere-card">
+      <view class="lobby-atmosphere-kicker">{{activePage === 'mine' ? '我的进度看板' : '今晚招募看板'}}</view>
+      <view class="lobby-atmosphere-title">
+        {{activePage === 'mine' ? '把自己参与过的组局按状态收拢查看' : '大厅展示的是招募意向，实际成局仍以门店确认为准'}}
+      </view>
+      <view class="lobby-atmosphere-tags">
+        <view class="lobby-atmosphere-tag">{{activePage === 'mine' ? '房间状态集中查看' : '招募状态一眼可见'}}</view>
+        <view class="lobby-atmosphere-tag">{{activePage === 'mine' ? '可直接回看房间' : '按主题快速筛场'}}</view>
+      </view>
     </view>
 
     <view class="lobby-summary-strip">
@@ -68,7 +74,7 @@
     </view>
 
     <view wx:if="{{isLoading}}" class="card status-card">
-      <view class="status-title">正在整理最近组局</view>
+      <view class="status-title">正在整理最近队伍</view>
       <view class="status-text">请稍等，马上就好。</view>
     </view>
 
@@ -113,13 +119,14 @@
               删除记录
             </view>
             <view
-              wx:else
+              wx:elif="{{item.canCancel}}"
               class="button-primary lobby-cancel-btn"
               data-id="{{item.id}}"
               bindtap="promptCancelGroup"
             >
               {{item.cancelButtonText}}
             </view>
+            <view wx:else class="button-secondary button-disabled">当前不可操作</view>
           </view>
         </view>
 
@@ -154,13 +161,14 @@
                   删除记录
                 </view>
                 <view
-                  wx:else
+                  wx:elif="{{item.canCancel}}"
                   class="button-primary lobby-cancel-btn"
                   data-id="{{item.id}}"
                   bindtap="promptCancelGroup"
                 >
                   {{item.cancelButtonText}}
                 </view>
+                <view wx:else class="button-secondary button-disabled">当前不可操作</view>
               </view>
             </view>
           </view>
@@ -193,11 +201,11 @@
     </block>
 
     <view wx:else class="card status-card">
-      <view class="status-title">{{activePage === 'mine' ? '你还没有相关组局' : '现在还没有组局'}}</view>
+      <view class="status-title">{{activePage === 'mine' ? '还没有相关队伍' : '今晚还没有队伍'}}</view>
       <view class="status-text">
         {{activePage === 'mine'
-          ? '你还没有发起或加入任何队伍，可以先去大厅看看，或者自己发起一场。'
-          : '你可以先发起一场，把今晚想玩的局挂出来。'}}
+          ? '你还没有发起或加入过队伍，可以先去大厅看看有没有可拼的场次。'
+          : '今晚还没有组局，要不要自己发起一场？'}}
       </view>
       <view class="button-primary status-action" bindtap="openCreatePage">去发起</view>
     </view>
@@ -228,9 +236,52 @@
     <view class="lobby-dialog modal-card-common" catchtap="noop">
       <view class="lobby-dialog-title modal-title-common">{{confirmDialogTitle}}</view>
       <view class="lobby-dialog-content modal-content-common">{{confirmDialogContent}}</view>
+      <view wx:if="{{confirmDialogPenaltyPreview && confirmDialogPenaltyPreview.shouldWarn}}" class="lobby-penalty-preview">
+        <view class="lobby-penalty-preview-head">取消惩罚预览</view>
+        <view class="lobby-penalty-preview-grid">
+          <view class="lobby-penalty-preview-card">
+            <view class="lobby-penalty-preview-value">{{confirmDialogPenaltyPreview.affectedMemberCount}}</view>
+            <view class="lobby-penalty-preview-label">受影响成员</view>
+          </view>
+          <view class="lobby-penalty-preview-card">
+            <view class="lobby-penalty-preview-value">-{{confirmDialogPenaltyPreview.totalPenalty}}</view>
+            <view class="lobby-penalty-preview-label">预计扣分</view>
+          </view>
+          <view class="lobby-penalty-preview-card">
+            <view class="lobby-penalty-preview-value">{{confirmDialogPenaltyPreview.currentScore}} → {{confirmDialogPenaltyPreview.nextScore}}</view>
+            <view class="lobby-penalty-preview-label">信誉变化</view>
+          </view>
+        </view>
+        <view class="lobby-penalty-preview-tags">
+          <view wx:if="{{confirmDialogPenaltyPreview.basePenalty}}" class="lobby-penalty-tag">人数惩罚 {{confirmDialogPenaltyPreview.basePenalty}}</view>
+          <view wx:if="{{confirmDialogPenaltyPreview.timePenalty}}" class="lobby-penalty-tag">临场惩罚 {{confirmDialogPenaltyPreview.timePenalty}}</view>
+          <view wx:if="{{confirmDialogPenaltyPreview.repeatPenalty}}" class="lobby-penalty-tag">近期重复 {{confirmDialogPenaltyPreview.repeatPenalty}}</view>
+        </view>
+        <view class="lobby-penalty-preview-note">{{confirmDialogPenaltyPreview.reasonText}}</view>
+      </view>
       <view class="lobby-dialog-actions actions-split">
         <view class="lobby-dialog-btn lobby-dialog-btn-secondary" bindtap="closeConfirmDialog">再想想</view>
         <view class="lobby-dialog-btn lobby-dialog-btn-primary" bindtap="confirmDialogAction">确认</view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{exitReasonVisible}}" class="lobby-modal-mask" bindtap="closeExitReasonPanel">
+    <view class="lobby-dialog modal-card-common" catchtap="noop">
+      <view class="lobby-dialog-title modal-title-common">退出原因</view>
+      <view class="lobby-dialog-content modal-content-common">退出前请选择一个原因，帮助我们改进大厅体验。</view>
+      <view class="lobby-exit-reason-options">
+        <view
+          wx:for="{{exitReasonOptions}}"
+          wx:key="*this"
+          class="lobby-exit-reason-option {{selectedExitReason === item ? 'lobby-exit-reason-option-active' : ''}}"
+          data-reason="{{item}}"
+          bindtap="selectExitReason"
+        >{{item}}</view>
+      </view>
+      <view class="lobby-dialog-actions actions-split">
+        <view class="lobby-dialog-btn lobby-dialog-btn-secondary" bindtap="closeExitReasonPanel">取消</view>
+        <view class="lobby-dialog-btn lobby-dialog-btn-primary" bindtap="confirmExitWithReason">确认退出</view>
       </view>
     </view>
   </view>

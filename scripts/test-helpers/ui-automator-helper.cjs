@@ -50,23 +50,43 @@ async function findElementByText(page, selector, expectedText, label) {
 
 async function launchMiniProgram() {
   let lastError = null;
+  const preferredPort = Number(process.env.WECHAT_AUTOMATOR_PORT || 9420);
 
   for (let index = 0; index < 3; index += 1) {
+    const port = preferredPort + index;
     try {
-      console.log(`[ui-helper] launch attempt ${index + 1}`);
+      console.log(`[ui-helper] connect attempt ${index + 1} on port ${port}`);
+      const connectedMiniProgram = await automator.connect({
+        wsEndpoint: `ws://127.0.0.1:${port}`,
+      });
+      console.log(`[ui-helper] connect ok ${index + 1} on port ${port}`);
+      return connectedMiniProgram;
+    } catch (error) {
+      lastError = error;
+      console.log(
+        `[ui-helper] connect failed ${index + 1} on port ${port}: ${
+          error && error.message ? error.message : error
+        }`
+      );
+    }
+
+    try {
+      console.log(`[ui-helper] launch attempt ${index + 1} on port ${port}`);
       const miniProgram = await automator.launch({
         cliPath,
         projectPath,
         timeout: 90000,
         trustProject: true,
-        port: 9420,
+        port,
       });
-      console.log(`[ui-helper] launch ok ${index + 1}`);
+      console.log(`[ui-helper] launch ok ${index + 1} on port ${port}`);
       return miniProgram;
     } catch (error) {
       lastError = error;
       console.log(
-        `[ui-helper] launch failed ${index + 1}: ${error && error.message ? error.message : error}`
+        `[ui-helper] launch failed ${index + 1} on port ${port}: ${
+          error && error.message ? error.message : error
+        }`
       );
       await sleep(1500);
     }

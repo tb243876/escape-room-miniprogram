@@ -1,0 +1,93 @@
+<view class="screen">
+  <view class="hero-card staff-highlights-hero">
+    <view class="staff-highlights-kicker">门店工作台</view>
+    <view class="staff-highlights-title">集锦管理</view>
+    <view class="staff-highlights-subtitle">这里集中查看哪些场次已上传、哪些还没上传，并可直接补传照片和视频。</view>
+  </view>
+
+  <view class="staff-highlights-tip-card">
+    <view class="staff-highlights-tip-title">集锦规则</view>
+    <view class="staff-highlights-tip-text">建议每场控制在 9 个内容以内，优先保留横版封面、关键剧情节点和结算合照，方便房间页直接展示。</view>
+  </view>
+
+  <view wx:if="{{errorText}}" class="card status-card">
+    <view class="status-title">集锦库加载失败</view>
+    <view class="status-text">{{errorText}}</view>
+    <view class="button-primary status-action" bindtap="retryLoad">重新加载</view>
+  </view>
+
+  <block wx:elif="{{highlights.length}}">
+    <view class="section-title">
+      <text>场次集锦</text>
+    </view>
+
+    <view class="card highlight-pack" wx:for="{{highlights}}" wx:key="id" wx:for-item="pack">
+      <view class="highlight-pack-head">
+        <view class="highlight-pack-title">{{pack.themeName}} · {{pack.sessionLabel}}</view>
+        <view class="highlight-pack-status {{pack.statusClass}}">{{pack.status}}</view>
+      </view>
+      <view class="highlight-pack-meta">{{pack.expireHint}}</view>
+      <view class="highlight-pack-meta">责任角色：{{pack.roleLabel}}{{pack.uploaderName ? ' · ' + pack.uploaderName : ''}}</view>
+      <view class="highlight-pack-meta">已上传 {{pack.media.length}} / 9 个内容</view>
+
+      <view class="highlight-pack-actions">
+        <view
+          class="button-primary highlight-upload-btn {{uploadingHighlightId && uploadingHighlightId !== pack.id ? 'button-disabled' : ''}}"
+          bindtap="uploadMedia"
+          data-id="{{pack.id}}"
+        >
+          {{uploadingHighlightId === pack.id ? '上传中...' : (pack.media.length ? '继续补传' : '上传内容')}}
+        </view>
+      </view>
+
+      <view wx:if="{{pack.media.length}}" class="highlight-media-list">
+        <view class="highlight-media-item" wx:for="{{pack.media}}" wx:key="id">
+          <view
+            class="highlight-media-visual {{item.type === 'video' ? 'highlight-media-video' : ''}}"
+            bindtap="previewMedia"
+            data-highlight-id="{{pack.id}}"
+            data-media-id="{{item.id}}"
+          >
+            <image
+              wx:if="{{item.type !== 'video' && item.previewUrl}}"
+              class="highlight-media-image"
+              src="{{item.previewUrl}}"
+              mode="aspectFill"
+            ></image>
+            <view wx:elif="{{item.type === 'video'}}" class="highlight-media-video-icon">VIDEO</view>
+          </view>
+          <view class="highlight-media-copy">
+            <view class="highlight-media-title">{{item.title}}</view>
+            <view class="highlight-media-tag">{{item.tagText}}</view>
+          </view>
+          <view
+            class="highlight-media-remove"
+            bindtap="promptRemoveMedia"
+            data-highlight-id="{{pack.id}}"
+            data-media-id="{{item.id}}"
+          >
+            删除
+          </view>
+        </view>
+      </view>
+
+      <view wx:else class="highlight-empty">当前还没有上传内容，场次结算后可补传</view>
+    </view>
+  </block>
+
+  <view wx:else class="card status-card">
+    <view class="status-title">当前还没有集锦记录</view>
+    <view class="status-text">场次结算后会自动显示集锦包</view>
+  </view>
+
+  <view wx:if="{{dialogVisible}}" class="modal-mask-center" bindtap="closeDialog">
+    <view class="modal-card-common" catchtap="noop">
+      <view class="modal-title-common">{{dialogTitle}}</view>
+      <view class="modal-content-common">{{dialogContent}}</view>
+      <view class="highlight-dialog-actions actions-split">
+        <view class="button-secondary" bindtap="closeDialog">取消</view>
+        <view class="button-primary" bindtap="confirmDialogAction">确认删除</view>
+      </view>
+    </view>
+  </view>
+</view>

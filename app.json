@@ -5,19 +5,30 @@
     "pages/lobby-create/index",
     "pages/team-room/index",
     "pages/leaderboard/index",
-    "pages/staff-auth-code/index",
-    "pages/staff-dashboard/index",
-    "pages/staff-users/index",
-    "pages/staff-sessions/index",
-    "pages/staff-store/index",
-    "pages/staff-session/index",
-    "pages/staff-highlights/index",
-    "pages/badges/index",
     "pages/theme-detail/index",
+    "pages/theme-reviews/index",
     "pages/activities/index",
     "pages/themes/index",
-    "pages/profile-edit/index",
     "pages/profile/index"
+  ],
+  "subPackages": [
+    {
+      "root": "packages/profile",
+      "pages": ["edit/index", "badges/index"]
+    },
+    {
+      "root": "packages/staff",
+      "pages": [
+        "auth-code/index",
+        "dashboard/index",
+        "users/index",
+        "sessions/index",
+        "store/index",
+        "session/index",
+        "highlights/index",
+        "revenue/index"
+      ]
+    }
   ],
   "window": {
     "navigationBarBackgroundColor": "#f8f1e8",

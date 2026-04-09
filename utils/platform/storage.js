@@ -2,6 +2,7 @@
 
 const PROFILE_STORAGE_KEY = 'escape-room-profile-state-v3';
 const PROFILE_SYNC_STORAGE_KEY = 'escape-room-profile-sync-state-v1';
+const THEME_WISHLIST_STORAGE_KEY = 'escape-room-theme-wishlist-v1';
 const GROUP_STORAGE_KEY = 'escape-room-group-state-v1';
 const TEAM_ROOM_STORAGE_KEY = 'escape-room-team-room-state-v1';
 const STAFF_BINDING_STORAGE_KEY = 'escape-room-staff-binding-v1';
@@ -12,7 +13,6 @@ const LOCAL_STORAGE_PREFIX = 'escape-room-';
 const LEGACY_STORAGE_KEYS = [
   'escape-room-profile-state-v1',
   'escape-room-profile-state-v2',
-  'escape-room-profile-state-v3',
   'escape-room-group-state-v1',
   'escape-room-used-codes-v1',
 ];
@@ -63,6 +63,7 @@ function clearBusinessStorage() {
 module.exports = {
   PROFILE_STORAGE_KEY,
   PROFILE_SYNC_STORAGE_KEY,
+  THEME_WISHLIST_STORAGE_KEY,
   GROUP_STORAGE_KEY,
   TEAM_ROOM_STORAGE_KEY,
   STAFF_BINDING_STORAGE_KEY,

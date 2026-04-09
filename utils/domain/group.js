@@ -142,6 +142,7 @@ function normalizeGroupItem(item) {
     members: memberInfo.members,
     createdAt: item.createdAt || '',
     sortTime: buildTimestamp(dateValue, item.timeSlot),
+    hiddenForViewer: Boolean(item.hiddenForViewer),
     viewerRelated: Boolean(item.viewerRelated),
     viewerRole: item.viewerRole || '',
     viewerStatus: item.viewerStatus || '',
@@ -243,19 +244,39 @@ function hasConflictingActiveGroup(activeGroup, targetGroupId) {
   );
 }
 
-function isActiveParticipationItem(item = {}) {
+function isExpiredRecruitingGroup(item = {}) {
+  const rawStatus = String(item.rawStatus || '').trim();
+  const sortTime = Number(item.sortTime || 0);
   return (
-    item.viewerRelated &&
-    item.viewerStatus === 'active' &&
-    item.rawStatus !== 'cancelled' &&
-    item.rawStatus !== 'settled'
+    Boolean(sortTime) &&
+    sortTime < Date.now() &&
+    rawStatus !== 'confirmed' &&
+    rawStatus !== 'playing'
   );
+}
+
+function isGroupStillActive(item = {}) {
+  return (
+    item.rawStatus !== 'cancelled' &&
+    item.rawStatus !== 'settled' &&
+    !isExpiredRecruitingGroup(item)
+  );
+}
+
+function isActiveParticipationItem(item = {}) {
+  const viewerRelated = Boolean(
+    item.viewerRelated || item.viewerRole || item.viewerStatus || item.viewerContactName
+  );
+  return viewerRelated && item.viewerStatus === 'active' && isGroupStillActive(item);
 }
 
 function attachParticipationState(groups, activeGroup, recentGroup) {
   return (groups || []).map((item) => {
-    // 组局已取消或已结算时，isMyActiveGroup 必须为 false
-    const isActive = item.rawStatus !== 'cancelled' && item.rawStatus !== 'settled';
+    const viewerRelated = Boolean(
+      item.viewerRelated || item.viewerRole || item.viewerStatus || item.viewerContactName
+    );
+    // 组局已取消、已结算，或已过期可清理时，不再视为当前活跃参与。
+    const isActive = isGroupStillActive(item);
     const isMyActive =
       isActive &&
       Boolean(
@@ -265,9 +286,14 @@ function attachParticipationState(groups, activeGroup, recentGroup) {
 
     // 我参与过的组局（已取消/已结算/非活跃）应该显示在"我的"页签
     const isMyRecent = Boolean(
-      item.viewerRelated &&
       !isMyActive &&
-      (item.rawStatus === 'cancelled' || item.rawStatus === 'settled' || item.rawStatus === 'full')
+      (
+        (recentGroup && recentGroup.groupId === item.id) ||
+        (viewerRelated &&
+          ((item.viewerStatus && item.viewerStatus !== 'active') ||
+            item.rawStatus === 'cancelled' ||
+            item.rawStatus === 'settled'))
+      )
     );
 
     return {
@@ -289,7 +315,7 @@ function attachParticipationState(groups, activeGroup, recentGroup) {
             ? recentGroup.role === 'creator'
               ? '我发起的'
               : '我已加入'
-            : item.viewerRelated
+            : viewerRelated
               ? item.viewerRole === 'creator'
                 ? '我发起的'
                 : '我已加入'
@@ -303,11 +329,12 @@ function attachParticipationState(groups, activeGroup, recentGroup) {
             ? recentGroup.role === 'creator'
               ? 'group-card-owner'
               : 'group-card-member'
-            : item.viewerRelated
+            : viewerRelated
               ? item.viewerRole === 'creator'
                 ? 'group-card-owner'
                 : 'group-card-member'
               : 'group-card-public',
+      viewerRelated,
       hasOtherActiveGroup: hasConflictingActiveGroup(activeGroup, item.id),
     };
   });
@@ -317,6 +344,15 @@ function normalizePhone(value) {
   return String(value || '')
     .replace(/\D/g, '')
     .slice(0, 11);
+}
+
+function fail(errorCode, message) {
+  return {
+    ok: false,
+    errorCode,
+    message,
+    retryable: false,
+  };
 }
 
 function validateCreateGroupPayload(payload = {}) {
@@ -331,22 +367,22 @@ function validateCreateGroupPayload(payload = {}) {
   const targetPeople = Math.min(8, Math.max(2, Number(payload.targetPeople || 0)));
 
   if (!themeName) {
-    return { ok: false, message: '请选择组局主题' };
+    return fail('REQUEST_PARAM_INVALID', '请选择组局主题');
   }
   if (!dateValue) {
-    return { ok: false, message: '请选择组局日期' };
+    return fail('REQUEST_PARAM_INVALID', '请选择组局日期');
   }
   if (!timeSlot) {
-    return { ok: false, message: '请选择开场时间' };
+    return fail('REQUEST_PARAM_INVALID', '请选择开场时间');
   }
   if (!contactName) {
-    return { ok: false, message: '请输入联系人称呼' };
+    return fail('REQUEST_PARAM_INVALID', '请输入联系人称呼');
   }
   if (!/^1\d{10}$/.test(contactPhone)) {
-    return { ok: false, message: '请输入正确的手机号' };
+    return fail('REQUEST_PARAM_INVALID', '请输入正确的手机号');
   }
   if (targetPeople <= currentPeople) {
-    return { ok: false, message: '目标人数必须大于当前人数' };
+    return fail('REQUEST_PARAM_INVALID', '目标人数必须大于当前人数');
   }
 
   return {
@@ -371,10 +407,10 @@ function validateJoinGroupPayload(payload = {}) {
   const contactPhone = normalizePhone(payload.contactPhone);
 
   if (!contactName) {
-    return { ok: false, message: '请输入联系人称呼' };
+    return fail('REQUEST_PARAM_INVALID', '请输入联系人称呼');
   }
   if (!/^1\d{10}$/.test(contactPhone)) {
-    return { ok: false, message: '请输入正确的手机号' };
+    return fail('REQUEST_PARAM_INVALID', '请输入正确的手机号');
   }
 
   return {
@@ -398,6 +434,7 @@ module.exports = {
   saveLocalRecentGroup,
   clearLocalRecentGroup,
   hasConflictingActiveGroup,
+  isGroupStillActive,
   attachParticipationState,
   validateCreateGroupPayload,
   validateJoinGroupPayload,

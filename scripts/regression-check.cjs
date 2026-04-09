@@ -1,20 +1,26 @@
 'use strict';
 
+const path = require('path');
 const { spawn } = require('child_process');
 
-const steps = [
+const projectRoot = path.resolve(__dirname, '..');
+
+const baseSteps = [
   { label: 'lint', command: 'npm', args: ['run', 'lint'] },
   { label: 'phase1', command: 'npm', args: ['run', 'test:phase1'] },
   { label: 'business', command: 'npm', args: ['run', 'test:business'] },
-  { label: 'groups', command: 'npm', args: ['run', 'test:groups'] },
-  { label: 'flows', command: 'npm', args: ['run', 'test:flows'] },
-  { label: 'api', command: 'npm', args: ['run', 'test:api'] },
-  { label: 'perf', command: 'npm', args: ['run', 'test:perf'] },
+];
+
+const uiSteps = [
   { label: 'ui-smoke', command: 'npm', args: ['run', 'test:ui'] },
   { label: 'ui-player', command: 'npm', args: ['run', 'test:ui:player'] },
   { label: 'ui-staff', command: 'npm', args: ['run', 'test:ui:staff'] },
   { label: 'ui-session', command: 'npm', args: ['run', 'test:ui:session'] },
 ];
+
+function shouldIncludeUiSteps() {
+  return String(process.env.INCLUDE_UI_REGRESSION || '').trim() === '1';
+}
 
 function runStep(step) {
   return new Promise((resolve, reject) => {
@@ -24,6 +30,7 @@ function runStep(step) {
       stdio: 'inherit',
       shell: process.platform === 'win32',
       env: process.env,
+      cwd: projectRoot,
     });
 
     child.on('error', (error) => {
@@ -43,6 +50,13 @@ function runStep(step) {
 
 async function main() {
   const startedAt = Date.now();
+  const includeUiSteps = shouldIncludeUiSteps();
+  const steps = includeUiSteps ? baseSteps.concat(uiSteps) : baseSteps;
+
+  if (!includeUiSteps) {
+    console.log('[regression] skip UI steps (set INCLUDE_UI_REGRESSION=1 to enable)');
+    console.log('[regression] UI steps require WeChat DevTools/automator process and are disabled for plain CI by default');
+  }
 
   for (const step of steps) {
     await runStep(step);

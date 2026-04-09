@@ -1,10 +1,9 @@
 .leaderboard-hero {
   padding: 30rpx;
   background:
-    linear-gradient(160deg, rgba(22, 12, 10, 0.06), rgba(22, 12, 10, 0)),
-    radial-gradient(circle at top right, rgba(239, 198, 135, 0.22), transparent 34%),
-    linear-gradient(135deg, #41302a, #6f5043 58%, #c89a65);
-  color: #fff3e8;
+    linear-gradient(135deg, #4a2d24 0%, #815542 100%);
+  color: var(--cream-primary);
+  border-bottom: 1rpx solid var(--border-red);
 }
 
 .leaderboard-kicker {
@@ -24,7 +23,7 @@
   margin-top: 14rpx;
   font-size: 24rpx;
   line-height: 1.8;
-  color: rgba(255, 243, 232, 0.84);
+  color: var(--cream-muted);
 }
 
 .leaderboard-summary {
@@ -34,21 +33,67 @@
   gap: 16rpx;
 }
 
+.leaderboard-period-tabs {
+  margin-top: 18rpx;
+  display: inline-flex;
+  padding: 8rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 249, 242, 0.92);
+  border: 1rpx solid var(--border-subtle);
+  gap: 8rpx;
+}
+
+.leaderboard-period-tab {
+  min-width: 136rpx;
+  padding: 14rpx 22rpx;
+  border-radius: 999rpx;
+  text-align: center;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.leaderboard-period-tab-active {
+  background: linear-gradient(135deg, #8d5f34, #c78d60);
+  color: var(--cream-primary);
+  box-shadow: 0 10rpx 20rpx rgba(94, 62, 39, 0.14);
+}
+
+.leaderboard-hero-tags {
+  margin-top: 18rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.leaderboard-hero-tag {
+  padding: 10rpx 14rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 244, 233, 0.12);
+  border: 1rpx solid var(--border-red);
+  font-size: 20rpx;
+  color: var(--cream-primary);
+}
+
 .leaderboard-summary-card {
   padding: 22rpx 16rpx;
   text-align: center;
+  background:
+    radial-gradient(circle at top right, rgba(255, 232, 202, 0.18), transparent 30%),
+    linear-gradient(180deg, rgba(255, 249, 241, 0.98), rgba(246, 234, 218, 0.98));
+  border: 1rpx solid var(--border-subtle);
 }
 
 .leaderboard-summary-num {
   font-size: 34rpx;
   font-weight: 700;
-  color: #7b4028;
+  color: var(--red-deep);
 }
 
 .leaderboard-summary-label {
   margin-top: 8rpx;
   font-size: 22rpx;
-  color: #7a695d;
+  color: var(--text-secondary);
 }
 
 .leaderboard-card {
@@ -61,8 +106,9 @@
 
 .leaderboard-card-top {
   background:
-    radial-gradient(circle at top right, rgba(255, 241, 214, 0.64), transparent 34%),
-    rgba(255, 249, 242, 0.98);
+    linear-gradient(135deg, #7b5a46, #a68062);
+  color: var(--cream-primary);
+  border: 1rpx solid var(--red-primary);
 }
 
 .leaderboard-card-rank {
@@ -71,10 +117,15 @@
   text-align: center;
   padding: 16rpx 0;
   border-radius: 22rpx;
-  background: linear-gradient(135deg, #efe0cb, #e5c7a7);
-  color: #8f5231;
+  background: var(--bg-card-alt);
+  color: var(--text-muted);
   font-size: 24rpx;
   font-weight: 700;
+}
+
+.leaderboard-card-top .leaderboard-card-rank {
+  background: linear-gradient(135deg, var(--red-deep), var(--red-primary));
+  color: var(--cream-primary);
 }
 
 .leaderboard-card-copy {
@@ -97,23 +148,42 @@
 .leaderboard-card-title {
   padding: 4rpx 12rpx;
   border-radius: 999rpx;
-  background: rgba(143, 67, 36, 0.1);
-  color: #8f4324;
+  background: var(--red-dim);
+  color: var(--red-deep);
   font-size: 20rpx;
   font-weight: 700;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+}
+
+.leaderboard-card-top .leaderboard-card-title {
+  background: rgba(255, 244, 233, 0.12);
+  color: var(--cream-primary);
 }
 
 .leaderboard-card-meta {
   margin-top: 10rpx;
   font-size: 23rpx;
   line-height: 1.7;
-  color: #6b5a4f;
+  color: var(--text-secondary);
+}
+
+.leaderboard-card-top .leaderboard-card-meta,
+.leaderboard-card-top .leaderboard-card-name {
+  color: var(--cream-primary);
 }
 
 .leaderboard-card-score {
   font-size: 32rpx;
   font-weight: 700;
-  color: #9e3d22;
+  color: var(--red-primary);
+}
+
+.leaderboard-card-top .leaderboard-card-score {
+  color: var(--cream-primary);
 }
 
 .leaderboard-avatar,
@@ -128,8 +198,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #8d3d23, #cf7544);
-  color: #fff;
+  background: linear-gradient(135deg, var(--red-deep), var(--red-primary));
+  color: var(--cream-primary);
   font-size: 28rpx;
   font-weight: 700;
 }
@@ -158,116 +228,4 @@
   margin-top: 18rpx;
   padding: 14rpx 30rpx;
   font-size: 22rpx;
-}
-
-.player-card-head {
-  display: flex;
-  align-items: center;
-  gap: 18rpx;
-}
-
-.player-card-avatar,
-.player-card-avatar-image {
-  width: 98rpx;
-  height: 98rpx;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.player-card-avatar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #8d3d23, #cf7544);
-  color: #fff;
-  font-size: 34rpx;
-  font-weight: 700;
-}
-
-.player-card-avatar-image {
-  display: block;
-}
-
-.player-card-copy {
-  min-width: 0;
-  flex: 1;
-}
-
-.player-card-name {
-  font-size: 30rpx;
-  font-weight: 700;
-  color: #523628;
-}
-
-.player-card-title {
-  margin-top: 8rpx;
-  font-size: 22rpx;
-  color: #8f4324;
-}
-
-.player-card-meta {
-  margin-top: 10rpx;
-  font-size: 22rpx;
-  line-height: 1.6;
-  color: #6d503f;
-}
-
-.player-card-section {
-  margin-top: 22rpx;
-}
-
-.player-card-section-title {
-  font-size: 24rpx;
-  font-weight: 700;
-  color: #523628;
-}
-
-.player-card-signature {
-  margin-top: 10rpx;
-  font-size: 22rpx;
-  line-height: 1.7;
-  color: #6d503f;
-}
-
-.player-card-stats {
-  margin-top: 22rpx;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12rpx;
-}
-
-.player-card-stat {
-  padding: 16rpx 12rpx;
-  border-radius: 18rpx;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.68);
-  border: 1rpx solid rgba(113, 81, 55, 0.08);
-}
-
-.player-card-stat-num {
-  font-size: 28rpx;
-  font-weight: 700;
-  color: #7b4028;
-}
-
-.player-card-stat-label {
-  margin-top: 8rpx;
-  font-size: 20rpx;
-  color: #7a695d;
-}
-
-.player-card-tag-list {
-  margin-top: 12rpx;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10rpx;
-}
-
-.player-card-tag {
-  padding: 8rpx 14rpx;
-  border-radius: 999rpx;
-  background: rgba(143, 67, 36, 0.1);
-  color: #8f4324;
-  font-size: 20rpx;
-  font-weight: 700;
 }

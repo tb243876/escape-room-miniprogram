@@ -7,95 +7,76 @@
 ### 玩家端
 
 - 首页：浏览主题、活动入口
-- 主题列表/详情：查看主题信息、恐怖星级
-- 活动页：查看门店活动
 - 组局大厅：发起/加入组局
-- 队伍房间：查看组局成员、互相查看玩家卡片
-- 排行榜：查看玩家排名、荣誉、徽章
-- 档案：查看个人通关记录、徽章、成长值
+- 队伍房间：查看成员、查看玩家资料卡、查看结算和集锦
+- 排行榜：查看成长值、荣誉、称号、徽章
+- 档案：查看个人记录与成长
 - 资料编辑：头像、昵称、签名、性别
 
-### 员工端（工作台）
+### 员工端
 
 - 授权绑定：本机授权码绑定
-- 场次管理：确认成员、开始场次、结束场次、上传集锦
-- 集锦管理：查看/上传照片视频
+- 工作台：查看待处理场次和统计
+- 场次管理：确认成员、开始、结束、自动结算
+- 集锦管理：上传和维护照片/视频
+- 门店管理：授权码、员工、店长转移
 
-## 技术架构
+## 当前运行口径
 
-```
-pages/                 # 页面目录
-  home/                # 首页
-  themes/              # 主题列表
-  theme-detail/        # 主题详情
-  activities/          # 活动页
-  lobby/               # 组局大厅
-  lobby-create/        # 发起组局
-  team-room/           # 队伍房间
-  leaderboard/         # 排行榜
-  profile/             # 我的/档案
-  profile-edit/        # 资料编辑
-  badges/              # 徽章页
-  staff-auth-code/     # 工作台授权
-  staff-dashboard/     # 工作台首页
-  staff-session/       # 场次管理
-  staff-sessions/      # 场次列表
-  staff-highlights/    # 集锦管理
-  staff-store/         # 门店管理
-  staff-users/         # 用户管理
+- `release -> prod`
+- `trial -> prod`
+- `develop -> prod`
+- 所有运行版本都禁止依赖 mock 或本地数据 fallback
+- `initData / runtimeReset / clearData` 已退出真实运行链路，不再作为日常体验版维护手段
 
-utils/                 # 公共工具
-  cloudbase.js         # 统一服务入口
-  platform/            # 平台相关（运行时、存储、性能）
-  domain/              # 业务领域（主题、档案、组局、店员、排行榜）
-```
+## 当前云函数
 
-### 云函数
+业务函数：
 
-- `getProfile`: 获取/创建用户档案
-- `updateProfile`: 更新用户资料
-- `groupManage`: 组局管理（创建/加入/退出/取消）
-- `staffManage`: 门店管理（授权/场次/集锦）
-- `getLeaderboard`: 排行榜数据聚合
+- `getProfile`
+- `updateProfile`
+- `groupManage`
+- `staffManage`
+- `getLeaderboard`
 
-## 运行配置
+维护函数：
 
-在 `app.js` 中配置：
+- `initData`
+- `runtimeReset`
+- `clearData`
 
-- `envId`: CloudBase 环境 ID
-- `useMockData`: 是否使用 Mock 数据
-- `useMockGroups`: 组局是否使用 Mock
-- `enablePerfTracing`: 是否开启性能追踪日志
+说明：
+
+- 组局的 `create/join/cancel/delete/getTeamRoom` 当前是 `groupManage.action`
+- 场次的 `confirm/start/end` 当前是 `staffManage.action='runSessionAction'`
+- 当前没有独立排行榜写入函数；排行榜通过 `profiles` 聚合读取
+
+## 核心文档
+
+- `PROJECT_CONTEXT.md`：业务上下文、成长体系、权限矩阵、多门店口径
+- `AGENT_WORKFLOW.md`：开发规则、Mock 退出条件、回归与发布要求
+- `CODEMAP.md`：代码入口、云函数地图、分包方案
+- `STATE_MACHINE.md`：组局 / 房间 / 场次状态机
+- `ERROR_CODES.md`：错误码和前端展示文案
+- `DB_SCHEMA.md`：集合结构与索引规范
+- `cloudfunctions/README.md`：云函数接口契约
+- `AGENT_PROMPT.md`：标准开工和发布 SOP
 
 ## 测试脚本
 
 ```bash
-npm run lint                # 代码静态检查
-npm run test:phase1         # 结构/规则/流程校验
-npm run test:business       # 业务规则校验
-npm run test:flows          # 主流程校验
-npm run test:api            # 接口契约校验
-npm run test:perf           # 性能校验
-npm run test:ui             # UI 冒烟校验
-npm run test:ui:player      # 玩家端 UI 校验
-npm run test:ui:staff       # 员工端 UI 校验
-npm run test:ui:session     # 场次 UI 校验
-npm run test:regression     # 完整回归测试
+npm run lint
+npm run test:phase1
+npm run test:business
+npm run test:ui
+npm run test:ui:player
+npm run test:ui:staff
+npm run test:ui:session
+npm run test:regression
 ```
 
-## 开发约束
+说明：
 
-1. 安全性 > 性能 > 用户体验
-2. 所有写操作需考虑幂等和重复提交
-3. 用户可见错误返回可读提示，不暴露底层异常
-4. 涉及用户身份、积分、勋章、库存的逻辑放云端
-
-## 相关文档
-
-- `PROJECT_CONTEXT.md`: 项目长期上下文
-- `CURRENT_STATUS.md`: 当前状态
-- `ARCHITECTURE.md`: 架构说明
-- `FINAL_DEVELOPMENT_SPEC.md`: 开发规范
-- `docs/PHASE1_DEVELOPMENT_GUIDE.md`: 开发指南
-- `docs/UI_STYLE_GUIDE.md`: UI 风格规范
-- `docs/UI_FLOW_GUIDE.md`: UI 流程规范
+- 已移除依赖本地 mock / 假玩家数据的离线脚本，不再保留“人机数据跑通”回归口径
+- `npm run test:regression` 当前默认只跑稳定的非 UI 检查
+- 如需把 UI 自动化一起跑，使用 `INCLUDE_UI_REGRESSION=1 npm run test:regression`

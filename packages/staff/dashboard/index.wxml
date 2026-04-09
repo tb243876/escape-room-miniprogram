@@ -1,0 +1,54 @@
+<view class="screen">
+  <view wx:if="{{errorText}}" class="card status-card">
+    <view class="status-title">工作台加载失败</view>
+    <view class="status-text">{{errorText}}</view>
+    <view class="button-primary status-action" bindtap="retryLoad">重新加载</view>
+  </view>
+
+  <block wx:elif="{{dashboard}}">
+    <view class="hero-card dashboard-hero">
+      <view class="dashboard-kicker">门店工作台</view>
+      <view class="dashboard-title">{{dashboard.storeName}} · {{dashboard.roleLabel}}</view>
+      <view class="dashboard-subtitle">选择功能进入相应页面处理</view>
+      <view class="dashboard-permissions">{{dashboard.permissionsText}}</view>
+      <view class="dashboard-sync-note">30 秒自动刷新 · 最近同步 {{lastRefreshText || '--:--:--'}}</view>
+    </view>
+
+    <view class="dashboard-highlight-strip">
+      <view class="dashboard-highlight-card" wx:for="{{dashboard.dashboardHighlights}}" wx:key="label">
+        <view class="dashboard-highlight-value">{{item.value}}</view>
+        <view class="dashboard-highlight-label">{{item.label}}</view>
+      </view>
+    </view>
+
+    <view class="staff-entry-grid">
+      <view wx:if="{{dashboard.canViewMemberStats}}" class="card staff-entry-card staff-entry-card-users" bindtap="openUsersPage">
+        <view class="staff-entry-kicker">用户看板</view>
+        <view class="staff-entry-title">用户概况</view>
+        <view class="staff-entry-meta">累计 {{dashboard.memberStats.totalUsers}} 人</view>
+      </view>
+
+      <view class="card staff-entry-card staff-entry-card-sessions" bindtap="openSessionsPage">
+        <view class="staff-entry-kicker">场次管理</view>
+        <view class="staff-entry-title">门店待办</view>
+        <view class="staff-entry-meta">待确认 {{dashboard.stats.pendingConfirm}} 场</view>
+      </view>
+
+      <view wx:if="{{dashboard.canManageAuthCodes}}" class="card staff-entry-card staff-entry-card-store" bindtap="openStorePage">
+        <view class="staff-entry-kicker">门店管理</view>
+        <view class="staff-entry-title">授权与员工</view>
+        <view class="staff-entry-meta">已绑定 {{dashboard.authCodeSummary.activeStaff}} 人</view>
+      </view>
+
+      <view wx:if="{{dashboard.canViewAnalytics}}" class="card staff-entry-card staff-entry-card-analytics" bindtap="openRevenuePage">
+        <view class="staff-entry-kicker">运营数据</view>
+        <view class="staff-entry-title">趋势与主题</view>
+        <view class="staff-entry-meta">近30天完成 {{dashboard.memberStats.completedSessions30d}} 场</view>
+      </view>
+    </view>
+
+    <view class="dashboard-actions">
+      <view class="button-secondary dashboard-action-btn" bindtap="openHighlights">查看集锦库</view>
+    </view>
+  </block>
+</view>

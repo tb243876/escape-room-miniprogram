@@ -12,16 +12,20 @@ const requiredPages = [
   'pages/lobby-create/index',
   'pages/team-room/index',
   'pages/leaderboard/index',
-  'pages/staff-auth-code/index',
-  'pages/staff-dashboard/index',
-  'pages/staff-session/index',
-  'pages/staff-highlights/index',
+  'packages/staff/auth-code/index',
+  'packages/staff/dashboard/index',
+  'packages/staff/session/index',
+  'packages/staff/highlights/index',
 ];
 
 const requiredDocs = [
   'PROJECT_CONTEXT.md',
-  'ARCHITECTURE.md',
-  'FINAL_DEVELOPMENT_SPEC.md',
+  'AGENT_WORKFLOW.md',
+  'AGENT_PROMPT.md',
+  'CODEMAP.md',
+  'STATE_MACHINE.md',
+  'ERROR_CODES.md',
+  'DB_SCHEMA.md',
   'docs/PHASE1_DEVELOPMENT_GUIDE.md',
   'docs/UI_STYLE_GUIDE.md',
   'docs/UI_FLOW_GUIDE.md',
@@ -46,7 +50,20 @@ function assertExists(relativePath, errors) {
 
 function main() {
   const errors = [];
-  const pages = Array.isArray(appJson.pages) ? appJson.pages : [];
+  const mainPages = Array.isArray(appJson.pages) ? appJson.pages : [];
+  const subPackagePages = Array.isArray(appJson.subPackages)
+    ? appJson.subPackages.reduce((list, pkg) => {
+        const root = String((pkg && pkg.root) || '').replace(/\/+$/, '');
+        const pages = Array.isArray(pkg && pkg.pages) ? pkg.pages : [];
+        return list.concat(
+          pages.map((pagePath) => {
+            const normalizedPagePath = String(pagePath || '').replace(/^\/+/, '');
+            return root ? `${root}/${normalizedPagePath}` : normalizedPagePath;
+          })
+        );
+      }, [])
+    : [];
+  const pages = mainPages.concat(subPackagePages);
 
   requiredPages.forEach((pagePath) => {
     if (!pages.includes(pagePath)) {

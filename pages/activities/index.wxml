@@ -34,7 +34,7 @@
     </block>
     <view wx:else class="card status-card">
       <view class="status-title">暂无活动</view>
-      <view class="status-text">当前没有活动内容，后续上新后会展示在这里。</view>
+      <view class="status-text">暂无活动内容，敬请期待</view>
     </view>
   </block>
 </view>

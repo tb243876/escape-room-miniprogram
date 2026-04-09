@@ -91,8 +91,35 @@ function allMembersCheckedIn(members = []) {
   return total > 0 && countCheckedInMembers(members) === total;
 }
 
+function buildMemberOpenId(member = {}, index = 0) {
+  const explicitOpenId = String(member.openId || '').trim();
+  if (explicitOpenId) {
+    return explicitOpenId;
+  }
+  const nickname = String(member.nickname || '').trim();
+  if (nickname) {
+    return `mock-member-${nickname}`;
+  }
+  return `mock-member-${index}`;
+}
+
+function normalizeSessionMembers(members = []) {
+  return (Array.isArray(members) ? members : []).map((member, index) => ({
+    ...member,
+    openId: buildMemberOpenId(member, index),
+    nickname: member.nickname || `成员${index + 1}`,
+  }));
+}
+
+function normalizeStoredSession(session = {}) {
+  return {
+    ...session,
+    members: normalizeSessionMembers(session.members),
+  };
+}
+
 function cloneDefaultSessions() {
-  return JSON.parse(JSON.stringify(mockData.staffSessions || []));
+  return JSON.parse(JSON.stringify(mockData.staffSessions || [])).map(normalizeStoredSession);
 }
 
 function buildActionList(stageKey, canConfirmMembers) {
@@ -107,35 +134,113 @@ function buildActionList(stageKey, canConfirmMembers) {
           ? '所有成员已确认到店，可以进入待开始。'
           : '请先逐个确认到店成员，再进入待开始。',
       },
-      { key: 'start', text: '开始场次', tone: 'secondary', enabled: false, hint: '必须先完成成员确认。' },
-      { key: 'end', text: '结束场次', tone: 'secondary', enabled: false, hint: '开始后才能结束并自动结算。' },
-      { key: 'highlight', text: '上传集锦', tone: 'secondary', enabled: false, hint: '结算成功后开放上传。' },
+      {
+        key: 'start',
+        text: '开始场次',
+        tone: 'secondary',
+        enabled: false,
+        hint: '必须先完成成员确认。',
+      },
+      {
+        key: 'end',
+        text: '结束场次',
+        tone: 'secondary',
+        enabled: false,
+        hint: '开始后才能结束并自动结算。',
+      },
+      {
+        key: 'highlight',
+        text: '上传集锦',
+        tone: 'secondary',
+        enabled: false,
+        hint: '结算成功后开放上传。',
+      },
     ];
   }
 
   if (stageKey === 'ready') {
     return [
-      { key: 'confirm', text: '确认成员', tone: 'secondary', enabled: false, hint: '这场成员已确认完成。' },
-      { key: 'start', text: '开始场次', tone: 'primary', enabled: true, hint: '点击后进入进行中状态。' },
-      { key: 'end', text: '结束场次', tone: 'secondary', enabled: false, hint: '开始后才能执行结束。' },
-      { key: 'highlight', text: '上传集锦', tone: 'secondary', enabled: false, hint: '结算成功后开放上传。' },
+      {
+        key: 'confirm',
+        text: '确认成员',
+        tone: 'secondary',
+        enabled: false,
+        hint: '这场成员已确认完成。',
+      },
+      {
+        key: 'start',
+        text: '开始场次',
+        tone: 'primary',
+        enabled: true,
+        hint: '点击后进入进行中状态。',
+      },
+      {
+        key: 'end',
+        text: '结束场次',
+        tone: 'secondary',
+        enabled: false,
+        hint: '开始后才能执行结束。',
+      },
+      {
+        key: 'highlight',
+        text: '上传集锦',
+        tone: 'secondary',
+        enabled: false,
+        hint: '结算成功后开放上传。',
+      },
     ];
   }
 
   if (stageKey === 'playing') {
     return [
-      { key: 'confirm', text: '确认成员', tone: 'secondary', enabled: false, hint: '这场已经开始，无需再次确认。' },
-      { key: 'start', text: '开始场次', tone: 'secondary', enabled: false, hint: '当前已经在进行中。' },
-      { key: 'end', text: '结束场次', tone: 'primary', enabled: true, hint: '点击后触发自动结算链路。' },
-      { key: 'highlight', text: '上传集锦', tone: 'secondary', enabled: false, hint: '结束并结算后即可上传。' },
+      {
+        key: 'confirm',
+        text: '确认成员',
+        tone: 'secondary',
+        enabled: false,
+        hint: '这场已经开始，无需再次确认。',
+      },
+      {
+        key: 'start',
+        text: '开始场次',
+        tone: 'secondary',
+        enabled: false,
+        hint: '当前已经在进行中。',
+      },
+      {
+        key: 'end',
+        text: '结束场次',
+        tone: 'primary',
+        enabled: true,
+        hint: '点击后触发自动结算链路。',
+      },
+      {
+        key: 'highlight',
+        text: '上传集锦',
+        tone: 'secondary',
+        enabled: false,
+        hint: '结束并结算后即可上传。',
+      },
     ];
   }
 
   return [
-    { key: 'confirm', text: '确认成员', tone: 'secondary', enabled: false, hint: '这场已经结算完成。' },
+    {
+      key: 'confirm',
+      text: '确认成员',
+      tone: 'secondary',
+      enabled: false,
+      hint: '这场已经结算完成。',
+    },
     { key: 'start', text: '开始场次', tone: 'secondary', enabled: false, hint: '这场已经结束。' },
     { key: 'end', text: '结束场次', tone: 'secondary', enabled: false, hint: '这场已经完成结算。' },
-    { key: 'highlight', text: '上传集锦', tone: 'primary', enabled: true, hint: '现在可以去集锦库上传本场内容。' },
+    {
+      key: 'highlight',
+      text: '上传集锦',
+      tone: 'primary',
+      enabled: true,
+      hint: '现在可以去集锦库上传本场内容。',
+    },
   ];
 }
 
@@ -144,54 +249,50 @@ function findSessionAction(session = {}, actionKey) {
   if (!normalizedActionKey) {
     return null;
   }
-  const canConfirmMembers = session.stageKey === 'pending_confirm' && allMembersCheckedIn(session.members || []);
-  const actionList = Array.isArray(session.actions) && session.actions.length
-    ? session.actions
-    : buildActionList(session.stageKey, canConfirmMembers);
+  const canConfirmMembers =
+    session.stageKey === 'pending_confirm' && allMembersCheckedIn(session.members || []);
+  const actionList =
+    Array.isArray(session.actions) && session.actions.length
+      ? session.actions
+      : buildActionList(session.stageKey, canConfirmMembers);
   return actionList.find((item) => item.key === normalizedActionKey) || null;
+}
+
+function fail(errorCode, message) {
+  return {
+    ok: false,
+    errorCode,
+    message,
+    retryable: false,
+  };
 }
 
 function validateSessionAction(session = {}, actionKey) {
   const targetAction = findSessionAction(session, actionKey);
   if (!targetAction) {
-    return {
-      ok: false,
-      message: '当前操作不存在或已失效，请刷新后重试',
-    };
+    return fail('SESSION_ACTION_INVALID', '当前操作不存在或已失效，请刷新后重试');
   }
   if (!targetAction.enabled) {
-    return {
-      ok: false,
-      message: targetAction.hint || '当前阶段不能执行这个操作',
-    };
+    return fail('SESSION_ACTION_FORBIDDEN', targetAction.hint || '当前阶段不能执行这个操作');
   }
   return {
     ok: true,
   };
 }
 
-function validateSessionMemberToggle(session = {}, nickname) {
-  const normalizedNickname = String(nickname || '').trim();
-  if (!normalizedNickname) {
-    return {
-      ok: false,
-      message: '没有找到要确认的成员，请刷新后重试',
-    };
+function validateSessionMemberToggle(session = {}, memberOpenId) {
+  const normalizedOpenId = String(memberOpenId || '').trim();
+  if (!normalizedOpenId) {
+    return fail('SESSION_MEMBER_NOT_FOUND', '没有找到要确认的成员，请刷新后重试');
   }
   if (session.stageKey !== 'pending_confirm') {
-    return {
-      ok: false,
-      message: '当前阶段不能再调整成员到店状态',
-    };
+    return fail('SESSION_MEMBER_TOGGLE_FORBIDDEN', '当前阶段不能再调整成员到店状态');
   }
   const matchedMember = (session.members || []).find(
-    (item) => String(item.nickname || '').trim() === normalizedNickname
+    (item) => String(item.openId || '').trim() === normalizedOpenId
   );
   if (!matchedMember) {
-    return {
-      ok: false,
-      message: '没有找到要确认的成员，请刷新后重试',
-    };
+    return fail('SESSION_MEMBER_NOT_FOUND', '没有找到要确认的成员，请刷新后重试');
   }
   return {
     ok: true,
@@ -200,11 +301,12 @@ function validateSessionMemberToggle(session = {}, nickname) {
 
 function getLocalStaffSessions() {
   const stored = storage.safeGetStorage(storage.STAFF_SESSION_STORAGE_KEY);
-  return Array.isArray(stored) && stored.length ? stored : cloneDefaultSessions();
+  const source = Array.isArray(stored) && stored.length ? stored : cloneDefaultSessions();
+  return source.map(normalizeStoredSession);
 }
 
 function saveLocalStaffSessions(sessionList) {
-  const normalized = Array.isArray(sessionList) ? sessionList : [];
+  const normalized = Array.isArray(sessionList) ? sessionList.map(normalizeStoredSession) : [];
   storage.safeSetStorage(storage.STAFF_SESSION_STORAGE_KEY, normalized);
   return normalized;
 }
@@ -250,10 +352,13 @@ function buildNextSessionState(session = {}, actionKey) {
     nextSession.memberSummary = `当前已确认 ${Array.isArray(nextSession.members) ? nextSession.members.length : 0}/${Array.isArray(nextSession.members) ? nextSession.members.length : 0} 人`;
     nextSession.metaText = '今晚场次 · 所有成员已确认';
     nextSession.note = '这场已经可以开场，开场后玩家端状态会自动切到游戏中。';
-    nextSession.members = (nextSession.members || []).map((item) => ({ ...item, status: '已确认' }));
+    nextSession.members = (nextSession.members || []).map((item) => ({
+      ...item,
+      status: '已确认',
+    }));
     nextSession.timeline = [
-      { title: '门店已确认成员', content: '真实队伍已固定，等待店员点击开始。' },
-      { title: '待开始', content: '开始后玩家端会看到“游戏中”，并锁定本场状态流转。' },
+      { title: '门店已确认成员', content: '队伍人员已固定，等待店员点击开始' },
+      { title: '待开始', content: '开始后玩家端会看到"游戏中"，并锁定本场状态流转' },
     ];
     nextSession.actions = buildActionList('ready', false);
     return nextSession;
@@ -265,7 +370,10 @@ function buildNextSessionState(session = {}, actionKey) {
     nextSession.memberSummary = `当前 ${Array.isArray(nextSession.members) ? nextSession.members.length : 0}/${Array.isArray(nextSession.members) ? nextSession.members.length : 0} 人 · 游戏中`;
     nextSession.metaText = '正在进行 · 等待店员结束场次';
     nextSession.note = '结束场次后系统会自动结算成长值、徽章、档案和排行榜。';
-    nextSession.members = (nextSession.members || []).map((item) => ({ ...item, status: '游戏中' }));
+    nextSession.members = (nextSession.members || []).map((item) => ({
+      ...item,
+      status: '游戏中',
+    }));
     nextSession.timeline = [
       { title: '场次已开始', content: '玩家正在游玩，等待店员在结束后点击结算。' },
       { title: '待自动结算', content: '结束场次后将自动发放成长值并更新排行榜。' },
@@ -280,7 +388,10 @@ function buildNextSessionState(session = {}, actionKey) {
     nextSession.memberSummary = `本场已完成 · ${Array.isArray(nextSession.members) ? nextSession.members.length : 0} 人已结算`;
     nextSession.metaText = '已结束并自动结算 · 等待上传集锦';
     nextSession.note = '本场已完成自动结算，现在可以上传照片和视频集锦。';
-    nextSession.members = (nextSession.members || []).map((item) => ({ ...item, status: '已结算' }));
+    nextSession.members = (nextSession.members || []).map((item) => ({
+      ...item,
+      status: '已结算',
+    }));
     nextSession.timeline = [
       { title: '场次已结束', content: '玩家已离场，系统已完成成长值、徽章和档案结算。' },
       { title: '待上传集锦', content: '店员现在可以上传本场照片和视频内容。' },
@@ -292,14 +403,14 @@ function buildNextSessionState(session = {}, actionKey) {
   return nextSession;
 }
 
-function toggleSessionMemberCheckIn(session = {}, nickname) {
+function toggleSessionMemberCheckIn(session = {}, memberOpenId) {
   const nextSession = JSON.parse(JSON.stringify(session || {}));
   if (nextSession.stageKey !== 'pending_confirm') {
     return nextSession;
   }
 
   nextSession.members = (nextSession.members || []).map((item) => {
-    if (String(item.nickname || '') !== String(nickname || '')) {
+    if (String(item.openId || '').trim() !== String(memberOpenId || '').trim()) {
       return item;
     }
     const checkedIn = isMemberCheckedIn(item);
@@ -325,7 +436,7 @@ function toggleSessionMemberCheckIn(session = {}, nickname) {
 }
 
 function normalizeSession(session = {}, binding) {
-  const members = Array.isArray(session.members) ? session.members : [];
+  const members = normalizeSessionMembers(session.members);
   const checkedInCount = countCheckedInMembers(members);
   const totalMemberCount = members.length;
   const canConfirmMembers = session.stageKey === 'pending_confirm' && allMembersCheckedIn(members);
@@ -410,16 +521,46 @@ function getSessionById(sessionList = [], sessionId, binding) {
 
 function normalizeHighlightPackages(packages = [], binding) {
   return (packages || []).map((item) => ({
+    id: item.id || item._id || '',
     ...item,
     roleLabel: binding.roleLabel || '店员',
+    canUpload: Boolean((binding.permissions || []).includes('upload_highlights')),
     media: Array.isArray(item.media)
       ? item.media.map((media) => ({
+          id: media.id || media.mediaId || '',
           ...media,
+          type: media.type === 'video' ? 'video' : 'image',
+          fileId: media.fileId || media.fileID || '',
+          title: media.title || (media.type === 'video' ? '视频内容' : '图片内容'),
           tagText: media.type === 'video' ? '视频' : '图片',
         }))
       : [],
     statusClass: item.status === '已上传' ? 'status-ok' : 'status-pending',
   }));
+}
+
+function handleStaffAuthFailure(pageContext, response, options = {}) {
+  const message = String((response && response.message) || options.fallbackMessage || '').trim();
+  if (!message.includes('请先完成授权绑定')) {
+    return false;
+  }
+
+  pageContext.setData({
+    ...(options.resetData || {}),
+    errorText: '',
+    redirectingToAuth: true,
+    hasLoaded: false,
+  });
+  wx.showToast({
+    title: '请先输入授权码',
+    icon: 'none',
+  });
+  setTimeout(() => {
+    wx.redirectTo({
+      url: '/packages/staff/auth-code/index',
+    });
+  }, 180);
+  return true;
 }
 
 module.exports = {
@@ -439,4 +580,5 @@ module.exports = {
   normalizeDashboard,
   getSessionById,
   normalizeHighlightPackages,
+  handleStaffAuthFailure,
 };
